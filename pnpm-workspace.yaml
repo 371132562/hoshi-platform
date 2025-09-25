@@ -1,0 +1,27 @@
+packages:
+  - frontend
+  - backend
+  - frontend-data
+  - frontend-evaluation
+  - frontend-score
+  - frontend-comprehensive
+  - frontend-urbanization
+  - frontend-human
+  - frontend-material
+  - frontend-spatial
+  - electron
+  - loading-frontend
+  - common
+  - doc/*
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - electron
+  - electron-winstaller
+  - es5-ext
+  - esbuild
+  - prisma
+  - sqlite3

@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// 指定生成器，这里是 Prisma Client for JavaScript
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 定义数据源，这里使用 SQLite
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL") // 数据库链接从环境变量中读取
+}
+
+// 用户表
+model User {
+  id         String   @id @default(uuid()) // 主键ID（UUID）
+  code       String   @unique // 用户编号（唯一）
+  name       String // 用户姓名
+  department String // 所属部门
+  email      String? // 邮箱地址（可选）
+  phone      String? // 电话号码（可选）
+  password   String // 密码（加密存储）
+  roleId     String? // 角色ID（可选，允许用户暂时没有角色）
+  role       Role?    @relation(fields: [roleId], references: [id]) // 关联到角色表
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
+
+  @@unique([code, delete]) // 邮箱在未删除状态下唯一
+  @@index([id])
+  @@index([code, delete])
+  @@index([email, delete])
+  @@index([roleId])
+}
+
+// 角色表
+model Role {
+  id            String   @id @default(uuid()) // 主键ID（UUID）
+  name          String // 角色名称（唯一）
+  description   String? // 角色描述
+  allowedRoutes Json     @default("[]") // 允许访问的前端路由地址（JSON数组）
+  users         User[] // 关联到用户表
+  createTime    DateTime @default(now())
+  updateTime    DateTime @updatedAt
+  delete        Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
+
+  @@index([id])
+  @@index([name, delete])
+}
+
+// 文章管理表
+model Article {
+  id         String   @id @default(uuid()) // 主键ID
+  title      String // 文章标题
+  content    String // 文章内容
+  images     Json     @default("[]") // 文章内包含的图片 为图片id组成的数组
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
+
+  @@index([id, delete])
+}
+
+// 上传的图片
+model Image {
+  id        String   @id @default(uuid())
+  filename  String // 生成的文件名
+  hash      String   @unique // 文件哈希值
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([id])
+}

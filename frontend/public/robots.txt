@@ -1,0 +1,12 @@
+# 允许所有搜索引擎抓取
+User-agent: *
+Allow: /
+
+# 不需要索引的后台资源（如有）
+Disallow: /api/
+Disallow: /admin/
+
+# Sitemap 位置（构建后静态路径）
+Sitemap: /sitemap.xml
+
+

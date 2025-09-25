@@ -1,0 +1,74 @@
+# 这个工作流文件的作用是：当代码被推送到 master 分支时，
+# 自动将客户端所需的文件打包成 zip，并创建一个 GitHub Release。
+
+name: 创建便携式运行包
+
+on:
+  push:
+    branches:
+      - aaa
+
+# 并发控制：自动取消旧的、正在进行中的工作流
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# 授予工作流写权限，以便它可以创建 Release
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  build-and-release:
+    name: 打包客户所需文件并发布
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          # 获取所有历史记录，以便能创建正确的变更日志（如果需要）
+          fetch-depth: 0
+
+      - name: 打包发布文件
+        run: |
+          zip fresh-shop.zip docker-compose.yml \
+          start.ps1 backup.ps1 restore.ps1 entrypoint.sh
+        
+      - name: 生成版本号 (北京时间)
+        id: version
+        run: echo "tag=$(TZ='Asia/Shanghai' date +'%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+
+      - name: 创建 GitHub Release
+        # 使用一个非常流行的第三方 Action 来简化 Release 的创建过程
+        uses: softprops/action-gh-release@v2
+        with:
+          # 使用日期和时间作为版本号，例如 release-v20240725-1030
+          tag_name: release-v${{ steps.version.outputs.tag }}
+          name: "客户端运行包 v${{ steps.version.outputs.tag }}"
+          body: |
+            自动打包的客户端运行文件 (PowerShell 版本)。
+            
+            本次发布包含了最新的：
+            - Docker Compose 配置文件 (`docker-compose.yml`)
+            - Docker启动脚本 (`entrypoint.sh`)
+            - PowerShell 脚本:
+              - 启动应用: `start.ps1`
+              - 备份数据: `backup.ps1` 
+              - 恢复数据: `restore.ps1`
+
+            请下载下面的 `fresh-shop.zip` 文件，解压后即可使用。
+          files: fresh-shop.zip
+
+      - name: 清理旧的workflow运行记录
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          # 保留最近30天的记录
+          retain_days: 30
+          # 保留最近10个运行记录
+          keep_minimum_runs: 10
+          # 只清理当前workflow的记录
+          delete_workflow_pattern: "创建便携式运行包"
+          # 只清理已完成的运行记录
+          delete_run_by_conclusion_pattern: "success,failure,cancelled"

@@ -1,0 +1,61 @@
+name: 发布 Docker 镜像
+
+on:
+  push:
+    branches:
+      - aaa # 当推送到 main 分支时触发
+
+# 授予工作流权限
+permissions:
+  contents: read
+  actions: write
+
+env:
+  DOCKER_IMAGE_NAME: linstar666/fresh-shop # 替换为你的 Docker Hub 用户名和镜像名
+  # 如果你的项目目录不是 fresh-shop，可以根据需要调整 IMAGE_NAME。
+  # 也可以直接在 steps 中构建时指定全名
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest # 使用最新的 Ubuntu 运行器
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4 # 检出你的仓库代码
+
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3 # 设置 Docker Buildx，用于更高效地构建镜像
+
+      - name: 登录 Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }} # 从 GitHub Secrets 获取 Docker Hub 用户名
+          password: ${{ secrets.DOCKER_PASSWORD }} # 从 GitHub Secrets 获取 Docker Hub 密码
+
+      - name: 构建和推送 Docker 镜像
+        uses: docker/build-push-action@v5
+        with:
+          context: . # Dockerfile 所在的目录 (你的项目根目录)
+          file: ./Dockerfile # Dockerfile 的路径
+          push: true # 推送到仓库
+          tags: ${{ env.DOCKER_IMAGE_NAME }}:latest # 镜像标签为 latest
+          # 也可以添加其他标签，例如：
+          # tags: |
+          #   ${{ env.DOCKER_IMAGE_NAME }}:latest
+          #   ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} # 使用 commit SHA 作为标签，唯一标识每次构建
+          build-args: | # 传递构建参数给 Dockerfile
+            DATABASE_URL_BUILD=file:../../db/shop.db # 你的 DATABASE_URL_BUILD 参数
+
+      - name: 清理旧的workflow运行记录
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          # 保留最近30天的记录
+          retain_days: 30
+          # 保留最近10个运行记录
+          keep_minimum_runs: 10
+          # 只清理当前workflow的记录
+          delete_workflow_pattern: "发布 Docker 镜像"
+          # 只清理已完成的运行记录
+          delete_run_by_conclusion_pattern: "success,failure,cancelled"
