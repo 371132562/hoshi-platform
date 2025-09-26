@@ -360,7 +360,6 @@ export type ArticleItem = {
   title: string;
   content: string;
   images: string[]; // 文章内包含的图片 为图片id组成的数组
-  type: string; // 文章类型
   createTime: Date;
   updateTime: Date;
 };
@@ -403,23 +402,4 @@ export type ArticleMetaItem = Omit<ArticleItem, 'content' | 'images'>;
  */
 export type DeleteArticleDto = {
   id: string;
-};
-
-/**
- * 创建/更新文章顺序 DTO
- */
-export type UpsertArticleOrderDto = {
-  page: string;
-  articles: string[]; // 文章ID数组
-};
-
-/**
- * 文章顺序 DTO
- */
-export type ArticleOrderDto = {
-  id: string;
-  page: string;
-  articles: string[];
-  createTime: Date;
-  updateTime: Date;
 };

@@ -27,33 +27,44 @@ export class AIService {
       this.logger.log(msg);
     }
 
-    // 查询国家与该年评分详情
-    const score = await this.prisma.score.findFirst({
-      where: { countryId, year, delete: 0, country: { delete: 0 } },
-      include: { country: true },
-    });
-    if (!score) {
-      {
-        const msg = `【验证失败】评分数据不存在\n- 国家ID: ${countryId}\n- 年份: ${year}`;
-        this.logger.warn(msg);
-      }
-      throw new BusinessException(
-        ErrorCode.RESOURCE_NOT_FOUND,
-        '未找到该国家该年份的评分数据',
-      );
-    }
-    {
-      const countryName = score.country?.cnName || score.country?.enName;
-      const total = decimalToNumber(score.totalScore);
-      const msg = `【成功】获取评分数据\n- 国家: ${countryName}\n- 总分: ${total}`;
-      this.logger.log(msg);
-    }
+    // 临时硬编码数据，用于后续开发参考
+    const score = {
+      year: year,
+      totalScore: 75.5,
+      urbanizationProcessDimensionScore: 80.0,
+      humanDynamicsDimensionScore: 70.0,
+      materialDynamicsDimensionScore: 75.0,
+      spatialDynamicsDimensionScore: 72.5,
+      country: {
+        cnName: '示例国家',
+        enName: 'Example Country',
+      },
+    };
 
-    // 读取评价体系规则（用于提示词背景）
-    const evaluations = await this.prisma.scoreEvaluation.findMany({
-      orderBy: { minScore: 'asc' },
-    });
-    this.logger.log(`【成功】获取评价规则 - 共 ${evaluations.length} 条`);
+    const evaluations = [
+      {
+        minScore: 0,
+        maxScore: 50,
+        evaluationText: '发展水平较低，需要重点关注基础设施建设',
+      },
+      {
+        minScore: 50,
+        maxScore: 70,
+        evaluationText: '发展水平中等，在部分领域表现良好',
+      },
+      {
+        minScore: 70,
+        maxScore: 100,
+        evaluationText: '发展水平较高，整体表现优秀',
+      },
+    ];
+
+    this.logger.log(
+      `【临时数据】使用硬编码评分数据 - 国家: ${score.country.cnName}, 总分: ${score.totalScore}`,
+    );
+    this.logger.log(
+      `【临时数据】使用硬编码评价规则 - 共 ${evaluations.length} 条`,
+    );
 
     // 组织 Prompt 背景
     const prompt = this.buildPrompt({ score, evaluations, language });

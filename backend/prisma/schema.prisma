@@ -65,10 +65,12 @@ model Article {
 // 上传的图片
 model Image {
   id        String   @id @default(uuid())
-  filename  String // 生成的文件名
-  hash      String   @unique // 文件哈希值
+  filename  String   @unique // 生成的文件名 作为唯一标识 
+  hash      String   @unique // 文件哈希值 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([id])
+  @@index([filename])
+  @@index([hash])
 }
