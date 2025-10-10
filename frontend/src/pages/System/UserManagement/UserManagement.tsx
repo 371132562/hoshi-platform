@@ -1,4 +1,4 @@
-import { KeyOutlined, PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined } from '@ant-design/icons'
 import {
   Button,
   Form,
@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react'
 
 import { useRoleStore } from '../../../stores/roleStore'
 import { useUserStore } from '../../../stores/userStore'
-import { UserListItemDto } from '../../../types'
+import { UserItem } from '../../../types'
 
 const UserManagement: React.FC = () => {
   const userList = useUserStore(s => s.userList)
@@ -31,10 +31,10 @@ const UserManagement: React.FC = () => {
   const fetchRoleList = useRoleStore(s => s.fetchRoleList)
 
   const [modalOpen, setModalOpen] = useState(false)
-  const [editUser, setEditUser] = useState<UserListItemDto | null>(null)
+  const [editUser, setEditUser] = useState<UserItem | null>(null)
   const [form] = Form.useForm()
   const [resetModalOpen, setResetModalOpen] = useState(false)
-  const [resetUser, setResetUser] = useState<UserListItemDto | null>(null)
+  const [resetUser, setResetUser] = useState<UserItem | null>(null)
   const [resetForm] = Form.useForm()
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const UserManagement: React.FC = () => {
   }, [fetchUserList, fetchRoleList])
 
   // 打开新建/编辑弹窗
-  const openModal = (user?: UserListItemDto) => {
+  const openModal = (user?: UserItem) => {
     setEditUser(user || null)
     setModalOpen(true)
     if (user) {
@@ -78,7 +78,7 @@ const UserManagement: React.FC = () => {
   }
 
   // 打开重置密码弹窗
-  const openResetModal = (user: UserListItemDto) => {
+  const openResetModal = (user: UserItem) => {
     setResetUser(user)
     setResetModalOpen(true)
     resetForm.resetFields()
@@ -110,14 +110,16 @@ const UserManagement: React.FC = () => {
     { title: '电话', dataIndex: 'phone', key: 'phone' },
     {
       title: '角色',
-      dataIndex: 'roleName',
-      key: 'roleName',
-      render: (v: string) => (v === 'admin' ? <Tag color="red">超级管理员</Tag> : v)
+      key: 'role',
+      render: (_: unknown, record: UserItem) => {
+        const roleName = record.role?.name || '未分配角色'
+        return roleName === 'admin' ? <Tag color="red">超级管理员</Tag> : <Tag>{roleName}</Tag>
+      }
     },
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: UserListItemDto) => (
+      render: (_: unknown, record: UserItem) => (
         <Space>
           <Button
             color="primary"

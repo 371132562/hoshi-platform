@@ -6,7 +6,7 @@ import {
   LoginResponseDto,
   TokenPayloadDto,
   ChallengeDto,
-  ChallengeResDto,
+  ChallengeResponse,
   LoginWithHashDto,
 } from '../../../types/dto';
 import { BusinessException } from '../../common/exceptions/businessException';
@@ -32,7 +32,7 @@ export class AuthService {
    * 通用挑战接口 - 获取随机盐
    * 两步登录 - 第一步：获取随机盐
    */
-  getChallenge(dto: ChallengeDto): ChallengeResDto {
+  getChallenge(dto: ChallengeDto): ChallengeResponse {
     this.logger.log(`[开始] 获取挑战 - 类型: ${dto.type}`);
     try {
       const salt = CryptoUtil.generateSalt();
@@ -63,6 +63,8 @@ export class AuthService {
               name: true,
               description: true,
               allowedRoutes: true,
+              createTime: true,
+              updateTime: true,
             },
           },
         },
@@ -85,8 +87,10 @@ export class AuthService {
       }
 
       const payload: TokenPayloadDto = {
+        sub: user.id,
         userId: user.id,
-        userCode: user.code,
+        code: user.code,
+        name: user.name,
         userName: user.name,
         roleId: user.roleId || undefined,
         roleName: user.role?.name,
@@ -102,17 +106,23 @@ export class AuthService {
           code: user.code,
           name: user.name,
           department: user.department,
-          email: user.email || undefined,
-          phone: user.phone || undefined,
-          roleId: user.roleId || undefined,
+          email: user.email || null,
+          phone: user.phone || null,
+          roleId: user.roleId || null,
           role: user.role
             ? {
                 id: user.role.id,
                 name: user.role.name,
-                description: user.role.description || undefined,
-                allowedRoutes: user.role.allowedRoutes as string[],
+                description: user.role.description || null,
+                allowedRoutes: Array.isArray(user.role.allowedRoutes)
+                  ? (user.role.allowedRoutes as string[])
+                  : [],
+                createTime: user.role.createTime,
+                updateTime: user.role.updateTime,
               }
-            : undefined,
+            : null,
+          createTime: user.createTime,
+          updateTime: user.updateTime,
         },
       };
     } catch (error) {
@@ -144,6 +154,8 @@ export class AuthService {
               name: true,
               description: true,
               allowedRoutes: true,
+              createTime: true,
+              updateTime: true,
             },
           },
         },
@@ -173,17 +185,19 @@ export class AuthService {
         code: user.code,
         name: user.name,
         department: user.department,
-        email: user.email || undefined,
-        phone: user.phone || undefined,
-        roleId: user.roleId || undefined,
+        email: user.email || null,
+        phone: user.phone || null,
+        roleId: user.roleId || null,
         role: user.role
           ? {
               id: user.role.id,
               name: user.role.name,
-              description: user.role.description || undefined,
+              description: user.role.description || null,
               allowedRoutes: user.role.allowedRoutes as string[],
+              createTime: user.role.createTime,
+              updateTime: user.role.updateTime,
             }
-          : undefined,
+          : null,
         createTime: user.createTime,
         updateTime: user.updateTime,
       };

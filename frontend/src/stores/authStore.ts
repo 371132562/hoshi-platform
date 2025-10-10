@@ -1,4 +1,4 @@
-import { ErrorCode } from 'urbanization-backend/types/response'
+import { ErrorCode } from 'template-backend/types/response'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 

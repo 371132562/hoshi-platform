@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Button, message, Modal, Select, Skeleton, Space, Tabs } from 'antd'
 import React, { useEffect, useState } from 'react'
-import type { ArticleItem, ArticleMetaItem } from 'urbanization-backend/types/dto'
+import type { ArticleItem, ArticleMetaItem } from 'template-backend/types/dto'
 import { v4 as uuidv4 } from 'uuid'
 
 import ArticleDisplay from '@/components/ArticleDisplay'
@@ -96,13 +96,7 @@ const SortableItem: React.FC<SortableItemProps> = ({
   )
 }
 
-const PAGES = [
-  { key: 'home', label: '首页' },
-  { key: 'urbanizationProcess', label: '城镇化进程' },
-  { key: 'humanDynamics', label: '人口迁徙动力' },
-  { key: 'materialDynamics', label: '经济发展动力' },
-  { key: 'spatialDynamics', label: '空间发展动力' }
-]
+const PAGES = [{ key: 'home', label: '首页' }]
 
 const OrderConfig = () => {
   const allArticles = useArticleStore(state => state.allArticles)
@@ -163,7 +157,6 @@ const OrderConfig = () => {
         title: '请选择一篇文章',
         content: '',
         images: [],
-        type: '', // 添加缺失的type属性
         createTime: new Date(),
         updateTime: new Date(),
         uniqueId: uuidv4()

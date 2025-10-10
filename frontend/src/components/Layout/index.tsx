@@ -1,7 +1,8 @@
 import { LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons' // 导入图标
 import {
   Avatar,
-  /* Breadcrumb, */ Dropdown,
+  Breadcrumb,
+  Dropdown,
   FloatButton,
   Layout,
   Menu,
@@ -11,26 +12,24 @@ import {
 } from 'antd'
 import { FC, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
-import { /* Link,  */ useLocation, useNavigate, useOutlet } from 'react-router'
+import { Link, useLocation, useNavigate, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
 import Forbidden from '@/components/Forbidden'
-import { /* getBreadcrumbItems,  */ getFilteredRoutes } from '@/router/routesConfig'
+import { getBreadcrumbItems, getFilteredRoutes } from '@/router/routesConfig'
 import { useAuthStore } from '@/stores/authStore'
-import useCountryAndContinentStore from '@/stores/countryAndContinentStore'
-import useIndicatorStore from '@/stores/indicatorStore'
 
-const { Header, Sider, Content, Footer } = Layout
+const { Header, Sider, Content /* Footer */ } = Layout
 
 export const Component: FC = () => {
   const outlet = useOutlet()
   const navigate = useNavigate()
-  const getIndicatorHierarchy = useIndicatorStore(state => state.getIndicatorHierarchy)
-  const getCountries = useCountryAndContinentStore(state => state.getCountries)
   const user = useAuthStore(state => state.user)
   const token = useAuthStore(state => state.token)
   const fetchProfile = useAuthStore(state => state.fetchProfile)
-  const { sideRoutes, topRoutes } = getFilteredRoutes(user?.role)
+  const { sideRoutes, topRoutes } = getFilteredRoutes(
+    user?.role ? { name: user.role.name, allowedRoutes: user.role.allowedRoutes || [] } : undefined
+  )
   const logout = useAuthStore(state => state.logout)
   const [collapsed, setCollapsed] = useState(false)
   const [openKeys, setOpenKeys] = useState<string[]>([])
@@ -44,12 +43,6 @@ export const Component: FC = () => {
       fetchProfile()
     }
   }, [token, fetchProfile])
-
-  // 全局获取一次指标数据
-  useEffect(() => {
-    getIndicatorHierarchy()
-    getCountries()
-  }, [])
 
   const handleMenuClick: MenuProps['onClick'] = e => {
     navigate(e.key)
@@ -195,16 +188,16 @@ export const Component: FC = () => {
   })
 
   // 获取面包屑项
-  // const breadcrumbItems = useMemo(() => {
-  //   return getBreadcrumbItems(pathname).map(item => ({
-  //     title:
-  //       item.component && item.path !== pathname ? (
-  //         <Link to={item.path}>{item.title}</Link>
-  //       ) : (
-  //         item.title
-  //       )
-  //   }))
-  // }, [pathname])
+  const breadcrumbItems = useMemo(() => {
+    return getBreadcrumbItems(pathname).map(item => ({
+      title:
+        item.component && item.path !== pathname ? (
+          <Link to={item.path}>{item.title}</Link>
+        ) : (
+          item.title
+        )
+    }))
+  }, [pathname])
 
   // 路由守卫：检查权限
   const hasPermission = useMemo(() => {
@@ -235,9 +228,7 @@ export const Component: FC = () => {
   return (
     <Layout className="h-screen w-full">
       <Header className="flex items-center !pl-[29px] text-white">
-        <div className="flex-shrink-0 text-xl font-bold text-white">
-          城镇化发展质量评价技术示范平台
-        </div>
+        <div className="flex-shrink-0 text-xl font-bold text-white">模版平台</div>
         <div className="flex-grow" />
         <Menu
           theme="dark"
@@ -310,11 +301,11 @@ export const Component: FC = () => {
           </Sider>
         )}
         <Layout>
-          <Content className="!flex flex-grow bg-gray-100 p-6">
+          <Content className="!flex flex-grow flex-col bg-gray-100 p-6">
             {/* 添加面包屑导航 */}
-            {/* <div className="mb-2">
+            <div className="mb-2">
               <Breadcrumb items={breadcrumbItems} />
-            </div> */}
+            </div>
             <div
               ref={scrollRef}
               className="box-border flex flex-grow flex-col items-center overflow-y-auto rounded-lg bg-white p-6 shadow-md"
@@ -337,9 +328,9 @@ export const Component: FC = () => {
             tooltip="回到顶部"
             style={{ right: 36, bottom: 86 }}
           />
-          <Footer className="!pt-0">
+          {/* <Footer className="!pt-0">
             <div className="flex w-full justify-center">如需帮助请联系 1234567890</div>
-          </Footer>
+          </Footer> */}
         </Layout>
       </Layout>
     </Layout>

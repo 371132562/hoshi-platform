@@ -80,11 +80,11 @@ import type {
   TokenPayloadDto,
   UpdateRoleDto,
   UpdateUserDto,
-  UserListItemDto,
+  UserItem,
   UserListResDto,
   UserLogFilesReqDto,
   UserProfileDto
-} from 'urbanization-backend/types/dto'
+} from 'template-backend/types/dto'
 // 认证相关DTO
 export type { ChallengeResDto, LoginDto, LoginResponseDto, TokenPayloadDto, UserProfileDto }
 // 角色管理相关DTO
@@ -113,6 +113,6 @@ export type {
   DeleteUserDto,
   ResetUserPasswordEncryptedDto,
   UpdateUserDto,
-  UserListItemDto,
+  UserItem,
   UserListResDto
 }

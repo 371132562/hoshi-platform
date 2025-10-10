@@ -15,7 +15,7 @@ import type {
   DeleteUserDto,
   ResetUserPasswordEncryptedDto,
   UpdateUserDto,
-  UserListItemDto,
+  UserItem,
   UserListResDto
 } from '../types'
 import { encryptData } from '../utils/crypto'
@@ -37,7 +37,7 @@ type ResetPasswordFormData = {
 }
 
 export const useUserStore = create<{
-  userList: UserListItemDto[]
+  userList: UserItem[]
   loading: boolean
   fetchUserList: () => Promise<void>
   createUser: (data: CreateUserFormData) => Promise<boolean>

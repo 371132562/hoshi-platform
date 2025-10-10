@@ -34,18 +34,6 @@ export class UploadService {
         'content',
       );
     });
-
-    // 注册：评分评价体系模块收集器（images 字段 + evaluationText 富文本图片）
-    this.registerInUseImageCollector(async () => {
-      const scoreEvaluations = await this.prisma.scoreEvaluation.findMany({
-        select: { images: true, evaluationText: true },
-      });
-      return ImageProcessorUtils.collectImagesFromRecords(
-        scoreEvaluations,
-        'images',
-        'evaluationText',
-      );
-    });
   }
 
   // ---------- 核心上传功能 ----------

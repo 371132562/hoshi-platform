@@ -14,13 +14,8 @@ import { AuthModule } from './commonModules/auth/auth.module';
 //业务模块
 import { RoleModule } from './businessModules/role/role.module';
 import { UserModule } from './businessModules/user/user.module';
-import { DataManagementModule } from './businessModules/dataManagement/dataManagement.module';
-import { IndicatorModule } from './businessModules/indicator/indicator.module';
-import { CountryAndContinentModule } from './businessModules/countryAndContinent/countryAndContinent.module';
 import { ArticleModule } from './businessModules/article/article.module';
-import { ScoreModule } from './businessModules/score/score.module';
 import { SystemLogsModule } from './commonModules/systemLogs/systemLogs.module';
-import { AIModule } from './businessModules/ai/ai.module';
 
 @Module({
   imports: [
@@ -50,13 +45,8 @@ import { AIModule } from './businessModules/ai/ai.module';
     //业务模块
     RoleModule,
     UserModule,
-    DataManagementModule,
-    IndicatorModule, // 指标查询模块
-    CountryAndContinentModule, // 国家和大洲模块
     ArticleModule, // 文章管理模块
-    ScoreModule, // 评分评价模块
     SystemLogsModule, // 系统日志模块
-    AIModule, // AI生成模块
   ],
   controllers: [],
   providers: [

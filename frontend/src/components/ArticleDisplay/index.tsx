@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArticleItem } from 'urbanization-backend/types/dto'
+import { ArticleItem } from 'template-backend/types/dto'
 
 import { toFullPathContent } from '@/utils'
 

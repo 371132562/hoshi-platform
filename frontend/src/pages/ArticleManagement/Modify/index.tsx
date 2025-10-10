@@ -1,7 +1,7 @@
 import { Button, Form, Input, message, Modal, Skeleton, Space } from 'antd'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import type { CreateArticleDto, UpdateArticleDto } from 'urbanization-backend/types/dto'
+import type { CreateArticleDto, UpdateArticleDto } from 'template-backend/types/dto'
 
 // 引入自定义的富文本编辑器组件和文章状态管理 store
 import RichEditor, { type RichEditorRef } from '@/components/RichEditor'

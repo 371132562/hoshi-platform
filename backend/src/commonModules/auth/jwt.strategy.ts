@@ -63,7 +63,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
               id: user.role.id,
               name: user.role.name,
               description: user.role.description,
-              allowedRoutes: user.role.allowedRoutes as string[],
+              allowedRoutes: Array.isArray(user.role.allowedRoutes)
+                ? (user.role.allowedRoutes as string[])
+                : [],
             }
           : undefined,
       };

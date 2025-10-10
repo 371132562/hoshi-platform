@@ -24,7 +24,7 @@
 
     "paths": {
       "@/*": ["./src/*"],
-      "urbanization-backend/*": ["../backend/*"] // <--- 根据你的 monorepo 结构调整路径
+      "template-backend/*": ["../backend/*"] // <--- 根据你的 monorepo 结构调整路径
     },
   },
   "include": ["src"]

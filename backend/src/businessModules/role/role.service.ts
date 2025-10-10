@@ -32,10 +32,10 @@ export class RoleService {
 
       this.logger.log(`[成功] 获取角色列表 - 共 ${roles.length} 个角色`);
 
-      return roles.map((role) => ({
+      const roleList = roles.map((role) => ({
         id: role.id,
         name: role.name,
-        description: role.description ?? undefined, // null转undefined
+        description: role.description ?? null, // null转null
         allowedRoutes: Array.isArray(role.allowedRoutes)
           ? (role.allowedRoutes as unknown[]).filter(
               (r): r is string => typeof r === 'string',
@@ -45,6 +45,8 @@ export class RoleService {
         createTime: role.createTime,
         updateTime: role.updateTime,
       }));
+
+      return roleList;
     } catch (error) {
       this.logger.error(
         `[失败] 获取角色列表 - ${error instanceof Error ? error.message : '未知错误'}`,

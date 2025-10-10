@@ -4,8 +4,6 @@
 // 指定生成器，这里是 Prisma Client for JavaScript
 generator client {
   provider      = "prisma-client-js"
-  engineType    = "binary" // 考虑此选项用于 Electron 部署
-  binaryTargets = ["native", "darwin", "windows"]
 }
 
 // 定义数据源，这里使用 SQLite
@@ -51,145 +49,16 @@ model Role {
   @@index([name, delete])
 }
 
-// 大洲字典表
-model Continent {
-  id         String    @id @default(uuid()) // 主键ID（UUID）
-  cnName     String    @unique // 大洲中文名
-  enName     String    @unique // 大洲英文名
-  country    Country[] // 关联到国家表
-  createTime DateTime  @default(now())
-  updateTime DateTime  @updatedAt
-  delete     Int       @default(0) // 软删除标记，0表示未删除，1表示已删除
-
-  @@index([id])
-  @@index([cnName, delete])
-  @@index([enName, delete])
-}
-
-// 国家字典表
-model Country {
-  id                    String                  @id @default(uuid()) // 主键ID（UUID）
-  cnName                String                  @unique // 国家中文名
-  enName                String                  @unique // 国家英文名
-  continentId           String // 外键，关联到大洲ID
-  continent             Continent               @relation(fields: [continentId], references: [id]) // 所属大洲
-  urbanizationWorldMap  UrbanizationWorldMap[] // 关联到世界地图城镇化数据
-  indicatorValues       IndicatorValue[] // 关联到指标数值表
-  createTime            DateTime                @default(now())
-  updateTime            DateTime                @updatedAt
-  delete                Int                     @default(0) // 软删除标记，0表示未删除，1表示已删除
-  Score                 Score[]
-  ScoreEvaluationDetail ScoreEvaluationDetail[]
-
-  @@index([id])
-  @@index([cnName, delete])
-  @@index([enName, delete])
-}
-
-// 一级维度/指标
-model TopIndicator {
-  id                 String               @id @default(uuid()) // 主键ID（UUID）
-  indicatorCnName    String               @unique // 指标中文名称
-  indicatorEnName    String               @unique // 指标英文名称
-  description        String? // 描述
-  weight             Decimal // 权重
-  secondaryIndicator SecondaryIndicator[] // 关联到二级指标
-  createTime         DateTime             @default(now())
-  updateTime         DateTime             @updatedAt
-  delete             Int                  @default(0) // 软删除标记，0表示未删除，1表示已删除
-
-  @@index([id])
-  @@index([indicatorCnName, delete])
-  @@index([indicatorEnName, delete])
-}
-
-// 二级要素/指标
-model SecondaryIndicator {
-  id                String              @id @default(uuid()) // 主键ID
-  indicatorCnName   String              @unique // 指标中文名称
-  indicatorEnName   String              @unique // 指标英文名称
-  description       String? // 描述
-  weight            Decimal // 权重
-  topIndicatorId    String // 外键，关联到一级指标ID
-  topIndicator      TopIndicator        @relation(fields: [topIndicatorId], references: [id]) // 所属一级维度
-  detailedIndicator DetailedIndicator[] // 关联到三级指标
-  createTime        DateTime            @default(now())
-  updateTime        DateTime            @updatedAt
-  delete            Int                 @default(0) // 软删除标记，0表示未删除，1表示已删除
-
-  @@index([id])
-  @@index([indicatorCnName, delete])
-  @@index([indicatorEnName, delete])
-}
-
-// 三级指标
-model DetailedIndicator {
-  id                   String             @id @default(uuid()) // 主键ID
-  indicatorCnName      String             @unique // 指标中文名称
-  indicatorEnName      String             @unique // 指标英文名称
-  unit                 String // 指标单位
-  description          String? // 描述
-  weight               Decimal // 权重
-  secondaryIndicatorId String // 外键，关联到二级指标ID
-  SecondaryIndicator   SecondaryIndicator @relation(fields: [secondaryIndicatorId], references: [id]) // 所属二级要素
-  IndicatorValue       IndicatorValue[] // 关联到指标数值表
-  createTime           DateTime           @default(now())
-  updateTime           DateTime           @updatedAt
-  delete               Int                @default(0) // 软删除标记，0表示未删除，1表示已删除
-
-  @@index([id])
-  @@index([indicatorCnName, delete])
-  @@index([indicatorEnName, delete])
-}
-
-// 指标值表，存储各国各年的三级指标具体数值
-model IndicatorValue {
-  id                  String            @id @default(uuid()) // 主键ID
-  value               Decimal? // 指标的具体值, 允许为空
-  year                Int // 数据年份
-  countryId           String // 外键，关联到国家ID
-  country             Country           @relation(fields: [countryId], references: [id]) // 所属国家
-  detailedIndicatorId String // 外键，关联到三级指标ID
-  detailedIndicator   DetailedIndicator @relation(fields: [detailedIndicatorId], references: [id]) // 所属三级指标
-  createTime          DateTime          @default(now())
-  updateTime          DateTime          @updatedAt
-  delete              Int               @default(0) // 软删除标记，0表示未删除，1表示已删除
-
-  @@index([countryId, year])
-  @@index([countryId, year, delete])
-  @@index([detailedIndicatorId, year, countryId])
-  @@index([detailedIndicatorId, year, countryId, delete])
-}
-
-// 世界地图城镇化展示表
-model UrbanizationWorldMap {
-  id           String   @id @default(uuid()) // 主键ID
-  countryId    String   @unique // 国家ID，这里应该是唯一的，一个国家只有一条记录
-  country      Country  @relation(fields: [countryId], references: [id]) // 所属国家
-  urbanization Boolean  @default(false) // 是否城镇化
-  createTime   DateTime @default(now())
-  updateTime   DateTime @updatedAt
-  delete       Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
-
-  @@index([id])
-  @@index([countryId, delete])
-}
-
-enum ArticleType {
-  ARTICLE //普通文章
-  SCORE_STANDARD //配置评价提示的评分标准文章
-}
 
 // 文章管理表
 model Article {
-  id         String      @id @default(uuid()) // 主键ID
+  id         String   @id @default(uuid()) // 主键ID
   title      String // 文章标题
   content    String // 文章内容
-  images     Json        @default("[]") // 文章内包含的图片 为图片id组成的数组
-  type       ArticleType @default(ARTICLE) // 文章类型
-  createTime DateTime    @default(now())
-  updateTime DateTime    @updatedAt
-  delete     Int         @default(0) // 软删除标记，0表示未删除，1表示已删除
+  images     Json     @default("[]") // 文章内包含的图片 为图片id组成的数组
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@index([id, delete])
 }
@@ -206,50 +75,6 @@ model ArticleOrder {
   @@index([page, delete])
 }
 
-// 评分管理表
-model Score {
-  id                                String   @id @default(uuid()) // 主键ID
-  totalScore                        Decimal // 综合评分
-  urbanizationProcessDimensionScore Decimal // 城镇化进程维度评分
-  humanDynamicsDimensionScore       Decimal // 人性动力维度评分
-  materialDynamicsDimensionScore    Decimal // 物性动力维度评分
-  spatialDynamicsDimensionScore     Decimal // 空间动力维度评分
-  year                              Int // 年份
-  countryId                         String // 国家ID
-  country                           Country  @relation(fields: [countryId], references: [id]) // 所属国家
-  createTime                        DateTime @default(now())
-  updateTime                        DateTime @updatedAt
-  delete                            Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
-
-  @@index([year, countryId, delete])
-}
-
-// 评分评价体系表 包含多组评分评价
-model ScoreEvaluation {
-  id             String   @id @default(uuid()) // 主键ID
-  minScore       Decimal // 最小评分
-  maxScore       Decimal // 最大评分
-  evaluationText String // 评价文案，富文本
-  images         Json     @default("[]") // 评价体系内包含的图片 为图片id组成的数组
-  createTime     DateTime @default(now())
-  updateTime     DateTime @updatedAt
-}
-
-// 评价详情表，一条数据代表某一个年份中某一个国家的不包含评价体系表评价的额外的评价文案，一个年份一个国家只会有一条记录，用富文本形式存储
-model ScoreEvaluationDetail {
-  id         String   @id @default(uuid()) // 主键ID
-  year       Int // 年份
-  countryId  String // 国家ID
-  country    Country  @relation(fields: [countryId], references: [id]) // 所属国家
-  text       String // 评价文案，富文本
-  images     Json     @default("[]") // 评价体系内包含的图片 为图片id组成的数组
-  createTime DateTime @default(now())
-  updateTime DateTime @updatedAt
-  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
-
-  @@index([year, countryId])
-  @@index([year, countryId, delete])
-}
 
 // 上传的图片
 model Image {

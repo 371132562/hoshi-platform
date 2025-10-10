@@ -10,7 +10,7 @@ import type {
   CountryScoreData,
   CountryScoreDataItem,
   UrbanizationWorldMapDataDto
-} from 'urbanization-backend/types/dto'
+} from 'template-backend/types/dto'
 
 import type { WorldMapProps } from '@/components/WorldMap'
 import { ContinentCountData, CountryRowData } from '@/types'
@@ -171,9 +171,9 @@ export const processUrbanizationData = (
  */
 export const createUrbanizationTooltipFormatter = (
   nameMap: Record<string, string>,
-  valueMap: any
+  valueMap: Record<string, unknown>
 ) => {
-  return (params: any): string => {
+  return (params: { name: string; value: unknown }): string => {
     const { name, value } = params
     const countryName = nameMap[name] || name
 

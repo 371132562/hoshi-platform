@@ -200,9 +200,8 @@ const RoleManagement: React.FC = () => {
         >
           <Form.Item
             name="name"
-            label="角色名称"
+            label="角色名称（admin为系统保留角色名，不可新建/编辑）"
             rules={[{ required: true, message: '请输入角色名称' }]}
-            extra="admin为系统保留角色名，不可新建/编辑"
           >
             <Input
               disabled={editRole?.name === 'admin'}

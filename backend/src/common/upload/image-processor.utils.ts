@@ -108,47 +108,6 @@ export class ImageProcessorUtils {
     return inUse;
   }
 
-  /**
-   * 批量处理多个评价规则的图片数据
-   * @param data 评价规则数组
-   * @returns 处理后的数据
-   */
-  static processEvaluationImages<
-    T extends {
-      images?: string[];
-      deletedImages?: string[];
-      evaluationText?: string;
-      [key: string]: any;
-    },
-  >(
-    data: T[],
-  ): {
-    processedData: Omit<T, 'deletedImages'>[];
-    allDeletedImages: string[];
-  } {
-    const processedData = data.map((item) => {
-      const { deletedImages, ...evaluationData } = item;
-
-      // 保险：根据 content 实际包含的图片，纠正 images / deletedImages
-      const reconciled = this.reconcileImages(
-        evaluationData.images ?? [],
-        deletedImages ?? [],
-        evaluationData.evaluationText ?? '',
-      );
-
-      return {
-        ...evaluationData,
-        images: reconciled.images,
-      } as Omit<T, 'deletedImages'>;
-    });
-
-    // 收集所有已删除的图片，去重
-    const allDeletedImages = data
-      .flatMap((item) => item.deletedImages ?? [])
-      .filter((filename, index, arr) => arr.indexOf(filename) === index);
-
-    return { processedData, allDeletedImages };
-  }
 
   /**
    * 验证图片文件名格式
@@ -210,9 +169,13 @@ export class ImageProcessorUtils {
     images?: string[];
     deletedImages?: string[];
     content?: string;
-    [key: string]: any;
+    title?: string;
   }): {
-    processedData: { [key: string]: any };
+    processedData: {
+      title: string;
+      content: string;
+      images: string[];
+    };
     deletedImages: string[];
   } {
     const { deletedImages, ...articleData } = data;
@@ -226,7 +189,8 @@ export class ImageProcessorUtils {
 
     return {
       processedData: {
-        ...articleData,
+        title: articleData.title ?? '',
+        content: articleData.content ?? '',
         images: reconciled.images,
       },
       deletedImages: reconciled.deletedImages,

@@ -114,8 +114,8 @@ const LoginPage: React.FC = () => {
                 <div className="mb-8 flex items-center gap-4">
                   {/* <span className="iconfont icon-chengshi1 flex-shrink-0 !text-4xl text-white"></span> */}
                   <div className="text-3xl font-bold leading-tight">
-                    <div className="mb-2">城镇化发展质量评价</div>
-                    <div>技术示范平台</div>
+                    <div className="mb-2">模版平台</div>
+                    <div>模版平台</div>
                   </div>
                 </div>
               </div>

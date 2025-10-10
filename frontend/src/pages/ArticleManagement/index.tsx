@@ -2,7 +2,7 @@ import { Button, Input, message, Popconfirm, Space, Table } from 'antd'
 import dayjs from 'dayjs'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
-import { ArticleItem } from 'urbanization-backend/types/dto'
+import { ArticleItem } from 'template-backend/types/dto'
 
 import useArticleStore from '@/stores/articleStore'
 
@@ -28,7 +28,7 @@ const ArticleManagement: React.FC = () => {
     getArticleList(1, pageSize, value)
   }
 
-  const handleTableChange = (pagination: any) => {
+  const handleTableChange = (pagination: { current: number; pageSize: number }) => {
     getArticleList(pagination.current, pagination.pageSize)
   }
 
@@ -57,7 +57,7 @@ const ArticleManagement: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: ArticleItem) => (
+      render: (_: unknown, record: ArticleItem) => (
         <Space>
           <Button
             color="primary"

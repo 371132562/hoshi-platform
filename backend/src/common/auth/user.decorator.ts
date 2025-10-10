@@ -1,5 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
+interface RequestWithUser {
+  user?: UserInfo;
+}
+
 export type UserInfo = {
   userId: string;
   userCode: string;
@@ -19,7 +23,11 @@ export type UserInfo = {
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): UserInfo => {
-    const request = ctx.switchToHttp().getRequest();
-    return request.user;
+    const request = ctx.switchToHttp().getRequest<RequestWithUser>();
+    const user = request.user;
+    if (!user) {
+      throw new Error('User not found in request');
+    }
+    return user;
   },
 );

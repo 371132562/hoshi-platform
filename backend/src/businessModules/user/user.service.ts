@@ -33,18 +33,31 @@ export class UserService {
 
       this.logger.log(`[成功] 获取用户列表 - 共 ${users.length} 个用户`);
 
-      return users.map((user) => ({
+      const userList = users.map((user) => ({
         id: user.id,
         code: user.code,
         name: user.name,
         department: user.department,
-        email: user.email ?? undefined,
-        phone: user.phone ?? undefined,
-        roleId: user.roleId ?? undefined,
-        roleName: user.role?.name ?? undefined,
+        email: user.email ?? null,
+        phone: user.phone ?? null,
+        roleId: user.roleId ?? null,
+        role: user.role
+          ? {
+              id: user.role.id,
+              name: user.role.name,
+              description: user.role.description ?? null,
+              allowedRoutes: Array.isArray(user.role.allowedRoutes)
+                ? (user.role.allowedRoutes as string[])
+                : [],
+              createTime: user.role.createTime,
+              updateTime: user.role.updateTime,
+            }
+          : null,
         createTime: user.createTime,
         updateTime: user.updateTime,
       }));
+
+      return userList;
     } catch (error) {
       this.logger.error(
         `[失败] 获取用户列表 - ${error instanceof Error ? error.message : '未知错误'}`,

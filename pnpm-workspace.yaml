@@ -5,7 +5,7 @@ packages:
   - frontend-evaluation
   - frontend-score
   - frontend-comprehensive
-  - frontend-urbanization
+  - frontend-template
   - frontend-human
   - frontend-material
   - frontend-spatial

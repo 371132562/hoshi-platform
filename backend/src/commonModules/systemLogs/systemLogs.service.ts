@@ -104,6 +104,7 @@ export class SystemLogsService {
           date: parsed.date,
           level: parsed.level,
           size: stats.size,
+          lastModified: stats.mtime,
         });
       }
 
@@ -153,6 +154,10 @@ export class SystemLogsService {
    */
   async listUserFiles(dto: UserLogFilesReqDto): Promise<SystemLogFilesResDto> {
     const { userId } = dto;
+
+    if (!userId) {
+      throw new Error('用户ID不能为空');
+    }
 
     this.logger.log(`[开始] 列出用户日志文件 - 用户编号: ${userId}`);
 
@@ -263,6 +268,10 @@ export class SystemLogsService {
    */
   async readUserLog(dto: ReadUserLogReqDto): Promise<LogLineItem[]> {
     const { userId, filename } = dto;
+
+    if (!userId) {
+      throw new Error('用户ID不能为空');
+    }
 
     this.logger.log(
       `[开始] 读取用户日志 - 用户编号: ${userId}, 文件名: ${filename}`,

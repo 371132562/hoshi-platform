@@ -1,5 +1,5 @@
 {
-  "name": "urbanization-backend",
+  "name": "template-backend",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -26,8 +26,6 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@langchain/core": "^0.3.72",
-    "@langchain/deepseek": "^0.1.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",

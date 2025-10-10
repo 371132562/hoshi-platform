@@ -1,5 +1,5 @@
 {
-  "name": "urbanization",
+  "name": "template-platform",
   "version": "1.0.0",
   "type": "module",
   "scripts": {},
@@ -14,7 +14,7 @@
     "url": "https://github.com/371132562/Urbanization/issues"
   },
   "homepage": "https://github.com/371132562/Urbanization#readme",
-  "description": "An application for urbanization.",
+  "description": "A template platform for management systems.",
   "devDependencies": {
     "@eslint/js": "^9.29.0",
     "@types/node": "^22.15.2",

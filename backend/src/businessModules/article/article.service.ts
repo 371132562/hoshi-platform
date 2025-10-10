@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Article, ArticleOrder, ArticleType } from '@prisma/client';
+import { Article, ArticleOrder } from '@prisma/client';
 import { BusinessException } from 'src/common/exceptions/businessException';
 import {
   CreateArticleDto,
@@ -32,22 +32,17 @@ export class ArticleService {
       title: article.title,
       content: article.content,
       images: article.images as string[], // images 字段从 JSON 转换为 string[]
-      type: article.type,
       createTime: article.createTime,
       updateTime: article.updateTime,
     };
   }
 
   private mapToMetaDto(
-    article: Pick<
-      Article,
-      'id' | 'title' | 'type' | 'createTime' | 'updateTime'
-    >,
+    article: Pick<Article, 'id' | 'title' | 'createTime' | 'updateTime'>,
   ): ArticleMetaItem {
     return {
       id: article.id,
       title: article.title,
-      type: article.type,
       createTime: article.createTime,
       updateTime: article.updateTime,
     };
@@ -113,7 +108,6 @@ export class ArticleService {
 
       const whereCondition = {
         delete: 0,
-        type: ArticleType.ARTICLE, // 只返回普通文章
         ...(title ? { title: { contains: title } } : {}),
       };
 
@@ -128,7 +122,6 @@ export class ArticleService {
           select: {
             id: true,
             title: true,
-            type: true,
             createTime: true,
             updateTime: true,
           },
@@ -162,7 +155,6 @@ export class ArticleService {
       const articles = await this.prisma.article.findMany({
         where: {
           delete: 0,
-          type: ArticleType.ARTICLE, // 只返回普通文章
         },
         orderBy: {
           updateTime: 'desc',
@@ -170,7 +162,6 @@ export class ArticleService {
         select: {
           id: true,
           title: true,
-          type: true,
           createTime: true,
           updateTime: true,
         },
@@ -187,10 +178,7 @@ export class ArticleService {
     }
   }
 
-  async create(
-    createArticleDto: CreateArticleDto,
-    type?: ArticleType,
-  ): Promise<ArticleItem> {
+  async create(createArticleDto: CreateArticleDto): Promise<ArticleItem> {
     this.logger.log(`[开始] 创建文章 - 标题: ${createArticleDto.title}`);
 
     try {
@@ -207,13 +195,9 @@ export class ArticleService {
       const article = await this.concurrency.runExclusiveGlobal(async () =>
         this.prisma.article.create({
           data: {
-            ...processedData,
-            type: type || ArticleType.ARTICLE,
-          } as {
-            title: string;
-            content: string;
-            images: string[];
-            type: ArticleType;
+            title: processedData.title,
+            content: processedData.content,
+            images: processedData.images,
           },
         }),
       );
@@ -526,50 +510,6 @@ export class ArticleService {
     } catch (error) {
       this.logger.error(
         `[失败] 获取文章详情 - ${error instanceof Error ? error.message : '未知错误'}`,
-        error instanceof Error ? error.stack : undefined,
-      );
-      throw error;
-    }
-  }
-
-  // 配置评价体系上方的评价标准文章 ArticleType.SCORE_STANDARD，如果未配置，则返回空对象，前端根据空id判断不初始化并走创建逻辑，否则展示并走更新逻辑
-  async getScoreStandard(): Promise<ArticleItem> {
-    this.logger.log('[开始] 获取评分标准文章');
-
-    try {
-      const article = await this.prisma.article.findFirst({
-        where: { type: ArticleType.SCORE_STANDARD, delete: 0 },
-      });
-
-      const result = this.mapToDto(
-        article
-          ? article
-          : {
-              id: '',
-              title: '',
-              content: '',
-              images: [],
-              type: ArticleType.SCORE_STANDARD,
-              createTime: new Date(),
-              updateTime: new Date(),
-              delete: 0,
-            },
-      );
-
-      if (article) {
-        this.logger.log(
-          `[成功] 获取评分标准文章 - 文章ID: ${article.id}, 标题: ${article.title}`,
-        );
-      } else {
-        this.logger.log(
-          '[成功] 获取评分标准文章 - 未配置评分标准文章，返回空对象',
-        );
-      }
-
-      return result;
-    } catch (error) {
-      this.logger.error(
-        `[失败] 获取评分标准文章 - ${error instanceof Error ? error.message : '未知错误'}`,
         error instanceof Error ? error.stack : undefined,
       );
       throw error;

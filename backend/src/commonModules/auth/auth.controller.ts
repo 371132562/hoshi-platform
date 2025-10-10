@@ -4,7 +4,7 @@ import {
   LoginResponseDto,
   UserProfileDto,
   ChallengeDto,
-  ChallengeResDto,
+  ChallengeResponse,
   LoginWithHashDto,
 } from '../../../types/dto';
 import { CurrentUser, UserInfo } from '../../common/auth/user.decorator';
@@ -25,7 +25,7 @@ export class AuthController {
    */
   @Public()
   @Post('challenge')
-  challenge(@Body() dto: ChallengeDto): ChallengeResDto {
+  challenge(@Body() dto: ChallengeDto): ChallengeResponse {
     return this.authService.getChallenge(dto);
   }
 
@@ -45,6 +45,7 @@ export class AuthController {
    */
   @Post('profile')
   async getProfile(@CurrentUser() user: UserInfo): Promise<UserProfileDto> {
-    return this.authService.getUserProfile(user.userId);
+    const userProfile = await this.authService.getUserProfile(user.userId);
+    return userProfile;
   }
 }
