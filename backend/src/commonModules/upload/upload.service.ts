@@ -34,6 +34,18 @@ export class UploadService {
         'content',
       );
     });
+
+    // 注册：评分评价体系模块收集器（images 字段 + evaluationText 富文本图片）
+    this.registerInUseImageCollector(async () => {
+      const scoreEvaluations = await this.prisma.scoreEvaluation.findMany({
+        select: { images: true, evaluationText: true },
+      });
+      return ImageProcessorUtils.collectImagesFromRecords(
+        scoreEvaluations,
+        'images',
+        'evaluationText',
+      );
+    });
   }
 
   // ---------- 核心上传功能 ----------
@@ -50,9 +62,10 @@ export class UploadService {
       const hash = await this.getFileHash(file.path);
       const originalName = file.originalname;
 
-      const existingImage = await this.prisma.image.findUnique({
+      const existingImage = await this.prisma.image.findFirst({
         where: {
           hash,
+          delete: 0,
         },
       });
 
@@ -72,6 +85,7 @@ export class UploadService {
       await this.prisma.image.create({
         data: {
           filename: file.filename,
+          originalName,
           hash,
         },
       });
@@ -187,6 +201,7 @@ export class UploadService {
    * 清理未被任何业务引用的图片
    * 当前支持引用来源：
    * - 文章模块 Article（images 字段 + content 富文本内的 <img src>）
+   * - 评分评价体系模块 ScoreEvaluation（images 字段 + evaluationText 富文本内的 <img src>）
    * 后续可在此扩展其他模块的引用收集
    */
   async cleanupUnusedImages(candidateFilenames: string[]): Promise<void> {
