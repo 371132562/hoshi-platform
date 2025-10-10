@@ -211,6 +211,10 @@ const createRequest = async <T>(
     return await handleResponse<T>(response)
   } catch (error) {
     clearTimeout(timeoutId)
+    // 若是业务错误（handleResponse 已提示过），避免二次通知
+    if (error && typeof error === 'object' && 'code' in (error as Record<string, unknown>)) {
+      return Promise.reject(error)
+    }
     return handleError(error)
   }
 }

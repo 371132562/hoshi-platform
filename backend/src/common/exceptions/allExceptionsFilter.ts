@@ -3,6 +3,7 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
+  BadRequestException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
@@ -46,6 +47,20 @@ export class AllExceptionsFilter implements ExceptionFilter {
       code = ErrorCode.THROTTLE_ERROR;
       msg = '请求过于频繁，请稍后再试';
       data = '接口限流保护，请降低请求频率';
+    } else if (exception instanceof BadRequestException) {
+      // ValidationPipe 等抛出的参数校验异常（在 main.ts 的 exceptionFactory 中已组装 msg/data）
+      const exceptionResponse = exception.getResponse() as {
+        msg?: string | string[];
+        data?: unknown;
+      };
+      code = ErrorCode.INVALID_INPUT;
+      msg =
+        (typeof exceptionResponse?.msg === 'string'
+          ? exceptionResponse.msg
+          : Array.isArray(exceptionResponse?.msg)
+            ? exceptionResponse.msg[1]
+            : undefined) || '请求参数错误';
+      data = exceptionResponse?.data ?? null;
     } else if (exception instanceof HttpException) {
       // 处理 HttpException，但所有响应都是 200 状态码（统一由下游包装）
       const exceptionResponse = exception.getResponse() as {

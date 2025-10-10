@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptors/response.interceptor';
 import { AllExceptionsFilter } from './common/exceptions/allExceptionsFilter';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { WinstonLoggerService } from './common/services/winston-logger.service';
 import { json, urlencoded } from 'express';
 import { UserContextInterceptor } from './common/interceptors/user-context.interceptor';
@@ -37,6 +37,14 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // 禁止非白名单字段
       transformOptions: {
         enableImplicitConversion: true, // 隐式类型转换
+      },
+      exceptionFactory: (errors) => {
+        const messages = errors.flatMap((e) =>
+          Object.values(e.constraints ?? {}),
+        );
+
+        const hint = messages[1] ?? messages[0] ?? '请求参数错误';
+        return new BadRequestException({ msg: hint, data: messages });
       },
     }),
   );
