@@ -1,16 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons'
-import {
-  Card,
-  DatePicker,
-  Form,
-  Input,
-  message,
-  Select,
-  Skeleton,
-  Space,
-  Table,
-  Tooltip
-} from 'antd'
+import { Card, DatePicker, Form, Input, Select, Skeleton, Space, Table, Tooltip } from 'antd'
 import dayjs from 'dayjs'
 import React, { useEffect, useMemo, useState } from 'react'
 
@@ -144,10 +133,7 @@ const SystemLogsFull: React.FC = () => {
     }
 
     // 调用store方法读取日志
-    const success = await readLog({ filename })
-    if (!success) {
-      message.error('读取日志失败')
-    }
+    await readLog({ filename })
   }
 
   // ==================== 副作用处理 ====================
@@ -175,10 +161,7 @@ const SystemLogsFull: React.FC = () => {
    */
   useEffect(() => {
     const loadFiles = async () => {
-      const success = await refreshFilesWithDebounce(true)
-      if (!success) {
-        message.error('获取日志文件失败')
-      }
+      await refreshFilesWithDebounce(true)
     }
     loadFiles()
   }, [refreshFilesWithDebounce])

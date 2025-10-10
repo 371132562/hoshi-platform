@@ -59,15 +59,11 @@ const RoleManagement: React.FC = () => {
       success = await updateRole({ ...values, id: editRole.id })
       if (success) {
         message.success('角色更新成功')
-      } else {
-        message.error('角色更新失败')
       }
     } else {
       success = await createRole(values)
       if (success) {
         message.success('角色创建成功')
-      } else {
-        message.error('角色创建失败')
       }
     }
     if (success) {
@@ -93,8 +89,6 @@ const RoleManagement: React.FC = () => {
       if (success) {
         message.success('权限分配成功')
         setAssignModalOpen(false)
-      } else {
-        message.error('权限分配失败')
       }
     }
   }
@@ -145,8 +139,6 @@ const RoleManagement: React.FC = () => {
               const success = await deleteRole({ id: record.id })
               if (success) {
                 message.success('角色删除成功')
-              } else {
-                message.error('角色删除失败')
               }
             }}
             disabled={record.name === 'admin'}

@@ -166,7 +166,7 @@ const SystemLogsUser: React.FC = () => {
     // 调用store方法读取用户日志
     const success = await readUserLog({ userId, filename })
     if (!success) {
-      message.error('读取用户日志失败')
+      // 统一错误在base处理，这里不再提示
     }
   }
 
@@ -217,7 +217,7 @@ const SystemLogsUser: React.FC = () => {
     if (userId) {
       const success = await refreshUserFilesWithDebounce(userId, true)
       if (!success) {
-        message.error('获取用户日志文件失败')
+        // 统一错误在base处理，这里不再提示
       }
     }
   }

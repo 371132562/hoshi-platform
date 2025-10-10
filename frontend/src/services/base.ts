@@ -1,5 +1,5 @@
 // 基于fetch封装的请求模块
-import { notification } from 'antd' // 导入 Ant Design 的 notification 组件
+import { message } from 'antd' // 导入 Ant Design 的 message 组件
 import { ErrorCode, type ResponseBody } from 'template-backend/types/response'
 
 // 导入authStore用于状态同步
@@ -27,7 +27,7 @@ const handleAuthFailure = (message: string) => {
 }
 
 // 显示认证提示的函数，带防抖机制
-const showAuthNotification = (message: string, description: string) => {
+const showAuthNotification = (title: string, description: string) => {
   if (authNotificationShown) {
     return // 如果已经显示过认证提示，则不再显示
   }
@@ -36,9 +36,9 @@ const showAuthNotification = (message: string, description: string) => {
   authNotificationShown = true
 
   // 显示通知
-  notification.warning({
-    message,
-    description,
+  message.open({
+    type: 'warning',
+    content: `${title}：${description}`,
     onClose: () => {
       // 通知关闭后，延迟重置防抖状态，避免立即重置
       if (authNotificationTimer) {
@@ -108,20 +108,14 @@ const handleResponse = async <T>(response: Response): Promise<ResponseBody<T>> =
           break
         default:
           // 其他业务错误
-          notification.error({
-            message: '错误',
-            description: msg
-          })
+          message.open({ type: 'error', content: `错误：${msg}` })
           break
       }
       return Promise.reject(data)
     }
   } else {
     // HTTP 非 200 错误
-    notification.error({
-      message: '错误',
-      description: `HTTP 错误: ${response.status} - ${msg || '未知错误'}`
-    })
+    message.open({ type: 'error', content: `错误：HTTP ${response.status} - ${msg || '未知错误'}` })
     return Promise.reject(new Error(msg || 'HTTP Error'))
   }
 }
@@ -130,22 +124,13 @@ const handleResponse = async <T>(response: Response): Promise<ResponseBody<T>> =
 const handleError = (error: Error | unknown) => {
   if (error instanceof Error && error.name === 'AbortError') {
     // 请求超时
-    notification.error({
-      message: '错误',
-      description: '请求超时，请稍后再试！'
-    })
+    message.open({ type: 'error', content: '错误：请求超时，请稍后再试！' })
   } else if (error instanceof Error && error.message) {
     // 其他错误
-    notification.error({
-      message: '错误',
-      description: '请求发送失败：' + error.message
-    })
+    message.open({ type: 'error', content: '错误：请求发送失败：' + error.message })
   } else {
     // 网络错误
-    notification.error({
-      message: '错误',
-      description: '服务器无响应，请检查网络或稍后再试！'
-    })
+    message.open({ type: 'error', content: '错误：服务器无响应，请检查网络或稍后再试！' })
   }
   return Promise.reject(error)
 }
@@ -201,10 +186,7 @@ const createRequest = async <T>(
         // 如果无法解析错误响应，使用默认错误信息
       }
 
-      notification.error({
-        message: '错误',
-        description: `HTTP ${response.status}: ${errorMessage}`
-      })
+      message.open({ type: 'error', content: `错误：HTTP ${response.status} - ${errorMessage}` })
       return Promise.reject(new Error(errorMessage))
     }
 

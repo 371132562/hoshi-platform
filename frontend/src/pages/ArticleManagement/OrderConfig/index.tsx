@@ -157,10 +157,8 @@ const OrderConfig = () => {
         title: '请选择一篇文章',
         content: '',
         images: [],
-        createTime: new Date(),
-        updateTime: new Date(),
         uniqueId: uuidv4()
-      }
+      } as ArticleItem & { uniqueId: string }
     ])
   }
 
@@ -188,8 +186,6 @@ const OrderConfig = () => {
     const success = await upsertArticleOrder(activePage, articleIds)
     if (success) {
       message.success('保存成功')
-    } else {
-      message.error('保存失败')
     }
   }
 

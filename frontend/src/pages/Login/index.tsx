@@ -1,5 +1,5 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Form, Input, notification } from 'antd'
+import { Button, Form, Input, message } from 'antd'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -16,14 +16,14 @@ const LoginPage: React.FC = () => {
   // 登录提交
   const onFinish = async (values: { code: string; password: string }) => {
     if (!values.code || !values.password) {
-      notification.warning({ message: '请输入用户编号和密码' })
+      message.open({ type: 'warning', content: '请输入用户编号和密码' })
       return
     }
     setSubmitting(true)
     const success = await login(values)
     setSubmitting(false)
     if (success) {
-      notification.success({ message: '登录成功' })
+      message.open({ type: 'success', content: '登录成功' })
       navigate('/home')
     }
   }

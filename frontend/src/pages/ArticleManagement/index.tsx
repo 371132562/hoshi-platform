@@ -1,4 +1,5 @@
 import { Button, Input, message, Popconfirm, Space, Table } from 'antd'
+import type { TablePaginationConfig } from 'antd/es/table/interface'
 import dayjs from 'dayjs'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
@@ -28,8 +29,10 @@ const ArticleManagement: React.FC = () => {
     getArticleList(1, pageSize, value)
   }
 
-  const handleTableChange = (pagination: { current: number; pageSize: number }) => {
-    getArticleList(pagination.current, pagination.pageSize)
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    const current = pagination.current ?? 1
+    const size = pagination.pageSize ?? pageSize
+    getArticleList(current, size)
   }
 
   const handleDelete = async (id: string) => {
@@ -37,8 +40,6 @@ const ArticleManagement: React.FC = () => {
     if (success) {
       message.success('文章删除成功')
       getArticleList(currentPage, pageSize)
-    } else {
-      message.error('文章删除失败')
     }
   }
 

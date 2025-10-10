@@ -61,15 +61,11 @@ const UserManagement: React.FC = () => {
       success = await updateUser({ ...values, id: editUser.id })
       if (success) {
         message.success('用户更新成功')
-      } else {
-        message.error('用户更新失败')
       }
     } else {
       success = await createUser(values)
       if (success) {
         message.success('用户创建成功')
-      } else {
-        message.error('用户创建失败')
       }
     }
     if (success) {
@@ -92,8 +88,6 @@ const UserManagement: React.FC = () => {
       if (success) {
         message.success('密码重置成功')
         setResetModalOpen(false)
-      } else {
-        message.error('密码重置失败')
       }
     }
   }
@@ -149,8 +143,6 @@ const UserManagement: React.FC = () => {
               const success = await deleteUser({ id: record.id })
               if (success) {
                 message.success('用户删除成功')
-              } else {
-                message.error('用户删除失败')
               }
             }}
             disabled={record.code === '88888888'}
