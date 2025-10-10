@@ -6,7 +6,7 @@ import {
   DeleteRoleDto,
   AssignRoleRoutesDto,
   RoleListResDto,
-} from '../../../types/dto';
+} from '../../dto/role.dto';
 
 @Controller('role')
 export class RoleController {

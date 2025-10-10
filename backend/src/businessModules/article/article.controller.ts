@@ -10,7 +10,7 @@ import {
   DeleteArticleDto,
   ArticleMetaItem,
   ArticleListResponse,
-} from '../../../types/dto';
+} from '../../dto/article.dto';
 
 @Controller('article')
 export class ArticleController {

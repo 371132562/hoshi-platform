@@ -40,21 +40,7 @@ export class UserService {
         department: user.department,
         email: user.email ?? null,
         phone: user.phone ?? null,
-        roleId: user.roleId ?? null,
-        role: user.role
-          ? {
-              id: user.role.id,
-              name: user.role.name,
-              description: user.role.description ?? null,
-              allowedRoutes: Array.isArray(user.role.allowedRoutes)
-                ? (user.role.allowedRoutes as string[])
-                : [],
-              createTime: user.role.createTime,
-              updateTime: user.role.updateTime,
-            }
-          : null,
-        createTime: user.createTime,
-        updateTime: user.updateTime,
+        role: user.role ? { name: user.role.name } : null,
       }));
 
       return userList;

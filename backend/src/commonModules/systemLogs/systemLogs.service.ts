@@ -84,34 +84,32 @@ export class SystemLogsService {
    * @returns 日志文件列表
    */
   private async scanLogFiles(dirPath: string): Promise<SystemLogFileItem[]> {
+    // 返回前端最小字段集：仅 filename；但依然按文件名中的日期倒序排列
     const files: SystemLogFileItem[] = [];
 
     try {
       const { readdirSync } = await import('fs');
       const logFiles = readdirSync(dirPath, { withFileTypes: true });
 
+      // 先收集可解析日期的信息用于排序
+      const parsedFiles: Array<{ filename: string; date: string }> = [];
       for (const file of logFiles) {
         if (!file.isFile() || !file.name.endsWith('.log')) continue;
 
         const parsed = this.parseLogFilename(file.name);
         if (!parsed) continue;
-
-        const filePath = join(dirPath, file.name);
-        const stats = statSync(filePath);
-
-        files.push({
-          filename: file.name,
-          date: parsed.date,
-          level: parsed.level,
-          size: stats.size,
-          lastModified: stats.mtime,
-        });
+        parsedFiles.push({ filename: file.name, date: parsed.date });
       }
 
-      // 按日期倒序排列，最新的在前面
-      files.sort(
+      // 按日期倒序排列
+      parsedFiles.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
       );
+
+      // 仅输出 filename 字段
+      for (const pf of parsedFiles) {
+        files.push({ filename: pf.filename });
+      }
     } catch (error) {
       this.logger.warn(
         `[警告] 扫描日志目录失败 - 目录: ${dirPath}, ${error instanceof Error ? error.message : '未知错误'}`,
@@ -208,7 +206,7 @@ export class SystemLogsService {
         );
         if (!m) return null;
         const [, ts, level, message] = m;
-        return { ts, level, message, raw };
+        return { ts, level, message };
       })
       .filter((v) => !!v) as LogLineItem[];
 

@@ -108,7 +108,6 @@ export class ImageProcessorUtils {
     return inUse;
   }
 
-
   /**
    * 验证图片文件名格式
    * @param filename 文件名

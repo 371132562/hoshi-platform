@@ -6,7 +6,7 @@ import {
   ChallengeDto,
   ChallengeResponse,
   LoginWithHashDto,
-} from '../../../types/dto';
+} from '../../dto/auth.dto';
 import { CurrentUser, UserInfo } from '../../common/auth/user.decorator';
 import { Public } from '../../common/auth/public.decorator';
 

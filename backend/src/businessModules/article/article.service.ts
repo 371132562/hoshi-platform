@@ -32,8 +32,6 @@ export class ArticleService {
       title: article.title,
       content: article.content,
       images: article.images as string[], // images 字段从 JSON 转换为 string[]
-      createTime: article.createTime,
-      updateTime: article.updateTime,
     };
   }
 
@@ -43,7 +41,6 @@ export class ArticleService {
     return {
       id: article.id,
       title: article.title,
-      createTime: article.createTime,
       updateTime: article.updateTime,
     };
   }

@@ -8,7 +8,7 @@ import {
   UserLogFilesReqDto,
   LogUsersResDto,
   LogLineItem,
-} from '../../../types/dto';
+} from '../../dto/systemLogs.dto';
 
 import { SystemLogsService } from './systemLogs.service';
 

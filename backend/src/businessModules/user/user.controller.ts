@@ -6,7 +6,7 @@ import {
   DeleteUserDto,
   CreateUserEncryptedDto,
   ResetUserPasswordEncryptedDto,
-} from '../../../types/dto';
+} from '../../dto/user.dto';
 
 @Controller('user')
 export class UserController {
