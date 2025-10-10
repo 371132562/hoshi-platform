@@ -17,12 +17,22 @@ rules:
 
   - title: 类型系统规范
     body: |
-      - TypeScript开发中必须优先使用type而非interface
-      - 所有数据结构必须使用TypeScript类型定义，禁止使用any
-      - 复杂对象使用交叉类型或联合类型
-      - 类型定义优先放在backend/types目录下供前后端共用
-      - 所有请求/响应数据结构必须有TypeScript类型定义
+      - DTO与请求/响应模型统一使用class，结合class-validator与class-transformer进行校验与转换
+      - 领域对象/实体优先使用class；仅在工具类型与编译期辅助场景下使用type
+      - 禁止使用any；对外数据结构禁止使用interface描述
+      - 共享基础类型仍放在backend/types目录下供前后端共用（以type为主，仅作工具/辅助）
+      - API入参必须使用class DTO；响应数据可在后端定义为class或直接使用type：
+        - 若使用class作为响应DTO，字段装饰器需完整、含默认值/可选性说明
+        - 前端消费侧统一以type表达响应形状，避免引入装饰器与运行时依赖
       - 所有代码都需要改正eslint错误
+      - 何时使用class：
+        - 后端Controller入参与业务入参：使用class DTO + class-validator装饰器，结合class-transformer进行转换
+        - 领域模型/实体：使用class以承载行为与不变量
+        - 需要运行时反射/装饰器/转换能力的对象：使用class
+      - 何时使用type：
+        - 前后端共享的纯结构化数据（只在编译期约束）：使用type
+        - 前端响应数据与视图层派生数据：使用type，避免将装饰器打入前端包
+        - 工具类型、联合/交叉类型、Mapped Types：使用type
 
   - title: 前端开发规范
     body: |
@@ -59,6 +69,7 @@ rules:
       - 新增错误类型时在ErrorCode中定义
       - 遵循NestJS最佳实践
       - 使用Prisma处理数据库操作
+      - 所有DTO必须使用class并添加class-validator装饰器；控制器启用全局ValidationPipe
       - businessModules是业务模块
       - commonModules是通用模块
       - common中是通用组件

@@ -10,6 +10,8 @@ import {
   DeleteArticleDto,
   ArticleMetaItem,
   ArticleListResponse,
+  GetArticlesByPageDto,
+  GetDetailsByIdsDto,
 } from '../../dto/article.dto';
 
 @Controller('article')
@@ -58,14 +60,14 @@ export class ArticleController {
 
   @Post('getByPage')
   async getArticlesByPage(
-    @Body() { page }: { page: string },
+    @Body() { page }: GetArticlesByPageDto,
   ): Promise<ArticleItem[]> {
     return this.articleService.getArticlesByPage(page);
   }
 
   @Post('getDetailsByIds')
   async getDetailsByIds(
-    @Body() { ids }: { ids: string[] },
+    @Body() { ids }: GetDetailsByIdsDto,
   ): Promise<ArticleItem[]> {
     return this.articleService.getDetailsByIds(ids);
   }

@@ -32,7 +32,7 @@ Urbanization/
 │   │   ├── components/      # 公共组件
 │   │   ├── pages/          # 页面组件
 │   │   ├── stores/         # 状态管理
-│   │   ├── services/       # API服务（Axios实例在 services/base.ts）
+│   │   ├── services/       # API服务（基于 fetch 的实例在 services/base.ts）
 │   │   ├── types/          # 类型定义（见 src/types/index.ts）
 │   │   └── utils/          # 工具函数
 │   ├── public/             # 静态资源
@@ -47,7 +47,7 @@ Urbanization/
 │   │   ├── upload/           # 文件上传（commonModules/upload + common/upload）
 │   │   └── utils/            # 工具函数
 │   ├── prisma/               # 数据库配置
-│   └── types/                # 类型定义
+│   └── types/                # 类型定义（统一从 src/dto/* 通过 backend/types/dto.ts 导出）
 ```
 
 ## 开发说明
@@ -84,12 +84,46 @@ cd backend && npx prisma db seed
 - git commit 要符合规范，以feat，fix，chore等开头然后书写具体内容
 
 #### 类型系统规范
-- TypeScript开发中必须优先使用type而非interface
-- 所有数据结构必须使用TypeScript类型定义，禁止使用any
-- 复杂对象使用交叉类型或联合类型
-- 类型定义优先放在backend/types目录下供前后端共用
-- 所有请求/响应数据结构必须有TypeScript类型定义
-- 所有代码都需要改正eslint错误
+- 请求入参 DTO 必须使用 class，并配合 class-validator/class-transformer 进行运行时校验与转换；响应可使用 class 或 type，前端以 type 消费
+- 前后端类型共享策略：
+  - 后端在 `backend/src/dto/*.dto.ts` 定义 class DTO 与必要的 type
+  - `backend/types/dto.ts` 统一 `export *` 暴露 DTO 与相关类型
+  - 前端仅导入 type（或通过 `InstanceType<typeof XxxDto>` 推导），避免打包装饰器逻辑
+- 仍然优先使用 `type`（而非 interface）声明通用结构与工具类型；禁止使用 any
+- 所有请求/响应结构必须有明确的 TypeScript 类型
+- 所有代码必须通过 ESLint 校验
+
+##### 何时使用 class / type（关键建议）
+- 入参（后端 Controller 接口入参、服务层业务入参）：优先使用 class DTO，结合 `class-validator` 与 `class-transformer` 支持运行时校验与转换。
+- 响应数据（后端返回给前端的数据模型）：
+  - 对外响应结构推荐定义为 class（便于与 DTO 对齐与转换），但在前端消费侧以 `type` 表达（仅做编译期约束，避免引入装饰器）。
+  - 若响应是纯结构化数据且无运行时转换/装饰器需求，也可直接以 `type` 约束（后端内部可将实体映射为 `type` 所需形状）。
+- 领域模型/实体：使用 class（承载领域行为与不变量，便于单元测试）。
+- 纯结构、工具与派生类型（联合/交叉、映射类型、Pick/Omit 等）：使用 `type`。
+
+示例（简化示例，仅示意）：
+```ts
+// 后端：请求入参 DTO（class）
+export class CreateUserDto {
+  @IsString()
+  username: string;
+
+  @IsString()
+  password: string;
+}
+
+// 后端：响应 DTO（class）
+export class UserResponseDto {
+  id: string;
+  username: string;
+}
+
+// 前端：响应消费（type，仅编译期约束）
+export type UserResponse = {
+  id: string;
+  username: string;
+};
+```
 
 #### 前端开发规范
 - 组件命名采用PascalCase
@@ -112,7 +146,7 @@ cd backend && npx prisma db seed
 - 统一使用Zustand进行状态管理
 - 数据处理逻辑集中在stores目录
 - API地址统一在services/apis.ts或common.ts中定义
-- 使用services/base.ts中的Axios实例处理请求
+- 使用services/base.ts中的 fetch 封装处理请求
 - 错误处理统一在拦截器中处理
 - 组件中避免直接调用API
 
@@ -154,9 +188,12 @@ pnpm dev
 
 ## 用户认证与权限管理
 
-### 认证体系
+### 认证与校验
 - **认证方式**: JWT Token认证
-- **登录接口**: `/auth/login`，支持用户编号(code) + 密码登录
+- **登录接口**: `/auth/login`（两步登录：/auth/challenge 获取盐 → 前端加密 → /auth/login 提交）
+- **参数校验**: 全局 ValidationPipe（whitelist/forbidNonWhitelisted/transform/enableImplicitConversion）
+  - 自定义 exceptionFactory：仅返回一条中文 `message`（可选附加 `data`）
+  - 全局异常过滤器统一包装为 HTTP 200，业务码见 `code`
 
 ### 路由权限配置
 - **路由配置**: 在 `frontend/src/router/routesConfig.tsx` 中统一配置，运行时由 `frontend/src/router.tsx` 动态生成 `RouteObject[]`

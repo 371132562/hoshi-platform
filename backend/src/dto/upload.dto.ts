@@ -52,3 +52,24 @@ export class DeleteOrphansDto {
   imageIds: string[];
 }
 export type DeleteOrphans = InstanceType<typeof DeleteOrphansDto>;
+
+/**
+ * 删除单张图片 DTO
+ */
+export class DeleteImageDto {
+  @IsString()
+  filename: string;
+}
+export type DeleteImage = InstanceType<typeof DeleteImageDto>;
+
+/**
+ * 根据文件名批量删除孤儿图片 DTO
+ */
+export class DeleteOrphansByFilenamesDto {
+  @IsArray()
+  @IsString({ each: true })
+  filenames: string[];
+}
+export type DeleteOrphansByFilenames = InstanceType<
+  typeof DeleteOrphansByFilenamesDto
+>;

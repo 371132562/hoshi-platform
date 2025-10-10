@@ -149,3 +149,23 @@ export type ArticleOrderDto = {
   createTime: Date;
   updateTime: Date;
 };
+
+/**
+ * 根据页面获取文章 DTO
+ */
+export class GetArticlesByPageDto {
+  @IsString()
+  @IsNotEmpty({ message: '页面不能为空' })
+  page: string;
+}
+export type GetArticlesByPage = InstanceType<typeof GetArticlesByPageDto>;
+
+/**
+ * 根据ID数组获取文章详情 DTO
+ */
+export class GetDetailsByIdsDto {
+  @IsArray()
+  @IsString({ each: true })
+  ids: string[];
+}
+export type GetDetailsByIds = InstanceType<typeof GetDetailsByIdsDto>;

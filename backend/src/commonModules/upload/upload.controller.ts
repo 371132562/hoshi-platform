@@ -12,6 +12,10 @@ import { Response } from 'express'; // 导入 Response
 import { FileInterceptor } from '@nestjs/platform-express'; // 导入 FileInterceptor
 import { multerOptions } from '../../common/upload/multer-config.utils';
 import { UploadService } from './upload.service';
+import {
+  DeleteImageDto,
+  DeleteOrphansByFilenamesDto,
+} from '../../dto/upload.dto';
 
 @Controller('upload') // 基础路由 /upload
 export class UploadController {
@@ -55,7 +59,7 @@ export class UploadController {
   }
 
   @Post('delete') // 完整路由 /upload/:filename (删除)
-  async deleteImage(@Body('filename') filename: string) {
+  async deleteImage(@Body() { filename }: DeleteImageDto) {
     // 简单校验 filename 是否是有效的 UUID 格式 (可选，但推荐)
     // 如果你的 UUID 总是包含扩展名，确保这里也考虑到
     // 例如：/^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}\.(jpg|jpeg|png|gif)$/i.test(filename)
@@ -78,7 +82,7 @@ export class UploadController {
   }
 
   @Post('maintenance/deleteOrphans')
-  async deleteOrphans(@Body('filenames') filenames: string[]) {
+  async deleteOrphans(@Body() { filenames }: DeleteOrphansByFilenamesDto) {
     if (!Array.isArray(filenames)) {
       throw new BadRequestException('参数错误：filenames 必须为数组');
     }
