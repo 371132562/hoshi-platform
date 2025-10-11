@@ -66,12 +66,12 @@ export class ImageProcessorUtils {
     // 可选日志：如有修正则打点
     if (finalImagesSet.size !== (imagesFromDto || []).length) {
       this.logger.log(
-        `[统计] 纠正图片数据 - images由 ${imagesFromDto.length} 调整为 ${finalImagesSet.size}`,
+        `[操作] 纠正图片数据 - images由 ${imagesFromDto.length} 调整为 ${finalImagesSet.size}`,
       );
     }
     if (finalDeleted.length !== (deletedImagesFromDto || []).length) {
       this.logger.log(
-        `[统计] 纠正图片数据 - deletedImages由 ${(deletedImagesFromDto || []).length} 调整为 ${finalDeleted.length}`,
+        `[操作] 纠正图片数据 - deletedImages由 ${(deletedImagesFromDto || []).length} 调整为 ${finalDeleted.length}`,
       );
     }
 

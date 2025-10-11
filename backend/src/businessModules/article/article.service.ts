@@ -69,13 +69,8 @@ export class ArticleService {
         );
       }
 
-      // 查到文章后再输出更友好的开始日志
       this.logger.log(
-        `[开始] 获取文章详情 - 文章ID: ${id}, 标题: ${article.title}`,
-      );
-
-      this.logger.log(
-        `[成功] 获取文章详情 - 文章ID: ${id}, 标题: ${article.title}`,
+        `[操作] 获取文章详情 - 文章ID: ${id}, 标题: ${article.title}`,
       );
       return this.mapToDto(article);
     } catch (error) {
@@ -96,7 +91,7 @@ export class ArticleService {
     title: string = '',
   ): Promise<ArticleListResponse> {
     this.logger.log(
-      `[开始] 获取文章列表 - 页码: ${page}, 每页大小: ${pageSize}, 标题筛选: ${title || '无'}`,
+      `[操作] 获取文章列表 - 页码: ${page}, 每页大小: ${pageSize}, 标题筛选: ${title || '无'}`,
     );
 
     try {
@@ -127,7 +122,7 @@ export class ArticleService {
       ]);
 
       this.logger.log(
-        `[成功] 获取文章列表 - 共 ${total} 篇文章，当前页返回 ${articles.length} 篇，页码: ${page}`,
+        `[操作] 获取文章列表 - 共 ${total} 篇文章，当前页返回 ${articles.length} 篇，页码: ${page}`,
       );
 
       return {
@@ -146,7 +141,7 @@ export class ArticleService {
   }
 
   async listAll(): Promise<ArticleMetaItem[]> {
-    this.logger.log('[开始] 获取所有文章列表');
+    this.logger.log('[操作] 获取所有文章列表');
 
     try {
       const articles = await this.prisma.article.findMany({
@@ -164,7 +159,7 @@ export class ArticleService {
         },
       });
 
-      this.logger.log(`[成功] 获取所有文章列表 - 共 ${articles.length} 篇文章`);
+      this.logger.log(`[操作] 获取所有文章列表 - 共 ${articles.length} 篇文章`);
       return articles.map((article) => this.mapToMetaDto(article));
     } catch (error) {
       this.logger.error(
@@ -176,7 +171,7 @@ export class ArticleService {
   }
 
   async create(createArticleDto: CreateArticleDto): Promise<ArticleItem> {
-    this.logger.log(`[开始] 创建文章 - 标题: ${createArticleDto.title}`);
+    this.logger.log(`[操作] 创建文章 - 标题: ${createArticleDto.title}`);
 
     try {
       const { deletedImages: incomingDeletedImages, ...articleData } =
@@ -202,7 +197,7 @@ export class ArticleService {
       // 异步清理不再使用的图片，不阻塞主流程
       if (deletedImages.length > 0) {
         this.logger.log(
-          `[资源清理] 清理文章图片 - 待清理图片数量: ${deletedImages.length}`,
+          `[操作] 清理文章图片 - 待清理图片数量: ${deletedImages.length}`,
         );
         ImageProcessorUtils.cleanupImagesAsync(
           this.uploadService,
@@ -213,7 +208,7 @@ export class ArticleService {
       }
 
       this.logger.log(
-        `[成功] 创建文章 - 文章ID: ${article.id}, 标题: ${article.title}`,
+        `[操作] 创建文章成功 - 文章ID: ${article.id}, 标题: ${article.title}`,
       );
       return this.mapToDto(article);
     } catch (error) {
@@ -246,7 +241,7 @@ export class ArticleService {
         );
       }
       this.logger.log(
-        `[开始] 更新文章 - 文章ID: ${original.id}, 标题: ${original.title}`,
+        `[操作] 更新文章 - 文章ID: ${original.id}, 标题: ${original.title}`,
       );
 
       // 使用工具类处理图片数据
@@ -266,7 +261,7 @@ export class ArticleService {
       // 异步清理不再使用的图片，不阻塞主流程
       if (deletedImages.length > 0) {
         this.logger.log(
-          `[资源清理] 清理文章图片 - 待清理图片数量: ${deletedImages.length}`,
+          `[操作] 清理文章图片 - 待清理图片数量: ${deletedImages.length}`,
         );
         ImageProcessorUtils.cleanupImagesAsync(
           this.uploadService,
@@ -277,7 +272,7 @@ export class ArticleService {
       }
 
       this.logger.log(
-        `[成功] 更新文章 - 文章ID: ${article.id}, 标题: ${article.title}`,
+        `[操作] 更新文章成功 - 文章ID: ${article.id}, 标题: ${article.title}`,
       );
       return this.mapToDto(article);
     } catch (error) {
@@ -304,9 +299,8 @@ export class ArticleService {
         );
       }
 
-      // 查到文章后再输出更友好的开始日志
       this.logger.log(
-        `[开始] 删除文章 - 文章ID: ${id}, 标题: ${articleToDelete.title}`,
+        `[操作] 删除文章 - 文章ID: ${id}, 标题: ${articleToDelete.title}`,
       );
 
       // 2. 物理删除
@@ -321,7 +315,7 @@ export class ArticleService {
       const imagesToClean = deletedArticle.images as string[];
       if (imagesToClean.length > 0) {
         this.logger.log(
-          `[资源清理] 清理删除文章的图片 - 待清理图片数量: ${imagesToClean.length}`,
+          `[操作] 清理删除文章的图片 - 待清理图片数量: ${imagesToClean.length}`,
         );
         ImageProcessorUtils.cleanupImagesAsync(
           this.uploadService,
@@ -332,7 +326,7 @@ export class ArticleService {
       }
 
       this.logger.log(
-        `[成功] 删除文章 - 文章ID: ${id}, 标题: ${deletedArticle.title}`,
+        `[操作] 删除文章成功 - 文章ID: ${id}, 标题: ${deletedArticle.title}`,
       );
       return this.mapToDto(deletedArticle);
     } catch (error) {
@@ -359,7 +353,7 @@ export class ArticleService {
     const { page, articles } = upsertArticleOrderDto;
 
     this.logger.log(
-      `[开始] 更新文章排序 - 页面: ${page}, 文章数量: ${articles.length}`,
+      `[操作] 更新文章排序 - 页面: ${page}, 文章数量: ${articles.length}`,
     );
 
     try {
@@ -412,7 +406,7 @@ export class ArticleService {
       });
 
       this.logger.log(
-        `[成功] 更新文章排序 - 页面: ${page}, 排序ID: ${result.id}`,
+        `[操作] 更新文章排序成功 - 页面: ${page}, 排序ID: ${result.id}`,
       );
       return this.mapToArticleOrderDto(result);
     } catch (error) {
@@ -428,7 +422,7 @@ export class ArticleService {
   }
 
   async getArticlesByPage(page: string): Promise<ArticleItem[]> {
-    this.logger.log(`[开始] 获取页面文章 - 页面: ${page}`);
+    this.logger.log(`[操作] 获取页面文章 - 页面: ${page}`);
 
     try {
       const articleOrder = await this.prisma.articleOrder.findFirst({
@@ -436,13 +430,13 @@ export class ArticleService {
       });
 
       if (!articleOrder) {
-        this.logger.log(`[成功] 获取页面文章 - 页面: ${page}, 未配置文章排序`);
+        this.logger.log(`[操作] 获取页面文章 - 页面: ${page}, 未配置文章排序`);
         return [];
       }
 
       const articleIds = articleOrder.articles as string[];
       if (!Array.isArray(articleIds) || articleIds.length === 0) {
-        this.logger.log(`[成功] 获取页面文章 - 页面: ${page}, 文章排序为空`);
+        this.logger.log(`[操作] 获取页面文章 - 页面: ${page}, 文章排序为空`);
         return [];
       }
 
@@ -463,7 +457,7 @@ export class ArticleService {
         .map((article) => this.mapToDto(article));
 
       this.logger.log(
-        `[成功] 获取页面文章 - 页面: ${page}, 返回 ${sortedArticles.length} 篇文章`,
+        `[操作] 获取页面文章 - 页面: ${page}, 返回 ${sortedArticles.length} 篇文章`,
       );
       return sortedArticles;
     } catch (error) {
@@ -477,11 +471,11 @@ export class ArticleService {
 
   async getDetailsByIds(ids: string[]): Promise<ArticleItem[]> {
     if (!ids || ids.length === 0) {
-      this.logger.log('[成功] 获取文章详情 - 文章ID列表为空');
+      this.logger.log('[操作] 获取文章详情 - 文章ID列表为空');
       return [];
     }
 
-    this.logger.log(`[开始] 获取文章详情 - 文章ID数量: ${ids.length}`);
+    this.logger.log(`[操作] 获取文章详情 - 文章ID数量: ${ids.length}`);
 
     try {
       const articles = await this.prisma.article.findMany({
@@ -501,7 +495,7 @@ export class ArticleService {
         .map((article) => this.mapToDto(article));
 
       this.logger.log(
-        `[成功] 获取文章详情 - 请求 ${ids.length} 篇文章，返回 ${sortedArticles.length} 篇`,
+        `[操作] 获取文章详情 - 请求 ${ids.length} 篇文章，返回 ${sortedArticles.length} 篇`,
       );
       return sortedArticles;
     } catch (error) {

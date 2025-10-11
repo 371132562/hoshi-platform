@@ -33,7 +33,7 @@ export class AuthService {
    * 两步登录 - 第一步：获取随机盐
    */
   getChallenge(dto: ChallengeDto): ChallengeResponse {
-    this.logger.log(`[开始] 获取挑战 - 类型: ${dto.type}`);
+    this.logger.log(`[操作] 获取挑战 - 类型: ${dto.type}`);
     try {
       const salt = CryptoUtil.generateSalt();
       // 直接返回随机盐字符串，避免前端多一层 data.salt 解构
@@ -52,7 +52,7 @@ export class AuthService {
    */
   async loginWithHash(dto: LoginWithHashDto): Promise<LoginResponseDto> {
     const { code } = dto;
-    this.logger.log(`[开始] 用户登录 - 用户编号: ${code}`);
+    this.logger.log(`[操作] 用户登录 - 用户编号: ${code}`);
     try {
       const user = await this.prisma.user.findFirst({
         where: { code, delete: 0 },
@@ -97,7 +97,7 @@ export class AuthService {
       };
       const token = this.jwtService.sign(payload);
       this.logger.log(
-        `[成功] 用户登录 - 用户编号: ${code}, 姓名: ${user.name}`,
+        `[操作] 用户登录成功 - 用户编号: ${code}, 姓名: ${user.name}`,
       );
       return {
         token,
@@ -162,13 +162,8 @@ export class AuthService {
         );
       }
 
-      // 查询到用户后再输出更友好的开始/成功日志
       this.logger.log(
-        `[开始] 获取用户信息 - 用户ID: ${userId}, 编号: ${user.code}, 姓名: ${user.name}`,
-      );
-
-      this.logger.log(
-        `[成功] 获取用户信息 - 用户ID: ${userId}, 姓名: ${user.name}`,
+        `[操作] 获取用户信息 - 用户ID: ${userId}, 编号: ${user.code}, 姓名: ${user.name}`,
       );
 
       return {

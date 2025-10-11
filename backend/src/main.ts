@@ -34,7 +34,6 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, // 过滤掉未定义的字段
       transform: true, // 自动类型转换
-      forbidNonWhitelisted: true, // 禁止非白名单字段
       transformOptions: {
         enableImplicitConversion: true, // 隐式类型转换
       },

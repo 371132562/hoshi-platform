@@ -21,7 +21,7 @@ export class RoleService {
    * 获取角色列表，包含用户数量
    */
   async getRoleList(): Promise<RoleListResDto> {
-    this.logger.log('[开始] 获取角色列表');
+    this.logger.log('[操作] 获取角色列表');
 
     try {
       const roles = await this.prisma.role.findMany({
@@ -30,7 +30,7 @@ export class RoleService {
         orderBy: { createTime: 'asc' },
       });
 
-      this.logger.log(`[成功] 获取角色列表 - 共 ${roles.length} 个角色`);
+      this.logger.log(`[操作] 获取角色列表 - 共 ${roles.length} 个角色`);
 
       const roleList = roles.map((role) => ({
         id: role.id,
@@ -58,7 +58,7 @@ export class RoleService {
    * 创建角色
    */
   async createRole(dto: CreateRoleDto) {
-    this.logger.log(`[开始] 创建角色 - 名称: ${dto.name}`);
+    this.logger.log(`[操作] 创建角色 - 名称: ${dto.name}`);
 
     try {
       // 超管角色名admin不可创建
@@ -88,7 +88,7 @@ export class RoleService {
         },
       });
 
-      this.logger.log(`[成功] 创建角色 - 名称: ${dto.name}`);
+      this.logger.log(`[操作] 创建角色成功 - 名称: ${dto.name}`);
       return true;
     } catch (error) {
       if (error instanceof BusinessException) {
@@ -110,8 +110,8 @@ export class RoleService {
       const role = await this.prisma.role.findUnique({ where: { id: dto.id } });
       this.logger.log(
         role
-          ? `[开始] 编辑角色 - ID: ${dto.id}, 名称: ${role.name}`
-          : `[开始] 编辑角色 - ID: ${dto.id}`,
+          ? `[操作] 编辑角色 - ID: ${dto.id}, 名称: ${role.name}`
+          : `[操作] 编辑角色 - ID: ${dto.id}`,
       );
       if (!role || role.delete !== 0) {
         this.logger.warn(`[验证失败] 编辑角色 - 角色ID ${dto.id} 不存在`);
@@ -155,7 +155,7 @@ export class RoleService {
       });
 
       this.logger.log(
-        `[成功] 编辑角色 - ID: ${dto.id}, 名称: ${dto.name || role.name}`,
+        `[操作] 编辑角色成功 - ID: ${dto.id}, 名称: ${dto.name || role.name}`,
       );
       return true;
     } catch (error) {
@@ -178,8 +178,8 @@ export class RoleService {
       const role = await this.prisma.role.findUnique({ where: { id: dto.id } });
       this.logger.log(
         role
-          ? `[开始] 删除角色 - ID: ${dto.id}, 名称: ${role.name}`
-          : `[开始] 删除角色 - ID: ${dto.id}`,
+          ? `[操作] 删除角色 - ID: ${dto.id}, 名称: ${role.name}`
+          : `[操作] 删除角色 - ID: ${dto.id}`,
       );
       if (!role || role.delete !== 0) {
         this.logger.warn(`[验证失败] 删除角色 - 角色ID ${dto.id} 不存在`);
@@ -215,7 +215,9 @@ export class RoleService {
         data: { delete: 1 },
       });
 
-      this.logger.log(`[成功] 删除角色 - ID: ${dto.id}, 名称: ${role.name}`);
+      this.logger.log(
+        `[操作] 删除角色成功 - ID: ${dto.id}, 名称: ${role.name}`,
+      );
       return true;
     } catch (error) {
       if (error instanceof BusinessException) {
@@ -237,8 +239,8 @@ export class RoleService {
       const role = await this.prisma.role.findUnique({ where: { id: dto.id } });
       this.logger.log(
         role
-          ? `[开始] 分配角色菜单权限 - 角色ID: ${dto.id}, 名称: ${role.name}`
-          : `[开始] 分配角色菜单权限 - 角色ID: ${dto.id}`,
+          ? `[操作] 分配角色菜单权限 - 角色ID: ${dto.id}, 名称: ${role.name}`
+          : `[操作] 分配角色菜单权限 - 角色ID: ${dto.id}`,
       );
       if (!role || role.delete !== 0) {
         this.logger.warn(
@@ -269,7 +271,7 @@ export class RoleService {
       });
 
       this.logger.log(
-        `[成功] 分配角色菜单权限 - 角色ID: ${dto.id}, 名称: ${role.name}, 权限数量: ${filteredRoutes.length}`,
+        `[操作] 分配角色菜单权限成功 - 角色ID: ${dto.id}, 名称: ${role.name}, 权限数量: ${filteredRoutes.length}`,
       );
       return true;
     } catch (error) {

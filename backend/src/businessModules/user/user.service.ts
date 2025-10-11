@@ -22,7 +22,7 @@ export class UserService {
    * 获取用户列表，包含角色名
    */
   async getUserList(): Promise<UserListResDto> {
-    this.logger.log('[开始] 获取用户列表');
+    this.logger.log('[操作] 获取用户列表');
 
     try {
       const users = await this.prisma.user.findMany({
@@ -31,7 +31,7 @@ export class UserService {
         orderBy: { createTime: 'asc' },
       });
 
-      this.logger.log(`[成功] 获取用户列表 - 共 ${users.length} 个用户`);
+      this.logger.log(`[操作] 获取用户列表 - 共 ${users.length} 个用户`);
 
       const userList = users.map((user) => ({
         id: user.id,
@@ -57,7 +57,7 @@ export class UserService {
    * 创建用户（加密）
    */
   async createUserEncrypted(dto: CreateUserEncryptedDto) {
-    this.logger.log(`[开始] 创建用户 - 编号: ${dto.code}, 姓名: ${dto.name}`);
+    this.logger.log(`[操作] 创建用户 - 编号: ${dto.code}, 姓名: ${dto.name}`);
 
     try {
       if (dto.code === '88888888') {
@@ -101,7 +101,9 @@ export class UserService {
         },
       });
 
-      this.logger.log(`[成功] 创建用户 - 编号: ${dto.code}, 姓名: ${dto.name}`);
+      this.logger.log(
+        `[操作] 创建用户成功 - 编号: ${dto.code}, 姓名: ${dto.name}`,
+      );
       return true;
     } catch (error) {
       if (error instanceof BusinessException) {
@@ -124,8 +126,8 @@ export class UserService {
       const user = await this.prisma.user.findUnique({ where: { id: dto.id } });
       this.logger.log(
         user
-          ? `[开始] 编辑用户 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`
-          : `[开始] 编辑用户 - ID: ${dto.id}`,
+          ? `[操作] 编辑用户 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`
+          : `[操作] 编辑用户 - ID: ${dto.id}`,
       );
       if (!user || user.delete !== 0) {
         this.logger.warn(`[验证失败] 编辑用户 - 用户ID ${dto.id} 不存在`);
@@ -154,7 +156,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[成功] 编辑用户 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${dto.name || user.name}`,
+        `[操作] 编辑用户成功 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${dto.name || user.name}`,
       );
       return true;
     } catch (error) {
@@ -178,8 +180,8 @@ export class UserService {
       const user = await this.prisma.user.findUnique({ where: { id: dto.id } });
       this.logger.log(
         user
-          ? `[开始] 删除用户 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`
-          : `[开始] 删除用户 - ID: ${dto.id}`,
+          ? `[操作] 删除用户 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`
+          : `[操作] 删除用户 - ID: ${dto.id}`,
       );
       if (!user || user.delete !== 0) {
         this.logger.warn(`[验证失败] 删除用户 - 用户ID ${dto.id} 不存在`);
@@ -202,7 +204,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[成功] 删除用户 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`,
+        `[操作] 删除用户成功 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`,
       );
       return true;
     } catch (error) {
@@ -226,8 +228,8 @@ export class UserService {
       const user = await this.prisma.user.findUnique({ where: { id: dto.id } });
       this.logger.log(
         user
-          ? `[开始] 重置用户密码 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`
-          : `[开始] 重置用户密码 - ID: ${dto.id}`,
+          ? `[操作] 重置用户密码 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`
+          : `[操作] 重置用户密码 - ID: ${dto.id}`,
       );
       if (!user || user.delete !== 0) {
         this.logger.warn(`[验证失败] 重置用户密码 - 用户ID ${dto.id} 不存在`);
@@ -248,7 +250,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[成功] 重置用户密码 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`,
+        `[操作] 重置用户密码成功 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`,
       );
       return true;
     } catch (error) {

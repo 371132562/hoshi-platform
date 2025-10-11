@@ -44,7 +44,7 @@ export class UploadService {
    * @returns 处理结果，包含文件信息和访问 URL
    */
   async processUploadedFile(file: Express.Multer.File) {
-    this.logger.log(`[开始] 处理上传文件 - 文件名: ${file.originalname}`);
+    this.logger.log(`[操作] 处理上传文件 - 文件名: ${file.originalname}`);
 
     try {
       const hash = await this.getFileHash(file.path);
@@ -61,7 +61,7 @@ export class UploadService {
         // 如果文件已存在，删除刚刚上传的重复文件
         await unlink(file.path);
         this.logger.log(
-          `[成功] 处理上传文件 - 重复文件: ${originalName}, 使用已存在的文件: ${existingImage.filename}`,
+          `[操作] 处理上传文件 - 重复文件: ${originalName}, 使用已存在的文件: ${existingImage.filename}`,
         );
         return {
           originalName,
@@ -78,7 +78,9 @@ export class UploadService {
         },
       });
 
-      this.logger.log(`[成功] 处理上传文件 - 新文件已保存: ${file.filename}`);
+      this.logger.log(
+        `[操作] 处理上传文件成功 - 新文件已保存: ${file.filename}`,
+      );
 
       return {
         originalName,
@@ -101,7 +103,7 @@ export class UploadService {
    * @returns 删除操作的结果
    */
   async deleteFile(filename: string) {
-    this.logger.log(`[开始] 删除文件 - 文件名: ${filename}`);
+    this.logger.log(`[操作] 删除文件 - 文件名: ${filename}`);
 
     try {
       const filePath = getImagePath(filename); // 获取文件的完整物理路径
@@ -114,7 +116,7 @@ export class UploadService {
 
       // 如果两者都不存在，说明已经清理干净，直接成功返回
       if (!imageInDb && !imageExistsOnDisk) {
-        this.logger.warn(`[警告] 删除文件 - 文件 ${filename} 不存在，无需删除`);
+        this.logger.log(`[操作] 删除文件 - 文件 ${filename} 不存在，无需删除`);
         return { delete: true };
       }
 
@@ -123,16 +125,14 @@ export class UploadService {
         await this.prisma.image.delete({
           where: { filename },
         });
-        this.logger.log(`[成功] 删除文件 - 数据库记录已删除: ${filename}`);
       }
 
       // 如果物理文件存在，则删除它
       if (imageExistsOnDisk) {
         await unlink(filePath);
-        this.logger.log(`[成功] 删除文件 - 物理文件已删除: ${filename}`);
       }
 
-      this.logger.log(`[成功] 删除文件 - 文件名: ${filename}`);
+      this.logger.log(`[操作] 删除文件成功 - 文件名: ${filename}`);
       return {
         delete: true,
       };
@@ -157,7 +157,7 @@ export class UploadService {
     deleted: string[];
     failed: { filename: string; error: string }[];
   }> {
-    this.logger.log(`[开始] 批量删除图片 - 文件数量: ${filenames.length}`);
+    this.logger.log(`[操作] 批量删除图片 - 文件数量: ${filenames.length}`);
 
     const deleted: string[] = [];
     const failed: { filename: string; error: string }[] = [];
@@ -171,13 +171,13 @@ export class UploadService {
           error instanceof Error ? error.message : String(error);
         failed.push({ filename: name, error: errorMessage });
         this.logger.warn(
-          `[警告] 批量删除图片 - 文件 ${name} 删除失败: ${errorMessage}`,
+          `[验证失败] 批量删除图片 - 文件 ${name} 删除失败: ${errorMessage}`,
         );
       }
     }
 
     this.logger.log(
-      `[成功] 批量删除图片 - 成功: ${deleted.length}, 失败: ${failed.length}`,
+      `[操作] 批量删除图片 - 成功: ${deleted.length}, 失败: ${failed.length}`,
     );
 
     return { deleted, failed };
@@ -194,12 +194,12 @@ export class UploadService {
    */
   async cleanupUnusedImages(candidateFilenames: string[]): Promise<void> {
     if (!Array.isArray(candidateFilenames) || candidateFilenames.length === 0) {
-      this.logger.log('[开始] 清理未引用图片 - 无候选文件，跳过清理');
+      this.logger.log('[操作] 清理未引用图片 - 无候选文件，跳过清理');
       return;
     }
 
     this.logger.log(
-      `[开始] 清理未引用图片 - 候选文件数量: ${candidateFilenames.length}`,
+      `[操作] 清理未引用图片 - 候选文件数量: ${candidateFilenames.length}`,
     );
 
     const inUse = await this.collectInUseImageFilenames();
@@ -212,10 +212,8 @@ export class UploadService {
         if (!inUse.has(filename)) {
           await this.deleteFile(filename);
           cleanedCount++;
-          this.logger.log(`[资源清理] 清理未引用图片成功: ${filename}`);
         } else {
           skippedCount++;
-          this.logger.log(`[跳过] 图片仍在使用，跳过删除: ${filename}`);
         }
       } catch (error) {
         failedCount++;
@@ -226,7 +224,7 @@ export class UploadService {
     }
 
     this.logger.log(
-      `[成功] 清理未引用图片完成 - 清理: ${cleanedCount}, 跳过: ${skippedCount}, 失败: ${failedCount}`,
+      `[操作] 清理未引用图片完成 - 清理: ${cleanedCount}, 跳过: ${skippedCount}, 失败: ${failedCount}`,
     );
   }
 
@@ -238,7 +236,7 @@ export class UploadService {
    * 两者取并集返回，供前端操作
    */
   async listOrphanImages(): Promise<string[]> {
-    this.logger.log('[开始] 列出孤立图片');
+    this.logger.log('[操作] 列出孤立图片');
 
     try {
       // 1) 枚举物理目录下的所有图片文件名
@@ -270,7 +268,7 @@ export class UploadService {
       const result = Array.from(orphanSet);
 
       this.logger.log(
-        `[成功] 列出孤立图片 - 磁盘文件: ${diskImageFiles.length}, 数据库文件: ${dbImageFiles.length}, 在用文件: ${inUse.size}, 孤立文件: ${result.length}`,
+        `[操作] 列出孤立图片 - 磁盘文件: ${diskImageFiles.length}, 数据库文件: ${dbImageFiles.length}, 在用文件: ${inUse.size}, 孤立文件: ${result.length}`,
       );
 
       return result;
@@ -310,7 +308,7 @@ export class UploadService {
       }
     }
 
-    this.logger.log(`[统计] 收集在用图片完成 - 共 ${inUse.size} 个文件`);
+    this.logger.log(`[操作] 收集在用图片完成 - 共 ${inUse.size} 个文件`);
 
     return inUse;
   }

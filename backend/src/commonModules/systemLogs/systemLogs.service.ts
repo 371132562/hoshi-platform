@@ -126,12 +126,12 @@ export class SystemLogsService {
    * @returns 日志文件列表响应
    */
   async listSystemFiles(): Promise<SystemLogFilesResDto> {
-    this.logger.log('[开始] 列出系统日志文件');
+    this.logger.log('[操作] 列出系统日志文件');
 
     try {
       const files = await this.scanLogFiles(this.baseLogDir);
 
-      this.logger.log(`[成功] 列出系统日志文件 - 共 ${files.length} 个文件`);
+      this.logger.log(`[操作] 列出系统日志文件 - 共 ${files.length} 个文件`);
 
       return { files };
     } catch (error) {
@@ -157,7 +157,7 @@ export class SystemLogsService {
       throw new Error('用户ID不能为空');
     }
 
-    this.logger.log(`[开始] 列出用户日志文件 - 用户编号: ${userId}`);
+    this.logger.log(`[操作] 列出用户日志文件 - 用户编号: ${userId}`);
 
     try {
       const userLogDir = join(this.baseLogDir, 'users', userId);
@@ -165,7 +165,7 @@ export class SystemLogsService {
       // 检查用户日志目录是否存在
       if (!existsSync(userLogDir)) {
         this.logger.log(
-          `[成功] 列出用户日志文件 - 用户编号: ${userId}, 目录不存在，返回空列表`,
+          `[操作] 列出用户日志文件 - 用户编号: ${userId}, 目录不存在，返回空列表`,
         );
         return { files: [] };
       }
@@ -173,7 +173,7 @@ export class SystemLogsService {
       const files = await this.scanLogFiles(userLogDir);
 
       this.logger.log(
-        `[成功] 列出用户日志文件 - 用户编号: ${userId}, 共 ${files.length} 个文件`,
+        `[操作] 列出用户日志文件 - 用户编号: ${userId}, 共 ${files.length} 个文件`,
       );
 
       return { files };
@@ -223,7 +223,7 @@ export class SystemLogsService {
   async readSystemLog(dto: ReadLogReqDto): Promise<LogLineItem[]> {
     const { filename } = dto;
 
-    this.logger.log(`[开始] 读取系统日志 - 文件名: ${filename}`);
+    this.logger.log(`[操作] 读取系统日志 - 文件名: ${filename}`);
 
     try {
       // 安全检查：只允许读取日志文件
@@ -244,7 +244,7 @@ export class SystemLogsService {
       const result = await this.readLogFile(filePath);
 
       this.logger.log(
-        `[成功] 读取系统日志 - 文件名: ${filename}, 共 ${result.length} 行日志`,
+        `[操作] 读取系统日志 - 文件名: ${filename}, 共 ${result.length} 行日志`,
       );
 
       return result;
@@ -272,7 +272,7 @@ export class SystemLogsService {
     }
 
     this.logger.log(
-      `[开始] 读取用户日志 - 用户编号: ${userId}, 文件名: ${filename}`,
+      `[操作] 读取用户日志 - 用户编号: ${userId}, 文件名: ${filename}`,
     );
 
     try {
@@ -294,7 +294,7 @@ export class SystemLogsService {
       const result = await this.readLogFile(filePath);
 
       this.logger.log(
-        `[成功] 读取用户日志 - 用户编号: ${userId}, 文件名: ${filename}, 共 ${result.length} 行日志`,
+        `[操作] 读取用户日志 - 用户编号: ${userId}, 文件名: ${filename}, 共 ${result.length} 行日志`,
       );
 
       return result;
@@ -317,14 +317,14 @@ export class SystemLogsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listLogUsers(): Promise<LogUsersResDto> {
-    this.logger.log('[开始] 列出日志用户');
+    this.logger.log('[操作] 列出日志用户');
 
     try {
       const { readdirSync } = await import('fs');
       const usersDir = join(this.baseLogDir, 'users');
 
       if (!existsSync(usersDir)) {
-        this.logger.log('[成功] 列出日志用户 - 用户目录不存在，返回空列表');
+        this.logger.log('[操作] 列出日志用户 - 用户目录不存在，返回空列表');
         return { list: [] };
       }
 
@@ -344,7 +344,7 @@ export class SystemLogsService {
       }));
 
       const result = { list };
-      this.logger.log(`[成功] 列出日志用户 - 共 ${result.list.length} 个用户`);
+      this.logger.log(`[操作] 列出日志用户 - 共 ${result.list.length} 个用户`);
       return result;
     } catch (error) {
       this.logger.error(
