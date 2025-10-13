@@ -13,39 +13,24 @@ const SystemMaintenance = lazy(() => import('@/pages/System/SystemMaintenance'))
 const UserManagement = lazy(() => import('@/pages/System/UserManagement/UserManagement'))
 const SystemLogs = lazy(() => import('@/pages/System/SystemLogs'))
 
-// 顶部导航菜单配置
-export const topRoutes: RouteItem[] = [
-  { path: '/home', title: '首页', icon: <HomeOutlined />, component: Home }
-]
-
-// 侧边栏导航菜单配置
-export const sideRoutes: RouteItem[] = [
+// 统一的路由配置数组，通过 menuPosition 区分顶部与侧边栏
+export const routes: RouteItem[] = [
+  { path: '/home', title: '首页', icon: <HomeOutlined />, component: Home, menuPosition: 'top' },
   {
     path: '/article',
     title: '文章管理',
     icon: <FileTextOutlined />,
+    menuPosition: 'side',
     children: [
-      {
-        path: '/article/list',
-        title: '文章列表',
-        component: ArticleManagement
-      },
-      {
-        path: '/article/create',
-        title: '新增文章',
-        component: ModifyArticle
-      },
-      {
-        path: '/article/order',
-        title: '配置文章顺序',
-        component: OrderConfig
-      },
+      { path: '/article/list', title: '文章列表', component: ArticleManagement },
+      { path: '/article/create', title: '新增文章', component: ModifyArticle },
+      { path: '/article/order', title: '配置文章顺序', component: OrderConfig },
       {
         path: '/article/modify/:id',
         title: '编辑文章',
         component: ModifyArticle,
         hideInMenu: true,
-        hideInBreadcrumb: false // 在面包屑中显示，但不在菜单中显示
+        hideInBreadcrumb: false
       }
     ]
   },
@@ -55,27 +40,12 @@ export const sideRoutes: RouteItem[] = [
     title: '系统管理',
     icon: <SettingOutlined />,
     adminOnly: true,
+    menuPosition: 'side',
     children: [
-      {
-        path: '/system/userManagement',
-        title: '用户管理',
-        component: UserManagement
-      },
-      {
-        path: '/system/roleManagement',
-        title: '角色管理',
-        component: RoleManagement
-      },
-      {
-        path: '/system/logs',
-        title: '系统日志',
-        component: SystemLogs
-      },
-      {
-        path: '/system/maintenance',
-        title: '系统维护',
-        component: SystemMaintenance
-      }
+      { path: '/system/userManagement', title: '用户管理', component: UserManagement },
+      { path: '/system/roleManagement', title: '角色管理', component: RoleManagement },
+      { path: '/system/logs', title: '系统日志', component: SystemLogs },
+      { path: '/system/maintenance', title: '系统维护', component: SystemMaintenance }
     ]
   }
 ]
@@ -92,82 +62,67 @@ export const getAllRoutes = (): RouteItem[] => {
     }, [])
   }
 
-  return [...flattenRoutes(topRoutes), ...flattenRoutes(sideRoutes)]
+  return flattenRoutes(routes)
 }
 
 // 根据用户角色过滤路由
-export const getFilteredRoutes = (userRole?: {
+export const getTopMenuRoutes = (): RouteItem[] => routes.filter(r => r.menuPosition === 'top')
+
+export const getSideMenuRoutes = (userRole?: {
   name: string
   allowedRoutes: string[]
-}): {
-  topRoutes: RouteItem[]
-  sideRoutes: RouteItem[]
-} => {
-  // 顶部菜单不做权限限制，始终显示
-  // 超管显示所有侧边栏菜单
+}): RouteItem[] => {
+  // 超管：全部侧边菜单
   if (userRole?.name === 'admin') {
-    return { topRoutes, sideRoutes }
+    return routes.filter(r => r.menuPosition === 'side')
   }
 
-  // 其他角色按allowedRoutes过滤侧边栏菜单
   const allowedRoutes = userRole?.allowedRoutes || []
 
   const filterRoute = (route: RouteItem): RouteItem | null => {
-    // 检查当前路由是否在允许列表中
     const isAllowed = allowedRoutes.includes(route.path)
-
     if (route.children) {
-      // 过滤子路由
       const filteredChildren = route.children
         .map(child => filterRoute(child))
         .filter(Boolean) as RouteItem[]
-
-      // 如果有子路由被允许，则保留父路由
       if (filteredChildren.length > 0) {
-        return {
-          ...route,
-          children: filteredChildren
-        }
+        return { ...route, children: filteredChildren }
       }
     } else if (isAllowed) {
-      // 叶子节点且被允许
       return route
     }
-
     return null
   }
 
-  const filteredSideRoutes = sideRoutes
+  return routes
+    .filter(r => r.menuPosition === 'side')
     .map(route => filterRoute(route))
     .filter(Boolean) as RouteItem[]
-
-  return {
-    topRoutes,
-    sideRoutes: filteredSideRoutes
-  }
 }
 
 // 导出分组菜单数据，供角色管理编辑使用
 export const getMenuOptionsForRoleEdit = () => {
   const options: Array<{ label: string; options: Array<{ label: string; value: string }> }> = []
 
-  // 只从sideRoutes生成选项，顶部菜单不做权限限制
-  sideRoutes.forEach(route => {
-    if (route.adminOnly) return // 跳过系统管理等adminOnly菜单
-    const routeOptions: Array<{ label: string; value: string }> = []
-    if (route.children) {
-      route.children.forEach(child => {
-        if (!child.hideInMenu) {
-          routeOptions.push({ label: child.title, value: child.path })
-        }
-      })
-    } else {
-      routeOptions.push({ label: route.title, value: route.path })
-    }
-    if (routeOptions.length > 0) {
-      options.push({ label: route.title, options: routeOptions })
-    }
-  })
+  // 只从 routes 中 menuPosition === 'side' 生成选项，顶部菜单不做权限限制
+  routes
+    .filter(r => r.menuPosition === 'side')
+    .forEach(route => {
+      if (route.adminOnly) return // 跳过系统管理等adminOnly菜单
+      const routeOptions: Array<{ label: string; value: string }> = []
+      if (route.children) {
+        route.children.forEach(child => {
+          if (!child.hideInMenu) {
+            routeOptions.push({ label: child.title, value: child.path })
+          }
+        })
+      } else {
+        routeOptions.push({ label: route.title, value: route.path })
+      }
+      if (routeOptions.length > 0) {
+        options.push({ label: route.title, options: routeOptions })
+      }
+    })
 
   return options
 }

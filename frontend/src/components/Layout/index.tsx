@@ -16,7 +16,7 @@ import { Link, useLocation, useNavigate, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
 import Forbidden from '@/components/Forbidden'
-import { getBreadcrumbItems, getFilteredRoutes } from '@/router/routesConfig'
+import { getBreadcrumbItems, getSideMenuRoutes, getTopMenuRoutes } from '@/router/routesConfig'
 import { useAuthStore } from '@/stores/authStore'
 
 const { Header, Sider, Content /* Footer */ } = Layout
@@ -27,8 +27,11 @@ export const Component: FC = () => {
   const user = useAuthStore(state => state.user)
   const token = useAuthStore(state => state.token)
   const fetchProfile = useAuthStore(state => state.fetchProfile)
-  const { sideRoutes, topRoutes } = getFilteredRoutes(
-    user?.role ? { name: user.role.name, allowedRoutes: user.role.allowedRoutes || [] } : undefined
+  const topRoutes = getTopMenuRoutes()
+  const sideRoutes = getSideMenuRoutes(
+    user?.role && user.role.name
+      ? { name: user.role.name, allowedRoutes: user.role.allowedRoutes || [] }
+      : undefined
   )
   const logout = useAuthStore(state => state.logout)
   const [collapsed, setCollapsed] = useState(false)

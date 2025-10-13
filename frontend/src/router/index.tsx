@@ -7,7 +7,7 @@ import LoadingFallback from '@/components/LoadingFallback'
 import LoginPage from '@/pages/Login'
 import { RouteItem } from '@/types'
 
-import { sideRoutes, topRoutes } from './router/routesConfig.tsx'
+import { routes } from './routesConfig'
 
 // 根据路由配置生成路由
 const generateRoutes = (): RouteObject[] => {
@@ -36,8 +36,8 @@ const generateRoutes = (): RouteObject[] => {
     })
   }
 
-  // 合并顶部和侧边栏路由
-  const allRoutes = [...generateChildrenRoutes(topRoutes), ...generateChildrenRoutes(sideRoutes)]
+  // 基于统一路由数组生成所有可渲染路由
+  const allRoutes = generateChildrenRoutes(routes)
 
   // 去重
   const pathMap = new Map<string, RouteObject>()
