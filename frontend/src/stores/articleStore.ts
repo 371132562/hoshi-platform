@@ -13,11 +13,17 @@ import {
 } from '@/services/apis'
 import http from '@/services/base'
 
-import type { ArticleItem, ArticleMetaItem, CreateArticle, UpdateArticle } from '../types'
+import type {
+  ArticleItem,
+  ArticleListResponse,
+  ArticleMetaItem,
+  CreateArticle,
+  UpdateArticle
+} from '../types'
 
 type ArticleStore = {
   // 状态
-  articles: ArticleItem[]
+  articles: ArticleMetaItem[]
   total: number
   currentPage: number
   pageSize: number
@@ -69,7 +75,8 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
 
     set({ loading: true })
     try {
-      const response = await http.post(articleList, {
+      // 明确响应数据类型：分页列表
+      const response = await http.post<ArticleListResponse>(articleList, {
         page,
         pageSize,
         title: searchTitle
@@ -150,7 +157,8 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   getArticleDetail: async (id: string) => {
     set({ detailLoading: true, articleDetail: null })
     try {
-      const response = await http.post(articleDetail, { id })
+      // 明确响应数据类型：文章详情
+      const response = await http.post<ArticleItem>(articleDetail, { id })
       if (response && response.data) {
         set({ articleDetail: response.data })
       }
@@ -171,7 +179,8 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   getAllArticles: async () => {
     set({ orderConfigLoading: true })
     try {
-      const response = await http.post(articleListAll)
+      // 明确响应数据类型：文章元数据列表
+      const response = await http.post<ArticleMetaItem[]>(articleListAll)
       if (response && response.data) {
         set({ allArticles: response.data })
       }
@@ -186,7 +195,8 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   getArticlesByPage: async (page: string) => {
     set({ orderConfigLoading: true })
     try {
-      const response = await http.post(articleGetByPage, { page })
+      // 明确响应数据类型：页面文章列表
+      const response = await http.post<ArticleItem[]>(articleGetByPage, { page })
       if (response && response.data) {
         set({ pageArticles: response.data })
       }
