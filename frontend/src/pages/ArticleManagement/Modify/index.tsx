@@ -7,6 +7,7 @@ import RichEditor, { type RichEditorRef } from '@/components/RichEditor'
 import useArticleStore from '@/stores/articleStore'
 import { extractFilename, toFilenameContent, toFullPathContent } from '@/utils'
 
+// 引入请求DTO类型
 import type { CreateArticle, UpdateArticle } from '../../../types'
 
 /**
@@ -93,7 +94,7 @@ const ArticleModify: FC = () => {
     // 根据是否为编辑模式，调用不同的 store 方法
     if (isEditMode) {
       // 编辑模式：需要传入文章 ID
-      const data: UpdateArticleDto = {
+      const data: UpdateArticle = {
         id: id as string,
         title: values.title,
         content: contentWithFilenames,
@@ -103,7 +104,7 @@ const ArticleModify: FC = () => {
       success = await updateArticle(data)
     } else {
       // 新增模式：直接使用表单数据
-      const data: CreateArticleDto = {
+      const data: CreateArticle = {
         title: values.title,
         content: contentWithFilenames,
         images: processedImages,
