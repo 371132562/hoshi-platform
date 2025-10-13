@@ -32,7 +32,8 @@ export const useAuthStore = create<AuthStore>()(
         try {
           // 两步登录：先获取随机盐，再用crypto-js加密(盐+密码)，然后提交加密数据
           const challenge = await http.post<ChallengeResDto>(challengeApiUrl, {
-            type: 'login'
+            type: 'login',
+            code: data.code
           })
           const salt = challenge.data
           const encryptedData = encryptData(salt, data.password)
