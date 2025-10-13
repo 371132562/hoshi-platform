@@ -18,11 +18,12 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Button, message, Modal, Select, Skeleton, Space, Tabs } from 'antd'
 import React, { useEffect, useState } from 'react'
-import type { ArticleItem, ArticleMetaItem } from 'template-backend/types/dto'
 import { v4 as uuidv4 } from 'uuid'
 
 import ArticleDisplay from '@/components/ArticleDisplay'
 import useArticleStore from '@/stores/articleStore'
+
+import type { ArticleItem, ArticleMetaItem } from '../../../types'
 
 // SortableItem 组件
 interface SortableItemProps {

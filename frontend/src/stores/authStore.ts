@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware'
 
 import { challengeApiUrl, loginApiUrl, profileApiUrl } from '../services/apis'
 import http from '../services/base'
-import type { ChallengeResDto, LoginDto, UserProfileDto } from '../types'
+import type { Login, LoginResponse, UserProfileDto } from '../types'
 import { encryptData } from '../utils/crypto'
 
 // 认证store的类型定义
@@ -13,7 +13,7 @@ export type AuthStore = {
   user: UserProfileDto | null // 当前用户信息
   loading: boolean // 加载状态
   error: string | null // 错误信息
-  login: (data: LoginDto) => Promise<boolean>
+  login: (data: Login) => Promise<boolean>
   logout: () => boolean
   fetchProfile: () => Promise<void>
 }
@@ -31,13 +31,13 @@ export const useAuthStore = create<AuthStore>()(
         set({ loading: true, error: null })
         try {
           // 两步登录：先获取随机盐，再用crypto-js加密(盐+密码)，然后提交加密数据
-          const challenge = await http.post<ChallengeResDto>(challengeApiUrl, {
+          const challenge = await http.post<string>(challengeApiUrl, {
             type: 'login',
             code: data.code
           })
           const salt = challenge.data
           const encryptedData = encryptData(salt, data.password)
-          const res = await http.post(loginApiUrl, {
+          const res = await http.post<LoginResponse>(loginApiUrl, {
             code: data.code,
             encryptedData
           })
@@ -59,7 +59,7 @@ export const useAuthStore = create<AuthStore>()(
       async fetchProfile() {
         set({ loading: true })
         try {
-          const user = await http.post(profileApiUrl)
+          const user = await http.post<UserProfileDto>(profileApiUrl)
           set({ user: user.data, loading: false, error: null })
         } catch (err: unknown) {
           // 根据后端错误码处理

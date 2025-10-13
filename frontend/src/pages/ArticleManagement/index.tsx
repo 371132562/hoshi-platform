@@ -3,9 +3,10 @@ import type { TablePaginationConfig } from 'antd/es/table/interface'
 import dayjs from 'dayjs'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
-import { ArticleItem } from 'template-backend/types/dto'
 
 import useArticleStore from '@/stores/articleStore'
+
+import type { ArticleItem } from '../../types'
 
 const { Search } = Input
 

@@ -11,9 +11,9 @@ import request from '@/services/base'
 import {
   LogLineItem,
   LogUsersResDto,
-  ReadLogReqDto,
+  ReadLog,
   SystemLogFilesResDto,
-  UserLogFilesReqDto
+  UserLogFilesReq
 } from '@/types'
 
 /**
@@ -62,15 +62,15 @@ type SystemLogsState = {
   /** 获取系统日志文件列表 */
   listFiles: () => Promise<boolean>
   /** 读取系统日志内容 */
-  readLog: (payload: ReadLogReqDto) => Promise<boolean>
+  readLog: (payload: ReadLog) => Promise<boolean>
   /** 带防抖的文件列表刷新 */
   refreshFilesWithDebounce: (force?: boolean) => Promise<boolean>
 
   // ==================== 用户日志方法 ====================
   /** 获取用户日志文件列表 */
-  listUserFiles: (payload: UserLogFilesReqDto) => Promise<boolean>
+  listUserFiles: (payload: UserLogFilesReq) => Promise<boolean>
   /** 读取用户日志内容 */
-  readUserLog: (payload: ReadLogReqDto & { userId: string }) => Promise<boolean>
+  readUserLog: (payload: ReadLog & { userId: string }) => Promise<boolean>
   /** 列出日志用户 */
   listUsers: () => Promise<LogUsersResDto>
   /** 带防抖的用户文件列表刷新 */
@@ -200,7 +200,7 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
     set({ usersLoading: true })
     try {
       const res = await request.post<LogUsersResDto>(systemUserLogsList)
-      const userOptions = (res.data.list || []).map(i => ({
+      const userOptions = (res.data?.list || []).map(i => ({
         label: i.userName ? `${i.userName}/${i.userCode}` : i.userCode,
         value: i.userCode
       }))
@@ -240,7 +240,7 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
   async loadInitialUsers() {
     try {
       const res = await get().listUsers()
-      if (res.list.length > 0) {
+      if (res.list && res.list.length > 0) {
         const userOptions = res.list.map(i => ({
           label: i.userName ? `${i.userName}/${i.userCode}` : i.userCode,
           value: i.userCode

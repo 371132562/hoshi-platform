@@ -1,9 +1,3 @@
-import type {
-  ArticleItem,
-  ArticleMetaItem,
-  CreateArticleDto,
-  UpdateArticleDto
-} from 'template-backend/types/dto'
 import { create } from 'zustand'
 
 import {
@@ -18,6 +12,8 @@ import {
   articleUpsertOrder
 } from '@/services/apis'
 import http from '@/services/base'
+
+import type { ArticleItem, ArticleMetaItem, CreateArticle, UpdateArticle } from '../types'
 
 type ArticleStore = {
   // 状态
@@ -39,8 +35,8 @@ type ArticleStore = {
   // 操作
   getArticleList: (page?: number, pageSize?: number, title?: string) => Promise<void>
   setSearchTitle: (title: string) => void
-  createArticle: (data: CreateArticleDto) => Promise<boolean>
-  updateArticle: (data: UpdateArticleDto) => Promise<boolean>
+  createArticle: (data: CreateArticle) => Promise<boolean>
+  updateArticle: (data: UpdateArticle) => Promise<boolean>
   deleteArticle: (id: string) => Promise<boolean>
   getArticleDetail: (id: string) => Promise<void>
   clearArticleDetail: () => void
@@ -101,7 +97,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   },
 
   // 创建文章
-  createArticle: async (data: CreateArticleDto) => {
+  createArticle: async (data: CreateArticle) => {
     set({ submitLoading: true })
     try {
       await http.post(articleCreate, data)
@@ -117,7 +113,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   },
 
   // 更新文章
-  updateArticle: async (data: UpdateArticleDto) => {
+  updateArticle: async (data: UpdateArticle) => {
     set({ submitLoading: true })
     try {
       await http.post(articleUpdate, data)

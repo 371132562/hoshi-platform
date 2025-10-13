@@ -9,12 +9,12 @@ import {
 } from '../services/apis'
 import request from '../services/base'
 import type {
-  AssignRoleRoutesDto,
-  CreateRoleDto,
-  DeleteRoleDto,
+  AssignRoleRoutes,
+  CreateRole,
+  DeleteRole,
   RoleListItemDto,
   RoleListResDto,
-  UpdateRoleDto
+  UpdateRole
 } from '../types'
 
 // 角色管理store
@@ -22,10 +22,10 @@ export const useRoleStore = create<{
   roleList: RoleListItemDto[]
   loading: boolean
   fetchRoleList: () => Promise<void>
-  createRole: (data: CreateRoleDto) => Promise<boolean>
-  updateRole: (data: UpdateRoleDto) => Promise<boolean>
-  deleteRole: (data: DeleteRoleDto) => Promise<boolean>
-  assignRoleRoutes: (data: AssignRoleRoutesDto) => Promise<boolean>
+  createRole: (data: CreateRole) => Promise<boolean>
+  updateRole: (data: UpdateRole) => Promise<boolean>
+  deleteRole: (data: DeleteRole) => Promise<boolean>
+  assignRoleRoutes: (data: AssignRoleRoutes) => Promise<boolean>
 }>((set, get) => ({
   roleList: [],
   loading: false,
