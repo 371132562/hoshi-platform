@@ -206,6 +206,45 @@ const UserManagement: React.FC = () => {
             />
           </Form.Item>
           <Form.Item
+            name="roleId"
+            label="角色"
+            rules={[{ required: true, message: '请选择角色' }]}
+          >
+            <Select
+              allowClear
+              placeholder="请选择角色"
+              optionLabelProp="label"
+            >
+              {/* 下拉项：若为超级管理员，显示与表格一致的红色标签样式，并展示角色描述 */}
+              {roleList.map(r => (
+                <Select.Option
+                  value={r.id}
+                  key={r.id}
+                  label={r.name === 'admin' ? '超级管理员' : r.name}
+                >
+                  <div>
+                    <div>{r.name === 'admin' ? <Tag color="red">超级管理员</Tag> : r.name}</div>
+                    {r.description && (
+                      <div
+                        style={{
+                          color: '#8c8c8c',
+                          fontSize: '12px',
+                          marginTop: '2px',
+                          wordBreak: 'break-word',
+                          whiteSpace: 'pre-wrap',
+                          width: '100%',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        {r.description}
+                      </div>
+                    )}
+                  </div>
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
             name="name"
             label="姓名"
             rules={[{ required: true, message: '请输入姓名' }]}
@@ -242,26 +281,6 @@ const UserManagement: React.FC = () => {
               maxLength={20}
               placeholder="请输入电话"
             />
-          </Form.Item>
-          <Form.Item
-            name="roleId"
-            label="角色"
-            rules={[{ required: true, message: '请选择角色' }]}
-          >
-            <Select
-              allowClear
-              placeholder="请选择角色"
-            >
-              {/* 下拉项：若为超级管理员，显示与表格一致的红色标签样式 */}
-              {roleList.map(r => (
-                <Select.Option
-                  value={r.id}
-                  key={r.id}
-                >
-                  {r.name === 'admin' ? <Tag color="red">超级管理员</Tag> : r.name}
-                </Select.Option>
-              ))}
-            </Select>
           </Form.Item>
           {!editUser && (
             <Form.Item

@@ -199,6 +199,7 @@ const RoleManagement: React.FC = () => {
               disabled={editRole?.name === 'admin'}
               maxLength={20}
               placeholder="请输入角色名称"
+              showCount
             />
           </Form.Item>
           <Form.Item
@@ -208,6 +209,7 @@ const RoleManagement: React.FC = () => {
             <Input
               maxLength={50}
               placeholder="请输入描述"
+              showCount
             />
           </Form.Item>
         </Form>
