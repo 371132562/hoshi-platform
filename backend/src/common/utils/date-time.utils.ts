@@ -1,10 +1,11 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import 'dayjs/locale/zh-cn';
 
 /**
  * 日期时间处理工具（基于 dayjs）
- * 用途：提供带有默认时区（Asia/Shanghai）的 dayjs 实例与若干常用的年份处理函数
+ * 用途：提供带有默认时区（Asia/Shanghai）和中文语言的 dayjs 实例与若干常用的年份处理函数
  * 上游：被各业务 Service 用于格式化导出文件名、记录日志时间戳、年份计算等
  * 下游：仅返回基础类型（number/string/Date），不直接产生副作用
  */
@@ -12,6 +13,9 @@ import timezone from 'dayjs/plugin/timezone';
 // 扩展 dayjs 插件（下游：为 dayjs 添加 UTC/时区能力）
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+// 设置默认语言为中文
+dayjs.locale('zh-cn');
 
 // 设置默认时区为北京时间（下游：所有 dayjs.tz 调用默认使用该时区）
 dayjs.tz.setDefault('Asia/Shanghai');

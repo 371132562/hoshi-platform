@@ -1,12 +1,12 @@
 import { Button, Input, message, Popconfirm, Space, Table } from 'antd'
 import type { TablePaginationConfig } from 'antd/es/table/interface'
-import dayjs from 'dayjs'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 
 import useArticleStore from '@/stores/articleStore'
+import { dayjs } from '@/utils/dayjs'
 
-import type { ArticleItem } from '../../types'
+import type { ArticleMetaItem } from '../../types'
 
 const { Search } = Input
 
@@ -59,7 +59,7 @@ const ArticleManagement: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: unknown, record: ArticleItem) => (
+      render: (_: unknown, record: ArticleMetaItem) => (
         <Space>
           <Button
             color="primary"

@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import { dayjs } from './dayjs'
 
 // 自定义手机号校验规则
 export const validatePhoneNumber = (_: unknown, value: string) => {

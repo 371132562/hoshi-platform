@@ -3,10 +3,9 @@ import {
   NestInterceptor,
   CallHandler,
   ExecutionContext,
-  Logger,
   StreamableFile,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -18,29 +17,18 @@ import { map } from 'rxjs/operators';
  */
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<T, any> {
-  private readonly logger = new Logger(TransformInterceptor.name); // 下游：记录每次请求的耗时和状态码
-
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     // 上游：请求/响应对象
-    const request = context.switchToHttp().getRequest<Request>();
     const response = context.switchToHttp().getResponse<Response>();
-    const startTime = Date.now();
 
     return next.handle().pipe(
       map((data: T) => {
         // 特殊下游：如果是文件流，直接透传，不做包装
         if (data instanceof StreamableFile) {
-          this.logger.log(
-            `[操作] ${request.method} ${request.url} - 文件流响应，跳过JSON包装`,
-          );
           return data;
         }
 
         // 正常下游：统一包装 JSON 响应
-        const duration = Date.now() - startTime;
-        this.logger.log(
-          `[操作] ${request.method} ${request.url} - 状态码: ${response.statusCode}, 耗时: ${duration}ms`,
-        );
         response.statusCode = 200; // 统一设置为 200
         return { code: 10000, msg: '成功', data };
       }),
