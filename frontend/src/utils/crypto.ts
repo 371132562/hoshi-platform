@@ -102,3 +102,43 @@ export const generateRandomString = (length: number): string => {
 export const sha256 = (data: string): string => {
   return CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex)
 }
+
+/**
+ * 解密后端返回的加密盐值
+ * 使用专用的盐值解密算法（AES-128-CBC），与密码解密算法不同
+ * @param encryptedSalt 加密的盐值（格式：iv(32字符hex) + 加密数据）
+ * @returns 解密后的盐值
+ */
+export const decryptSalt = (encryptedSalt: string): string => {
+  try {
+    // 使用专用的盐值解密密钥（16字节，适合AES-128）
+    const keyString = 'salt-encryption-key-2024'.padEnd(16, '\0').slice(0, 16)
+    const key = CryptoJS.enc.Utf8.parse(keyString)
+
+    // 提取 IV（前 32 个字符，16 字节的十六进制表示）
+    const ivHex = encryptedSalt.substring(0, 32)
+    // 提取加密数据（剩余部分）
+    const encryptedBase64 = encryptedSalt.substring(32)
+
+    // 转换 IV
+    const iv = CryptoJS.enc.Hex.parse(ivHex)
+
+    // 创建加密对象
+    const encrypted = CryptoJS.lib.CipherParams.create({
+      ciphertext: CryptoJS.enc.Base64.parse(encryptedBase64)
+    })
+
+    // 使用 AES-CBC 解密
+    const decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    })
+
+    // 将解密结果转换为字符串
+    return decrypted.toString(CryptoJS.enc.Utf8)
+  } catch (error) {
+    console.error('crypto-js 解密盐值失败:', error)
+    throw new Error('盐值解密失败')
+  }
+}

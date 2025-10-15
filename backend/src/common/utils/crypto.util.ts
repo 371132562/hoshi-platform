@@ -12,6 +12,10 @@ export class CryptoUtil {
   private static readonly SECRET_KEY = 'urbanization-secret-key';
   private static readonly ALGORITHM = 'aes-256-cbc';
 
+  // 盐值加密专用配置 - 使用不同的密钥和算法
+  private static readonly SALT_SECRET_KEY = 'salt-encryption-key-2024';
+  private static readonly SALT_ALGORITHM = 'aes-128-cbc';
+
   /**
    * 生成随机盐
    * @returns 32字节的随机十六进制字符串
@@ -61,5 +65,38 @@ export class CryptoUtil {
       throw new BusinessException(ErrorCode.PASSWORD_INCORRECT, '数据格式错误');
     }
     return parts[1]; // 返回密码部分
+  }
+
+  /**
+   * 加密随机盐
+   * 使用专用的盐值加密算法（AES-128-CBC），与密码加密算法不同
+   * @param salt 要加密的随机盐
+   * @returns 加密后的盐值（格式：iv(32字符hex) + 加密数据）
+   */
+  static encryptSalt(salt: string): string {
+    try {
+      // 使用专用的盐值加密密钥（16字节，适合AES-128）
+      const key = Buffer.from(
+        this.SALT_SECRET_KEY.padEnd(16, '\0').slice(0, 16),
+      );
+
+      // 生成随机 IV（16 字节，CBC模式标准长度）
+      const iv = crypto.randomBytes(16);
+
+      // 使用 AES-128-CBC 加密
+      const cipher = crypto.createCipheriv(this.SALT_ALGORITHM, key, iv);
+
+      let encrypted = cipher.update(salt, 'utf8', 'base64');
+      encrypted += cipher.final('base64');
+
+      // 将 IV 和加密数据组合
+      const ivHex = iv.toString('hex');
+      return ivHex + encrypted;
+    } catch (error) {
+      this.logger.error(
+        `[失败] 盐值加密 - ${error instanceof Error ? error.message : '未知错误'}`,
+      );
+      throw new BusinessException(ErrorCode.PASSWORD_INCORRECT, '盐值加密失败');
+    }
   }
 }

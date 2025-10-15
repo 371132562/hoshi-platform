@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsIn, ValidateIf } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 /**
  * 认证相关 DTO 类定义
@@ -22,26 +22,7 @@ export class LoginDto {
 export type Login = InstanceType<typeof LoginDto>;
 
 /**
- * 挑战 DTO
- */
-export class ChallengeDto {
-  // 当 type 不是 'create' 时，要求提供 code（登录/重置等场景）
-  @ValidateIf((o: ChallengeDto) => o.type !== 'create')
-  @IsString()
-  @IsNotEmpty({ message: '用户编码不能为空' })
-  code: string;
-
-  @IsString()
-  @IsNotEmpty({ message: 'type 不能为空' })
-  @IsIn(['login', 'create', 'reset'], {
-    message: 'type 仅支持 login/create/reset',
-  })
-  type: string;
-}
-export type Challenge = InstanceType<typeof ChallengeDto>;
-
-/**
- * 挑战响应类型
+ * 挑战响应类型 - 直接返回加密的随机盐字符串
  */
 export type ChallengeResponse = string;
 

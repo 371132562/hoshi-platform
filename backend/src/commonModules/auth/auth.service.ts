@@ -5,7 +5,6 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import {
   LoginResponseDto,
   TokenPayloadDto,
-  ChallengeDto,
   ChallengeResponse,
   LoginWithHashDto,
 } from '../../../types/dto';
@@ -30,14 +29,14 @@ export class AuthService {
 
   /**
    * 通用挑战接口 - 获取随机盐
-   * 两步登录 - 第一步：获取随机盐
    */
-  getChallenge(dto: ChallengeDto): ChallengeResponse {
-    this.logger.log(`[操作] 获取挑战 - 类型: ${dto.type}`);
+  getChallenge(): ChallengeResponse {
+    this.logger.log(`[操作] 获取挑战 - 生成随机盐`);
     try {
       const salt = CryptoUtil.generateSalt();
-      // 直接返回随机盐字符串，避免前端多一层 data.salt 解构
-      return salt;
+      // 加密随机盐后返回，提高安全性
+      const encryptedSalt = CryptoUtil.encryptSalt(salt);
+      return encryptedSalt;
     } catch (error) {
       this.logger.error(
         `[失败] 获取挑战 - ${error instanceof Error ? error.message : '未知错误'}`,

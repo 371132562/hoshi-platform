@@ -105,7 +105,6 @@ const OrderConfig = () => {
   const orderConfigLoading = useArticleStore(state => state.orderConfigLoading)
   const submitLoading = useArticleStore(state => state.submitLoading)
   const previewArticles = useArticleStore(state => state.previewArticles)
-  // const previewLoading = useArticleStore(state => state.previewLoading)
   const getAllArticles = useArticleStore(state => state.getAllArticles)
   const getArticlesByPage = useArticleStore(state => state.getArticlesByPage)
   const upsertArticleOrder = useArticleStore(state => state.upsertArticleOrder)

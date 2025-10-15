@@ -84,7 +84,10 @@ const UserManagement: React.FC = () => {
   const handleResetOk = async () => {
     const values = await resetForm.validateFields()
     if (resetUser) {
-      const success = await resetUserPassword({ id: resetUser.id, newPassword: values.newPassword })
+      const success = await resetUserPassword({
+        id: String(resetUser.id),
+        newPassword: values.newPassword
+      })
       if (success) {
         message.success('密码重置成功')
         setResetModalOpen(false)

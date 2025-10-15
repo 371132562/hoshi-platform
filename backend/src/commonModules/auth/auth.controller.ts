@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import {
   LoginResponseDto,
   UserProfileDto,
-  ChallengeDto,
   ChallengeResponse,
   LoginWithHashDto,
 } from '../../dto/auth.dto';
@@ -25,8 +24,8 @@ export class AuthController {
    */
   @Public()
   @Post('challenge')
-  challenge(@Body() dto: ChallengeDto): ChallengeResponse {
-    return this.authService.getChallenge(dto);
+  challenge(): ChallengeResponse {
+    return this.authService.getChallenge();
   }
 
   /**

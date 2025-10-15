@@ -9,7 +9,6 @@ import type {
   // 角色管理相关类型
   AssignRoleRoutes,
   // 认证相关类型
-  Challenge,
   CreateArticle,
   CreateRole,
   // 用户管理相关类型
@@ -71,7 +70,7 @@ export type RouteItem = {
 export type { ApiResponse, ExportFormat, PaginatedResponse }
 
 // 认证相关类型
-export type { Challenge, Login, LoginResponse, TokenPayloadDto, UserProfileDto }
+export type { Login, LoginResponse, TokenPayloadDto, UserProfileDto }
 
 // 文章管理相关类型
 export type {

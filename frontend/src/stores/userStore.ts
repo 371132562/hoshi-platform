@@ -10,15 +10,14 @@ import {
 } from '../services/apis'
 import request from '../services/base'
 import type {
-  ChallengeResDto,
-  CreateUserEncryptedDto,
-  DeleteUserDto,
-  ResetUserPasswordEncryptedDto,
-  UpdateUserDto,
+  CreateUserEncrypted,
+  DeleteUser,
+  ResetUserPasswordEncrypted,
+  UpdateUser,
   UserItem,
   UserListResDto
 } from '../types'
-import { encryptData } from '../utils/crypto'
+import { decryptSalt, encryptData } from '../utils/crypto'
 
 // 临时类型定义，用于前端表单
 type CreateUserFormData = {
@@ -41,8 +40,8 @@ export const useUserStore = create<{
   loading: boolean
   fetchUserList: () => Promise<void>
   createUser: (data: CreateUserFormData) => Promise<boolean>
-  updateUser: (data: UpdateUserDto) => Promise<boolean>
-  deleteUser: (data: DeleteUserDto) => Promise<boolean>
+  updateUser: (data: UpdateUser) => Promise<boolean>
+  deleteUser: (data: DeleteUser) => Promise<boolean>
   resetUserPassword: (data: ResetPasswordFormData) => Promise<boolean>
 }>((set, get) => ({
   userList: [],
@@ -61,12 +60,14 @@ export const useUserStore = create<{
   createUser: async data => {
     set({ loading: true })
     try {
-      // 两步加密：先获取随机盐，再用Web Crypto加密(盐+密码)，然后提交加密数据
-      const challenge = await request.post<ChallengeResDto>(challengeApiUrl, { type: 'create' })
-      const salt = challenge.data
+      // 两步加密：先获取加密的随机盐，解密后使用crypto-js加密(盐+密码)，然后提交加密数据
+      const challenge = await request.post<string>(challengeApiUrl)
+      const encryptedSalt = challenge.data
+      // 解密后端返回的加密盐值
+      const salt = decryptSalt(encryptedSalt)
       const encryptedPassword = await encryptData(salt, data.password)
 
-      const encryptedData: CreateUserEncryptedDto = {
+      const encryptedData: CreateUserEncrypted = {
         ...data,
         encryptedPassword
       }
@@ -113,12 +114,14 @@ export const useUserStore = create<{
   resetUserPassword: async data => {
     set({ loading: true })
     try {
-      // 两步加密：先获取随机盐，再用Web Crypto加密(盐+新密码)，然后提交加密数据
-      const challenge = await request.post<ChallengeResDto>(challengeApiUrl, { type: 'reset' })
-      const salt = challenge.data
+      // 两步加密：先获取加密的随机盐，解密后使用crypto-js加密(盐+新密码)，然后提交加密数据
+      const challenge = await request.post<string>(challengeApiUrl)
+      const encryptedSalt = challenge.data
+      // 解密后端返回的加密盐值
+      const salt = decryptSalt(encryptedSalt)
       const encryptedNewPassword = await encryptData(salt, data.newPassword)
 
-      const encryptedData: ResetUserPasswordEncryptedDto = {
+      const encryptedData: ResetUserPasswordEncrypted = {
         id: data.id,
         encryptedNewPassword
       }
