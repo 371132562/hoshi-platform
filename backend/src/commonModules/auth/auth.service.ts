@@ -1,15 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
-  LoginResponseDto,
-  TokenPayloadDto,
   ChallengeResponse,
+  LoginResponseDto,
   LoginWithHashDto,
+  TokenPayloadDto,
 } from '../../../types/dto';
-import { BusinessException } from '../../common/exceptions/businessException';
 import { ErrorCode } from '../../../types/response';
+import { BusinessException } from '../../common/exceptions/businessException';
 import { CryptoUtil } from '../../common/utils/crypto.util';
 
 @Injectable()

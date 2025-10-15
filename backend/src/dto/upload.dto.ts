@@ -1,4 +1,4 @@
-import { IsString, IsArray } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 /**
  * 上传相关 DTO 类定义

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ArticleService } from './article.service';
-import { ArticleController } from './article.controller';
-import { UploadModule } from '../../commonModules/upload/upload.module';
+
 import { ConcurrencyModule } from '../../commonModules/concurrency/concurrency.module';
+import { UploadModule } from '../../commonModules/upload/upload.module';
+import { ArticleController } from './article.controller';
+import { ArticleService } from './article.service';
 
 @Module({
   imports: [UploadModule, ConcurrencyModule],

@@ -4,8 +4,9 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { Request } from 'express';
+import { Observable } from 'rxjs';
+
 import { RequestContext } from '../context/request-context.utils';
 
 /**

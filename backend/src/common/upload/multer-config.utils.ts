@@ -1,8 +1,8 @@
-import { extname, join } from 'path';
+import { Request } from 'express';
 import { existsSync, mkdirSync } from 'fs';
 import { diskStorage, FileFilterCallback } from 'multer';
+import { extname, join } from 'path';
 import { v4 as uuid } from 'uuid';
-import { Request } from 'express';
 
 /**
  * Multer 文件上传配置工具

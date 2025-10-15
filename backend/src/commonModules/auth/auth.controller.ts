@@ -1,13 +1,14 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import {
-  LoginResponseDto,
-  UserProfileDto,
-  ChallengeResponse,
-  LoginWithHashDto,
-} from '../../dto/auth.dto';
-import { CurrentUser, UserInfo } from '../../common/auth/user.decorator';
+
 import { Public } from '../../common/auth/public.decorator';
+import { CurrentUser, UserInfo } from '../../common/auth/user.decorator';
+import {
+  ChallengeResponse,
+  LoginResponseDto,
+  LoginWithHashDto,
+  UserProfileDto,
+} from '../../dto/auth.dto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {

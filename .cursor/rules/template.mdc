@@ -14,7 +14,7 @@ rules:
       - 代码中必须书写简洁明了的功能解释中文注释
       - 文件名命名优先采用以下前后端文件中的要求,如果没有对应的规则则优先采用驼峰命名法camelCase
       - git commit 要符合规范，以feat，dix，chore等开头然后书写具体内容
-      - Agent运行过程中不需要进行git提交、dev运行、build构建这些步骤
+      - Agent运行过程中不需要进行git提交、dev运行、build构建这些步骤，除非是我主动要求
 
   - title: 类型系统规范
     body: |

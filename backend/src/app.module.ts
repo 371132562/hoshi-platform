@@ -1,27 +1,22 @@
 import { Module } from '@nestjs/common';
-import { join } from 'path';
-import { APP_GUARD, APP_FILTER, APP_PIPE, APP_INTERCEPTOR } from '@nestjs/core';
-import { JwtAuthGuard } from './commonModules/auth/jwt-auth.guard';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { RequestContextMiddleware } from './common/middlewares/request-context.middleware';
-import { UserContextInterceptor } from './common/interceptors/user-context.interceptor';
-import { TransformInterceptor } from './common/interceptors/response.interceptor';
-
-//公共插件
-import { AllExceptionsFilter } from './common/exceptions/allExceptionsFilter';
-
-//公共模块
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { PrismaModule } from '../prisma/prisma.module';
-import { UploadModule } from './commonModules/upload/upload.module';
-import { AuthModule } from './commonModules/auth/auth.module';
+import { join } from 'path';
 
-//业务模块
+import { PrismaModule } from '../prisma/prisma.module';
+import { ArticleModule } from './businessModules/article/article.module';
 import { RoleModule } from './businessModules/role/role.module';
 import { UserModule } from './businessModules/user/user.module';
-import { ArticleModule } from './businessModules/article/article.module';
+import { AllExceptionsFilter } from './common/exceptions/allExceptionsFilter';
+import { TransformInterceptor } from './common/interceptors/response.interceptor';
+import { UserContextInterceptor } from './common/interceptors/user-context.interceptor';
+import { RequestContextMiddleware } from './common/middlewares/request-context.middleware';
+import { AuthModule } from './commonModules/auth/auth.module';
+import { JwtAuthGuard } from './commonModules/auth/jwt-auth.guard';
 import { SystemLogsModule } from './commonModules/systemLogs/systemLogs.module';
+import { UploadModule } from './commonModules/upload/upload.module';
 
 @Module({
   imports: [

@@ -1,12 +1,12 @@
+import { Type } from 'class-transformer';
 import {
-  IsString,
-  IsOptional,
-  IsNotEmpty,
   IsArray,
   IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
   Min,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 /**
  * 文章相关 DTO 类定义

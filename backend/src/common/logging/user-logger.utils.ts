@@ -1,7 +1,8 @@
-import { createLogger, format, transports, Logger } from 'winston';
 import 'winston-daily-rotate-file';
+
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { createLogger, format, Logger, transports } from 'winston';
 
 /**
  * 用户级日志工具

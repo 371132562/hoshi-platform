@@ -1,21 +1,22 @@
 // src/upload/upload.controller.ts
 import {
-  Controller,
-  Post,
-  UseInterceptors,
-  UploadedFile, // 导入 UploadedFile
   BadRequestException,
   Body,
+  Controller,
+  Post,
   Res, // 导入 Res
+  UploadedFile, // 导入 UploadedFile
+  UseInterceptors,
 } from '@nestjs/common';
-import { Response } from 'express'; // 导入 Response
 import { FileInterceptor } from '@nestjs/platform-express'; // 导入 FileInterceptor
+import { Response } from 'express'; // 导入 Response
+
 import { multerOptions } from '../../common/upload/multer-config.utils';
-import { UploadService } from './upload.service';
 import {
   DeleteImageDto,
   DeleteOrphansByFilenamesDto,
 } from '../../dto/upload.dto';
+import { UploadService } from './upload.service';
 
 @Controller('upload') // 基础路由 /upload
 export class UploadController {

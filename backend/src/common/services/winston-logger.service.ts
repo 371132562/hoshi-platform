@@ -1,7 +1,8 @@
 import { Injectable, LoggerService } from '@nestjs/common';
-import { logger as winstonLogger } from '../logging/winston-core.utils';
+
 import { RequestContext } from '../context/request-context.utils';
 import { getUserLogger } from '../logging/user-logger.utils';
+import { logger as winstonLogger } from '../logging/winston-core.utils';
 
 /**
  * 应用级日志服务（WinstonLoggerService）

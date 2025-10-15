@@ -1,5 +1,5 @@
-import { IsString, IsOptional, IsNotEmpty, IsEmail } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 /**
  * 用户相关 DTO 类定义
