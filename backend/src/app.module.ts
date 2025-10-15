@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { join } from 'path';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { JwtAuthGuard } from './commonModules/auth/jwt-auth.guard';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { RequestContextMiddleware } from './common/middlewares/request-context.middleware';
+
+//公共插件
+import { AllExceptionsFilter } from './common/exceptions/allExceptionsFilter';
 
 //公共模块
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -53,6 +56,10 @@ import { SystemLogsModule } from './commonModules/systemLogs/systemLogs.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter, // 通过依赖注入注册全局异常过滤器
     },
   ],
 })

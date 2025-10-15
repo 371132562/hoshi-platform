@@ -14,6 +14,7 @@ rules:
       - 代码中必须书写简洁明了的功能解释中文注释
       - 文件名命名优先采用以下前后端文件中的要求,如果没有对应的规则则优先采用驼峰命名法camelCase
       - git commit 要符合规范，以feat，dix，chore等开头然后书写具体内容
+      - Agent运行过程中不需要进行git提交、dev运行、build构建这些步骤
 
   - title: 类型系统规范
     body: |
@@ -37,14 +38,12 @@ rules:
   - title: 前端开发规范
     body: |
       - 组件命名采用PascalCase
-      - pages目录下的页面组件应专注于界面展示，避免复杂数据处理逻辑
       - Props必须明确定义TypeScript类型
-      - 使用受控组件处理表单，避免直接操作DOM
       - useEffect必须明确声明依赖项
-      - 使用React.memo优化组件性能
       - 公共逻辑提取为自定义Hook或HOC
       - 变量/函数使用camelCase，类/接口用PascalCase，常量用UPPER_SNAKE_CASE
-      - api地址写在apis.ts文件中,在stores文件中进行调用和数据层的逻辑
+      - 前端应分为视图层（UI组件），数据层（store文件），API端点（API地址文件），各司其职
+      - 统一使用Zustand进行状态管理
 
   - title: 前端样式规范
     body: |
@@ -53,21 +52,12 @@ rules:
       - 保持全局风格一致性
       - 加载效果优先使用骨架屏
 
-  - title: 状态管理与API调用
-    body: |
-      - 统一使用Zustand进行状态管理
-      - 数据处理逻辑集中在stores目录
-      - API地址统一在services/apis.ts或common.ts中定义
-      - 使用services/base.ts中的fetch实例处理请求
-      - 错误处理统一在拦截器中处理
-      - 组件中避免直接调用API
-
   - title: 后端开发规范
     body: |
+      - 遵循NestJS最佳实践
       - 接口必须统一使用POST方法
       - 业务错误需返回合适的Error信息，优先使用自定义的BusinessException搭配ErrorCode
-      - 新增错误类型时在ErrorCode中定义
-      - 遵循NestJS最佳实践
+      - 当前错误类型不满足时在ErrorCode中新增
       - 使用Prisma处理数据库操作
       - 所有DTO必须使用class并添加class-validator装饰器；控制器启用全局ValidationPipe
       - businessModules是业务模块

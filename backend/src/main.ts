@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptors/response.interceptor';
-import { AllExceptionsFilter } from './common/exceptions/allExceptionsFilter';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { WinstonLoggerService } from './common/services/winston-logger.service';
 import { json, urlencoded } from 'express';
@@ -23,9 +22,6 @@ async function bootstrap() {
     new UserContextInterceptor(),
     new TransformInterceptor(),
   );
-
-  // 注册全局异常过滤器
-  app.useGlobalFilters(new AllExceptionsFilter());
 
   // 添加全局路径前缀
   app.setGlobalPrefix(`${process.env.DEPLOY_PATH || '/'}api`);
