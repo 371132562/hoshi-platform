@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { join } from 'path';
-import { APP_GUARD, APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER, APP_PIPE, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './commonModules/auth/jwt-auth.guard';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { RequestContextMiddleware } from './common/middlewares/request-context.middleware';
+import { UserContextInterceptor } from './common/interceptors/user-context.interceptor';
+import { TransformInterceptor } from './common/interceptors/response.interceptor';
 
 //公共插件
 import { AllExceptionsFilter } from './common/exceptions/allExceptionsFilter';
@@ -61,6 +63,15 @@ import { SystemLogsModule } from './commonModules/systemLogs/systemLogs.module';
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
+    },
+    // 全局拦截器按顺序注册：先写入用户上下文，再做统一响应包装
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: UserContextInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
     {
       provide: APP_PIPE,
