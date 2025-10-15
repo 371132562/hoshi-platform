@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { join } from 'path';
-import { APP_GUARD, APP_FILTER } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { JwtAuthGuard } from './commonModules/auth/jwt-auth.guard';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { RequestContextMiddleware } from './common/middlewares/request-context.middleware';
 
 //公共插件
@@ -59,7 +60,25 @@ import { SystemLogsModule } from './commonModules/systemLogs/systemLogs.module';
     },
     {
       provide: APP_FILTER,
-      useClass: AllExceptionsFilter, // 通过依赖注入注册全局异常过滤器
+      useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_PIPE,
+      useFactory: () =>
+        new ValidationPipe({
+          whitelist: true, // 过滤掉未定义的字段
+          transform: true, // 自动类型转换
+          transformOptions: {
+            enableImplicitConversion: true, // 隐式类型转换
+          },
+          exceptionFactory: (errors) => {
+            const messages = errors.flatMap((e) =>
+              Object.values(e.constraints ?? {}),
+            );
+            const hint = messages[1] ?? messages[0] ?? '请求参数错误';
+            return new BadRequestException({ msg: hint, data: messages });
+          },
+        }),
     },
   ],
 })

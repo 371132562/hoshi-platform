@@ -42,7 +42,7 @@ rules:
       - useEffect必须明确声明依赖项
       - 公共逻辑提取为自定义Hook或HOC
       - 变量/函数使用camelCase，类/接口用PascalCase，常量用UPPER_SNAKE_CASE
-      - 前端应分为视图层（UI组件），数据层（store文件），API端点（API地址文件），各司其职
+      - 前端应分为视图层（UI组件），数据层（store文件），API端点（API地址文件），各司其职，单一职责原则
       - 统一使用Zustand进行状态管理
 
   - title: 前端样式规范
