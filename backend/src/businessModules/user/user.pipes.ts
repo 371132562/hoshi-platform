@@ -1,4 +1,5 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
+import type { User } from '@prisma/client';
 
 import { PrismaService } from '../../../prisma/prisma.service';
 import { ErrorCode } from '../../../types/response';
@@ -32,5 +33,23 @@ export class UserCodeExistsValidationPipe implements PipeTransform {
     }
 
     return value;
+  }
+}
+
+/**
+ * 根据ID加载用户实体（存在性校验 + 注入实体）
+ */
+@Injectable()
+export class UserByIdPipe implements PipeTransform<string, Promise<User>> {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async transform(value: string): Promise<User> {
+    const user = await this.prisma.user.findFirst({
+      where: { id: value, delete: 0 },
+    });
+    if (!user) {
+      throw new BusinessException(ErrorCode.USER_NOT_FOUND, '用户不存在');
+    }
+    return user;
   }
 }

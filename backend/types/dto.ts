@@ -33,16 +33,6 @@ export type PaginationInfo = {
 };
 
 /**
- * 通用响应类型
- */
-export type ApiResponse<T = any> = {
-  success: boolean;
-  data?: T;
-  message?: string;
-  code?: number;
-};
-
-/**
  * 分页响应类型
  */
 export type PaginatedResponse<T> = {
@@ -60,12 +50,3 @@ export enum ExportFormat {
   CSV = 'csv',
   JSON = 'json',
 }
-
-/**
- * 简单国家数据类型
- */
-export type SimpleCountryData = {
-  id: string;
-  cnName: string;
-  enName: string;
-};

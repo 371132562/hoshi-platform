@@ -45,4 +45,5 @@ rules:
       - 使用Prisma处理数据库操作
       - 业务错误需返回合适的Error信息，优先使用自定义的BusinessException搭配ErrorCode，当前错误类型不满足时在ErrorCode中新增
       - 接口入参使用Class DTO验证类型的合法性，使用Pipe验证业务上的合法性
+      - 简单的，通用的业务逻辑可以抽取为Pipe以便于复用
       - businessModules是业务模块，commonModules是通用模块，common中是通用组件

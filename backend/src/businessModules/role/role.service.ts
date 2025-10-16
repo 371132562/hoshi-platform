@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { Role } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -89,18 +90,9 @@ export class RoleService {
   /**
    * 编辑角色
    */
-  async updateRole(dto: UpdateRoleDto) {
+  async updateRole(role: Role, dto: UpdateRoleDto) {
     try {
-      const role = await this.prisma.role.findUnique({ where: { id: dto.id } });
-      this.logger.log(
-        role
-          ? `[操作] 编辑角色 - ID: ${dto.id}, 名称: ${role.name}`
-          : `[操作] 编辑角色 - ID: ${dto.id}`,
-      );
-      if (!role || role.delete !== 0) {
-        this.logger.warn(`[验证失败] 编辑角色 - 角色ID ${dto.id} 不存在`);
-        throw new BusinessException(ErrorCode.ROLE_NOT_FOUND, '角色不存在');
-      }
+      this.logger.log(`[操作] 编辑角色 - ID: ${role.id}, 名称: ${role.name}`);
 
       if (role.name === 'admin') {
         this.logger.warn(
@@ -127,7 +119,7 @@ export class RoleService {
       }
 
       await this.prisma.role.update({
-        where: { id: dto.id },
+        where: { id: role.id },
         data: {
           name: dto.name ?? role.name,
           description: dto.description ?? role.description,
@@ -139,7 +131,7 @@ export class RoleService {
       });
 
       this.logger.log(
-        `[操作] 编辑角色成功 - ID: ${dto.id}, 名称: ${dto.name || role.name}`,
+        `[操作] 编辑角色成功 - ID: ${role.id}, 名称: ${dto.name || role.name}`,
       );
       return true;
     } catch (error) {
@@ -157,18 +149,9 @@ export class RoleService {
   /**
    * 删除角色（软删除）
    */
-  async deleteRole(dto: DeleteRoleDto) {
+  async deleteRole(role: Role) {
     try {
-      const role = await this.prisma.role.findUnique({ where: { id: dto.id } });
-      this.logger.log(
-        role
-          ? `[操作] 删除角色 - ID: ${dto.id}, 名称: ${role.name}`
-          : `[操作] 删除角色 - ID: ${dto.id}`,
-      );
-      if (!role || role.delete !== 0) {
-        this.logger.warn(`[验证失败] 删除角色 - 角色ID ${dto.id} 不存在`);
-        throw new BusinessException(ErrorCode.ROLE_NOT_FOUND, '角色不存在');
-      }
+      this.logger.log(`[操作] 删除角色 - ID: ${role.id}, 名称: ${role.name}`);
 
       if (role.name === 'admin') {
         this.logger.warn(
@@ -182,7 +165,7 @@ export class RoleService {
 
       // 检查是否有用户关联该角色
       const userCount = await this.prisma.user.count({
-        where: { roleId: dto.id, delete: 0 },
+        where: { roleId: role.id, delete: 0 },
       });
       if (userCount > 0) {
         this.logger.warn(
@@ -195,12 +178,12 @@ export class RoleService {
       }
 
       await this.prisma.role.update({
-        where: { id: dto.id },
+        where: { id: role.id },
         data: { delete: 1 },
       });
 
       this.logger.log(
-        `[操作] 删除角色成功 - ID: ${dto.id}, 名称: ${role.name}`,
+        `[操作] 删除角色成功 - ID: ${role.id}, 名称: ${role.name}`,
       );
       return true;
     } catch (error) {

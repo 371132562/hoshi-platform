@@ -56,22 +56,10 @@ export class ArticleService {
     };
   }
 
-  async detail(id: string): Promise<ArticleItem> {
+  detail(article: Article): ArticleItem {
     try {
-      const article = await this.prisma.article.findFirst({
-        where: { id, delete: 0 },
-      });
-
-      if (!article) {
-        this.logger.warn(`[验证失败] 获取文章详情 - 文章ID ${id} 不存在`);
-        throw new BusinessException(
-          ErrorCode.RESOURCE_NOT_FOUND,
-          `文章ID ${id} 不存在`,
-        );
-      }
-
       this.logger.log(
-        `[操作] 获取文章详情 - 文章ID: ${id}, 标题: ${article.title}`,
+        `[操作] 获取文章详情 - 文章ID: ${article.id}, 标题: ${article.title}`,
       );
       return this.mapToDto(article);
     } catch (error) {
@@ -221,28 +209,16 @@ export class ArticleService {
     }
   }
 
-  async update(updateArticleDto: UpdateArticleDto): Promise<ArticleItem> {
+  async update(
+    article: Article,
+    updateArticleDto: UpdateArticleDto,
+  ): Promise<ArticleItem> {
     try {
-      const {
-        id,
-        deletedImages: incomingDeletedImages,
-        ...data
-      } = updateArticleDto;
-
-      // 先查原始文章，用于输出更友好的开始日志
-      const original = await this.prisma.article.findFirst({
-        where: { id, delete: 0 },
-        select: { id: true, title: true },
-      });
-      if (!original) {
-        this.logger.warn(`[验证失败] 更新文章 - 文章ID ${id} 不存在或已被删除`);
-        throw new BusinessException(
-          ErrorCode.RESOURCE_NOT_FOUND,
-          `文章ID ${id} 不存在或已被删除`,
-        );
-      }
+      const { id } = article;
+      const { deletedImages: incomingDeletedImages, ...data } =
+        updateArticleDto;
       this.logger.log(
-        `[操作] 更新文章 - 文章ID: ${original.id}, 标题: ${original.title}`,
+        `[操作] 更新文章 - 文章ID: ${article.id}, 标题: ${article.title}`,
       );
 
       // 使用工具类处理图片数据
@@ -252,11 +228,12 @@ export class ArticleService {
           deletedImages: incomingDeletedImages,
         });
 
-      const article = await this.concurrency.runExclusiveGlobal(async () =>
-        this.prisma.article.update({
-          where: { id },
-          data: processedData,
-        }),
+      const updatedArticle = await this.concurrency.runExclusiveGlobal(
+        async () =>
+          this.prisma.article.update({
+            where: { id },
+            data: processedData,
+          }),
       );
 
       // 异步清理不再使用的图片，不阻塞主流程
@@ -273,9 +250,9 @@ export class ArticleService {
       }
 
       this.logger.log(
-        `[操作] 更新文章成功 - 文章ID: ${article.id}, 标题: ${article.title}`,
+        `[操作] 更新文章成功 - 文章ID: ${updatedArticle.id}, 标题: ${updatedArticle.title}`,
       );
-      return this.mapToDto(article);
+      return this.mapToDto(updatedArticle);
     } catch (error) {
       this.logger.error(
         `[失败] 更新文章 - ${error instanceof Error ? error.message : '未知错误'}`,
@@ -285,15 +262,11 @@ export class ArticleService {
     }
   }
 
-  async delete(id: string): Promise<ArticleItem> {
+  async delete(article: Article): Promise<ArticleItem> {
     try {
-      // 1. 查找要删除的文章，以获取其图片列表
-      const articleToDelete = await this.prisma.article.findFirst({
-        where: { id, delete: 0 },
-      });
-
+      const id = article.id;
       this.logger.log(
-        `[操作] 删除文章 - 文章ID: ${id}, 标题: ${articleToDelete?.title || '未知'}`,
+        `[操作] 删除文章 - 文章ID: ${id}, 标题: ${article.title}`,
       );
 
       // 2. 物理删除
@@ -333,12 +306,6 @@ export class ArticleService {
       throw error;
     }
   }
-
-  /**
-   * 清理已删除的图片文件。
-   * 仅当图片在所有文章中都未被引用时，才会执行物理删除。
-   * @param deletedImages - 包含待删除图片文件名的数组
-   */
 
   async upsertArticleOrder(
     upsertArticleOrderDto: UpsertArticleOrderDto,

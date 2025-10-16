@@ -34,8 +34,10 @@ export class AuthController {
    */
   @Public()
   @Post('login')
-  async login(@Body() dto: LoginWithHashDto): Promise<LoginResponseDto> {
-    return this.authService.loginWithHash(dto);
+  async login(
+    @Body() loginWithHashDto: LoginWithHashDto,
+  ): Promise<LoginResponseDto> {
+    return this.authService.loginWithHash(loginWithHashDto);
   }
 
   /**

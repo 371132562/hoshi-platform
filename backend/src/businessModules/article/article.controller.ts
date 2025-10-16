@@ -1,4 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import type { Article } from '@prisma/client';
 
 import {
   ArticleItem,
@@ -13,11 +14,8 @@ import {
   UpdateArticleDto,
   UpsertArticleOrderDto,
 } from './article.dto';
+import { ArticleByIdPipe } from './article.pipes';
 import { ArticleService } from './article.service';
-import {
-  ArticleExistsValidationPipe,
-  ArticleTitleExistsValidationPipe,
-} from './article-validation.pipes';
 
 @Controller('article')
 export class ArticleController {
@@ -32,32 +30,32 @@ export class ArticleController {
   }
 
   @Post('detail')
-  async getArticleDetail(@Body() body: DeleteArticleDto) {
-    return this.articleService.detail(body.id);
+  getArticleDetail(
+    @Body() _dto: DeleteArticleDto,
+    @Body('id', ArticleByIdPipe) article: Article,
+  ) {
+    return this.articleService.detail(article);
   }
 
   @Post('create')
-  async createArticle(
-    @Body() createArticleDto: CreateArticleDto,
-    @Body('title', ArticleTitleExistsValidationPipe) _title: string,
-  ) {
+  async createArticle(@Body() createArticleDto: CreateArticleDto) {
     return this.articleService.create(createArticleDto);
   }
 
   @Post('update')
   async updateArticle(
     @Body() updateArticleDto: UpdateArticleDto,
-    @Body('title', ArticleTitleExistsValidationPipe) _title: string,
+    @Body('id', ArticleByIdPipe) article: Article,
   ) {
-    return this.articleService.update(updateArticleDto);
+    return await this.articleService.update(article, updateArticleDto);
   }
 
   @Post('delete')
   async deleteArticle(
-    @Body() deleteArticleDto: DeleteArticleDto,
-    @Body('id', ArticleExistsValidationPipe) _id: string,
+    @Body() _dto: DeleteArticleDto,
+    @Body('id', ArticleByIdPipe) article: Article,
   ) {
-    return this.articleService.delete(deleteArticleDto.id);
+    return await this.articleService.delete(article);
   }
 
   @Post('listAll')

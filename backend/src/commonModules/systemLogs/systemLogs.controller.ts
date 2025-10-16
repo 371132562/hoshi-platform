@@ -28,23 +28,27 @@ export class SystemLogsController {
   @Post('user/files')
   @Throttle({ default: { limit: 30, ttl: 60000 } })
   async listUserFiles(
-    @Body() dto: UserLogFilesReqDto,
+    @Body() userLogFilesReqDto: UserLogFilesReqDto,
   ): Promise<SystemLogFilesResDto> {
-    return this.service.listUserFiles(dto);
+    return this.service.listUserFiles(userLogFilesReqDto);
   }
 
   // 读取系统日志内容（限流：每分钟最多20次，防止频繁读取大文件）
   @Post('read')
   @Throttle({ default: { limit: 20, ttl: 60000 } })
-  async readSystemLog(@Body() dto: ReadLogReqDto): Promise<LogLineItem[]> {
-    return this.service.readSystemLog(dto);
+  async readSystemLog(
+    @Body() readLogReqDto: ReadLogReqDto,
+  ): Promise<LogLineItem[]> {
+    return this.service.readSystemLog(readLogReqDto);
   }
 
   // 读取用户日志内容（限流：每分钟最多20次，防止频繁读取大文件）
   @Post('user/read')
   @Throttle({ default: { limit: 20, ttl: 60000 } })
-  async readUserLog(@Body() dto: ReadUserLogReqDto): Promise<LogLineItem[]> {
-    return this.service.readUserLog(dto);
+  async readUserLog(
+    @Body() readUserLogReqDto: ReadUserLogReqDto,
+  ): Promise<LogLineItem[]> {
+    return this.service.readUserLog(readUserLogReqDto);
   }
 
   // 列出日志用户（限流：每分钟最多30次）

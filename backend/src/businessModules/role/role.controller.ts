@@ -1,4 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import type { Role } from '@prisma/client';
 
 import {
   AssignRoleRoutesDto,
@@ -7,8 +8,8 @@ import {
   RoleListResDto,
   UpdateRoleDto,
 } from './role.dto';
+import { RoleByIdPipe, RoleNameExistsValidationPipe } from './role.pipes';
 import { RoleService } from './role.service';
-import { RoleNameExistsValidationPipe } from './role-validation.pipes';
 
 @Controller('role')
 export class RoleController {
@@ -27,26 +28,32 @@ export class RoleController {
    */
   @Post('create')
   async createRole(
-    @Body() dto: CreateRoleDto,
+    @Body() createRoleDto: CreateRoleDto,
     @Body('name', RoleNameExistsValidationPipe) _name: string,
   ) {
-    return this.roleService.createRole(dto);
+    return this.roleService.createRole(createRoleDto);
   }
 
   /**
    * 编辑角色
    */
   @Post('update')
-  async updateRole(@Body() dto: UpdateRoleDto) {
-    return this.roleService.updateRole(dto);
+  async updateRole(
+    @Body() updateRoleDto: UpdateRoleDto,
+    @Body('id', RoleByIdPipe) role: Role,
+  ) {
+    return this.roleService.updateRole(role, updateRoleDto);
   }
 
   /**
    * 删除角色
    */
   @Post('delete')
-  async deleteRole(@Body() dto: DeleteRoleDto) {
-    return this.roleService.deleteRole(dto);
+  async deleteRole(
+    @Body() _deleteRoleDto: DeleteRoleDto,
+    @Body('id', RoleByIdPipe) role: Role,
+  ) {
+    return this.roleService.deleteRole(role);
   }
 
   /**

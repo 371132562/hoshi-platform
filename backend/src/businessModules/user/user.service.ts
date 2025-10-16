@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -102,19 +103,11 @@ export class UserService {
   /**
    * 编辑用户
    */
-  async updateUser(dto: UpdateUserDto) {
+  async updateUser(user: User, dto: UpdateUserDto) {
     try {
-      // 先获取用户信息，便于输出更友好的日志
-      const user = await this.prisma.user.findUnique({ where: { id: dto.id } });
       this.logger.log(
-        user
-          ? `[操作] 编辑用户 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`
-          : `[操作] 编辑用户 - ID: ${dto.id}`,
+        `[操作] 编辑用户 - ID: ${user.id}, 编号: ${user.code}, 姓名: ${user.name}`,
       );
-      if (!user || user.delete !== 0) {
-        this.logger.warn(`[验证失败] 编辑用户 - 用户ID ${dto.id} 不存在`);
-        throw new BusinessException(ErrorCode.USER_NOT_FOUND, '用户不存在');
-      }
 
       if (user.code === '88888888') {
         this.logger.warn(
@@ -127,7 +120,7 @@ export class UserService {
       }
 
       await this.prisma.user.update({
-        where: { id: dto.id },
+        where: { id: user.id },
         data: {
           name: dto.name ?? user.name,
           department: dto.department ?? user.department,
@@ -138,7 +131,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[操作] 编辑用户成功 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${dto.name || user.name}`,
+        `[操作] 编辑用户成功 - ID: ${user.id}, 编号: ${user.code}, 姓名: ${dto.name || user.name}`,
       );
       return true;
     } catch (error) {
@@ -156,19 +149,11 @@ export class UserService {
   /**
    * 删除用户（软删除）
    */
-  async deleteUser(dto: DeleteUserDto) {
+  async deleteUser(user: User) {
     try {
-      // 先获取用户信息，便于输出更友好的日志
-      const user = await this.prisma.user.findUnique({ where: { id: dto.id } });
       this.logger.log(
-        user
-          ? `[操作] 删除用户 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`
-          : `[操作] 删除用户 - ID: ${dto.id}`,
+        `[操作] 删除用户 - ID: ${user.id}, 编号: ${user.code}, 姓名: ${user.name}`,
       );
-      if (!user || user.delete !== 0) {
-        this.logger.warn(`[验证失败] 删除用户 - 用户ID ${dto.id} 不存在`);
-        throw new BusinessException(ErrorCode.USER_NOT_FOUND, '用户不存在');
-      }
 
       if (user.code === '88888888') {
         this.logger.warn(
@@ -181,12 +166,12 @@ export class UserService {
       }
 
       await this.prisma.user.update({
-        where: { id: dto.id },
+        where: { id: user.id },
         data: { delete: 1 },
       });
 
       this.logger.log(
-        `[操作] 删除用户成功 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`,
+        `[操作] 删除用户成功 - ID: ${user.id}, 编号: ${user.code}, 姓名: ${user.name}`,
       );
       return true;
     } catch (error) {

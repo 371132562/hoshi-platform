@@ -1,7 +1,5 @@
 import { LazyExoticComponent, ReactNode } from 'react'
 import type {
-  // 通用类型
-  ApiResponse,
   // 文章管理相关类型
   ArticleItem,
   ArticleListResponse,
@@ -67,7 +65,7 @@ export type RouteItem = {
 // 按功能模块分组导出，便于查找和维护
 
 // 通用类型
-export type { ApiResponse, ExportFormat, PaginatedResponse }
+export type { ExportFormat, PaginatedResponse }
 
 // 认证相关类型
 export type { Login, LoginResponse, TokenPayloadDto, UserProfileDto }
