@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 
 import { PrismaService } from '../../../prisma/prisma.service';
+import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import {
   LogFileLevel,
   LogLineItem,
@@ -12,8 +13,7 @@ import {
   SystemLogFileItem,
   SystemLogFilesResDto,
   UserLogFilesReqDto,
-} from '../../../types/dto';
-import { WinstonLoggerService } from '../../common/services/winston-logger.service';
+} from './systemLogs.dto';
 
 /**
  * 系统日志服务

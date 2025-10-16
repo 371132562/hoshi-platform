@@ -6,7 +6,7 @@ import {
   ResetUserPasswordEncryptedDto,
   UpdateUserDto,
   UserListResDto,
-} from '../../dto/user.dto';
+} from './user.dto';
 import { UserService } from './user.service';
 import { UserCodeExistsValidationPipe } from './user-validation.pipes';
 

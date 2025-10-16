@@ -12,10 +12,7 @@ import { FileInterceptor } from '@nestjs/platform-express'; // 导入 FileInterc
 import { Response } from 'express'; // 导入 Response
 
 import { multerOptions } from '../../common/upload/multer-config.utils';
-import {
-  DeleteImageDto,
-  DeleteOrphansByFilenamesDto,
-} from '../../dto/upload.dto';
+import { DeleteImageDto, DeleteOrphansByFilenamesDto } from './upload.dto';
 import { UploadService } from './upload.service';
 
 @Controller('upload') // 基础路由 /upload

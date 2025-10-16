@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from '../../../prisma/prisma.service';
+import { ErrorCode } from '../../../types/response';
+import { BusinessException } from '../../common/exceptions/businessException';
+import { WinstonLoggerService } from '../../common/services/winston-logger.service';
+import { CryptoUtil } from '../../common/utils/crypto.util';
 import {
   CreateUserEncryptedDto,
   DeleteUserDto,
   ResetUserPasswordEncryptedDto,
   UpdateUserDto,
   UserListResDto,
-} from '../../../types/dto';
-import { ErrorCode } from '../../../types/response';
-import { BusinessException } from '../../common/exceptions/businessException';
-import { WinstonLoggerService } from '../../common/services/winston-logger.service';
-import { CryptoUtil } from '../../common/utils/crypto.util';
+} from './user.dto';
 
 @Injectable()
 export class UserService {

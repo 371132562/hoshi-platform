@@ -8,7 +8,7 @@ import {
   ReadUserLogReqDto,
   SystemLogFilesResDto,
   UserLogFilesReqDto,
-} from '../../dto/systemLogs.dto';
+} from './systemLogs.dto';
 import { SystemLogsService } from './systemLogs.service';
 
 // 系统日志控制器：提供日志文件列表、读取、用户搜索等接口

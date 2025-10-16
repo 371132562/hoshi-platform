@@ -3,6 +3,11 @@ import { Article, ArticleOrder } from '@prisma/client';
 import { BusinessException } from 'src/common/exceptions/businessException';
 
 import { PrismaService } from '../../../prisma/prisma.service';
+import { ErrorCode } from '../../../types/response';
+import { WinstonLoggerService } from '../../common/services/winston-logger.service';
+import { ImageProcessorUtils } from '../../common/upload';
+import { ConcurrencyService } from '../../commonModules/concurrency/concurrency.service';
+import { UploadService } from '../../commonModules/upload/upload.service';
 import {
   ArticleItem,
   ArticleListResponse,
@@ -11,12 +16,7 @@ import {
   CreateArticleDto,
   UpdateArticleDto,
   UpsertArticleOrderDto,
-} from '../../../types/dto';
-import { ErrorCode } from '../../../types/response';
-import { WinstonLoggerService } from '../../common/services/winston-logger.service';
-import { ImageProcessorUtils } from '../../common/upload';
-import { ConcurrencyService } from '../../commonModules/concurrency/concurrency.service';
-import { UploadService } from '../../commonModules/upload/upload.service';
+} from './article.dto';
 
 @Injectable()
 export class ArticleService {

@@ -6,7 +6,7 @@ import {
   DeleteRoleDto,
   RoleListResDto,
   UpdateRoleDto,
-} from '../../dto/role.dto';
+} from './role.dto';
 import { RoleService } from './role.service';
 import { RoleNameExistsValidationPipe } from './role-validation.pipes';
 

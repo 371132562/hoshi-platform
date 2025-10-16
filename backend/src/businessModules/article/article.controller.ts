@@ -12,7 +12,7 @@ import {
   GetDetailsByIdsDto,
   UpdateArticleDto,
   UpsertArticleOrderDto,
-} from '../../dto/article.dto';
+} from './article.dto';
 import { ArticleService } from './article.service';
 import {
   ArticleExistsValidationPipe,

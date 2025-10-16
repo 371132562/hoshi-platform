@@ -7,7 +7,7 @@ import {
   LoginResponseDto,
   LoginWithHashDto,
   UserProfileDto,
-} from '../../dto/auth.dto';
+} from './auth.dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')

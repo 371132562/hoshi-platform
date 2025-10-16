@@ -2,16 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../../prisma/prisma.service';
+import { ErrorCode } from '../../../types/response';
+import { BusinessException } from '../../common/exceptions/businessException';
+import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import {
   AssignRoleRoutesDto,
   CreateRoleDto,
   DeleteRoleDto,
   RoleListResDto,
   UpdateRoleDto,
-} from '../../../types/dto';
-import { ErrorCode } from '../../../types/response';
-import { BusinessException } from '../../common/exceptions/businessException';
-import { WinstonLoggerService } from '../../common/services/winston-logger.service';
+} from './role.dto';
 
 @Injectable()
 export class RoleService {
