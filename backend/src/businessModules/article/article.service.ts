@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Article, ArticleOrder } from '@prisma/client';
 import { BusinessException } from 'src/common/exceptions/businessException';
 
@@ -13,17 +13,18 @@ import {
   UpsertArticleOrderDto,
 } from '../../../types/dto';
 import { ErrorCode } from '../../../types/response';
+import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { ImageProcessorUtils } from '../../common/upload';
 import { ConcurrencyService } from '../../commonModules/concurrency/concurrency.service';
 import { UploadService } from '../../commonModules/upload/upload.service';
 
 @Injectable()
 export class ArticleService {
-  private readonly logger = new Logger(ArticleService.name);
   constructor(
     private readonly prisma: PrismaService,
     private readonly uploadService: UploadService,
     private readonly concurrency: ConcurrencyService,
+    private readonly logger: WinstonLoggerService,
   ) {}
 
   private mapToDto(article: Article): ArticleItem {

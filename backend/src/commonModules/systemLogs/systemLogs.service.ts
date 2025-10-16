@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { existsSync, statSync } from 'fs';
+import { Injectable } from '@nestjs/common';
+import { existsSync } from 'fs';
 import { join } from 'path';
 
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -13,6 +13,7 @@ import {
   SystemLogFilesResDto,
   UserLogFilesReqDto,
 } from '../../../types/dto';
+import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 
 /**
  * 系统日志服务
@@ -27,10 +28,13 @@ import {
  */
 @Injectable()
 export class SystemLogsService {
-  private readonly logger = new Logger(SystemLogsService.name);
-
   /** 日志文件根目录，可通过环境变量 LOG_DIR 配置 */
   private readonly baseLogDir = process.env.LOG_DIR || './logs';
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly logger: WinstonLoggerService,
+  ) {}
 
   /**
    * 构建系统日志文件路径
@@ -315,7 +319,6 @@ export class SystemLogsService {
    * @param dto 搜索请求参数
    * @returns 用户搜索结果
    */
-  constructor(private readonly prisma: PrismaService) {}
 
   async listLogUsers(): Promise<LogUsersResDto> {
     this.logger.log('[操作] 列出日志用户');

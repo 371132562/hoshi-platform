@@ -1,4 +1,4 @@
-import { Injectable, LoggerService } from '@nestjs/common';
+import { Global, Injectable, LoggerService } from '@nestjs/common';
 
 import { RequestContext } from '../context/request-context.utils';
 import { getUserLogger } from '../logging/user-logger.utils';

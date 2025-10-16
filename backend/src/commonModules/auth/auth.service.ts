@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
@@ -11,15 +11,15 @@ import {
 } from '../../../types/dto';
 import { ErrorCode } from '../../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
+import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { CryptoUtil } from '../../common/utils/crypto.util';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger(AuthService.name);
-
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private readonly logger: WinstonLoggerService,
   ) {}
 
   /**

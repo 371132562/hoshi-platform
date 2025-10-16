@@ -13,6 +13,7 @@ import { AllExceptionsFilter } from './common/exceptions/allExceptionsFilter';
 import { TransformInterceptor } from './common/interceptors/response.interceptor';
 import { UserContextInterceptor } from './common/interceptors/user-context.interceptor';
 import { RequestContextMiddleware } from './common/middlewares/request-context.middleware';
+import { LoggerModule } from './common/services/logger.module';
 import { AuthModule } from './commonModules/auth/auth.module';
 import { JwtAuthGuard } from './commonModules/auth/jwt-auth.guard';
 import { SystemLogsModule } from './commonModules/systemLogs/systemLogs.module';
@@ -40,6 +41,7 @@ import { UploadModule } from './commonModules/upload/upload.module';
       },
     ),
     PrismaModule,
+    LoggerModule, // 全局日志模块
     UploadModule, // 上传模块
     AuthModule, // 认证模块
 

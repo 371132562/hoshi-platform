@@ -1,5 +1,5 @@
 // src/upload/upload.service.ts
-import { Injectable, Logger } from '@nestjs/common'; // 导入 Logger
+import { Injectable } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { existsSync } from 'fs'; // 导入 existsSync
 import { readdir, readFile, unlink } from 'fs/promises'; // 导入 fs/promises 中的 unlink 用于异步删除文件
@@ -8,6 +8,7 @@ import { join } from 'path';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { ErrorCode } from '../../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
+import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { ImageProcessorUtils } from '../../common/upload/image-processor.utils';
 import {
   getImagePath,
@@ -19,10 +20,12 @@ export type InUseImageCollector = () => Promise<Set<string>>;
 
 @Injectable()
 export class UploadService {
-  private readonly logger = new Logger(UploadService.name);
   private readonly inUseCollectors: InUseImageCollector[] = [];
 
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly logger: WinstonLoggerService,
+  ) {
     // 默认注册：文章模块收集器（images 字段 + content 富文本图片）
     this.registerInUseImageCollector(async () => {
       const articles = await this.prisma.article.findMany({

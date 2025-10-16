@@ -5,12 +5,12 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  Logger,
 } from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 
 import { ErrorCode } from '../../../types/response';
+import { WinstonLoggerService } from '../services/winston-logger.service';
 import { BusinessException } from './businessException';
 
 /**
@@ -21,7 +21,7 @@ import { BusinessException } from './businessException';
  */
 @Catch() // 捕获所有异常
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new Logger(AllExceptionsFilter.name); // 上游：被 Nest 注入使用；下游：输出到 Winston
+  constructor(private readonly logger: WinstonLoggerService) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     // 上游：来自当前处理的异常对象（可能是任意类型）

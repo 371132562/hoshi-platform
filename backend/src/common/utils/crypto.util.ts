@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
 
 import { ErrorCode } from '../../../types/response';
@@ -9,7 +8,6 @@ import { BusinessException } from '../exceptions/businessException';
  * 提供统一的加解密功能，用于前后端数据传输安全
  */
 export class CryptoUtil {
-  private static readonly logger = new Logger(CryptoUtil.name);
   private static readonly SECRET_KEY = 'urbanization-secret-key';
   private static readonly ALGORITHM = 'aes-256-cbc';
 
@@ -47,7 +45,7 @@ export class CryptoUtil {
 
       return decrypted;
     } catch (error) {
-      this.logger.error(
+      console.error(
         `[失败] 数据解密 - ${error instanceof Error ? error.message : '未知错误'}`,
       );
       throw new BusinessException(ErrorCode.PASSWORD_INCORRECT, '数据解密失败');
@@ -94,7 +92,7 @@ export class CryptoUtil {
       const ivHex = iv.toString('hex');
       return ivHex + encrypted;
     } catch (error) {
-      this.logger.error(
+      console.error(
         `[失败] 盐值加密 - ${error instanceof Error ? error.message : '未知错误'}`,
       );
       throw new BusinessException(ErrorCode.PASSWORD_INCORRECT, '盐值加密失败');

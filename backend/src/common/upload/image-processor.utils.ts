@@ -1,12 +1,8 @@
-import { Logger } from '@nestjs/common';
-
 /**
  * 图片处理工具类
  * 提供图片文件名解析、图片数据纠正、图片清理等通用功能
  */
 export class ImageProcessorUtils {
-  private static readonly logger = new Logger(ImageProcessorUtils.name);
-
   /**
    * 从富文本 HTML 内容中解析图片文件名
    * 支持以下 src 形式：
@@ -65,12 +61,12 @@ export class ImageProcessorUtils {
 
     // 可选日志：如有修正则打点
     if (finalImagesSet.size !== (imagesFromDto || []).length) {
-      this.logger.log(
+      console.log(
         `[操作] 纠正图片数据 - images由 ${imagesFromDto.length} 调整为 ${finalImagesSet.size}`,
       );
     }
     if (finalDeleted.length !== (deletedImagesFromDto || []).length) {
-      this.logger.log(
+      console.log(
         `[操作] 纠正图片数据 - deletedImages由 ${(deletedImagesFromDto || []).length} 调整为 ${finalDeleted.length}`,
       );
     }

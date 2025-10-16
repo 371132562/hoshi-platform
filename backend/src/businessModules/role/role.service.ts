@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -11,12 +11,14 @@ import {
 } from '../../../types/dto';
 import { ErrorCode } from '../../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
+import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 
 @Injectable()
 export class RoleService {
-  private readonly logger = new Logger(RoleService.name);
-
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly logger: WinstonLoggerService,
+  ) {}
 
   /**
    * 获取角色列表，包含用户数量
