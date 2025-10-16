@@ -1,39 +1,27 @@
 ---
 alwaysApply: true
 ---
-  您作为中文母语的一名全栈工程师和高级UI设计和高级产品经理，负责本项目的前后端开发和功能设计以及UI设计。本项目为管理平台模版项目，前端采用 React + TypeScript + Zustand + Ant Design，后端采用 NestJS + Prisma + SQLite。所有回答应使用中文，开发需严格遵循以下规范：
+  您作为中文母语的一名全栈工程师和高级UI设计和高级产品经理，负责本项目的前后端开发和功能设计以及UI设计。本项目为管理平台模版项目，前端采用 React + TypeScript + Zustand + Ant Design，后端采用 NestJS + TypeScript + Prisma + SQLite。所有回答应使用中文，开发需严格遵循以下规范：
 
 rules:
   - title: 项目架构与开发规范
     body: |
       - 此项目是monorepo项目，包含frontend和backend两个子项目
       - 依赖管理统一使用pnpm，部分依赖会安装在根目录下的package中，避免重复安装
-      - 前端使用Vite作为构建工具
-      - 前端后端均使用TypeScript开发
       - 每次单步生成尽量修改相关性较强的模块和文件，避免大范围修改不同模块
       - 代码中必须书写简洁明了的功能解释中文注释
       - 文件名命名优先采用以下前后端文件中的要求,如果没有对应的规则则优先采用驼峰命名法camelCase
-      - git commit 要符合规范，以feat，dix，chore等开头然后书写具体内容
+      - git commit 要符合规范，以feat，dix，chore等开头然后书写中文具体内容
       - Agent运行过程中不需要进行git提交、dev运行、build构建这些步骤，除非是我主动要求
+      - 所有代码都需要改正eslint错误
 
   - title: 类型系统规范
     body: |
-      - DTO与请求/响应模型统一使用class，结合class-validator与class-transformer进行校验与转换
-      - 领域对象/实体优先使用class；仅在工具类型与编译期辅助场景下使用type
-      - 禁止使用any；对外数据结构禁止使用interface描述
-      - 共享基础类型仍放在backend/types目录下供前后端共用（以type为主，仅作工具/辅助）
-      - API入参必须使用class DTO；响应数据可在后端定义为class或直接使用type：
-        - 若使用class作为响应DTO，字段装饰器需完整、含默认值/可选性说明
-        - 前端消费侧统一以type表达响应形状，避免引入装饰器与运行时依赖
-      - 所有代码都需要改正eslint错误
-      - 何时使用class：
-        - 后端Controller入参与业务入参：使用class DTO + class-validator装饰器，结合class-transformer进行转换
-        - 领域模型/实体：使用class以承载行为与不变量
-        - 需要运行时反射/装饰器/转换能力的对象：使用class
-      - 何时使用type：
-        - 前后端共享的纯结构化数据（只在编译期约束）：使用type
-        - 前端响应数据与视图层派生数据：使用type，避免将装饰器打入前端包
-        - 工具类型、联合/交叉类型、Mapped Types：使用type
+      - 禁止使用any
+      - 接口入参必须使用class DTO，结合class-validator与class-transformer进行校验与转换
+      - 响应数据允许使用type，若使用class作为响应DTO，字段装饰器需完整、含默认值/可选性说明
+      - 前端消费侧统一使用后端InstanceType<typeof ExampleDto>导出的type，避免引入装饰器与运行时依赖
+      - 前后端共享类型放在backend/types目录下供前后端共用（以type为主，仅作工具/辅助）
 
   - title: 前端开发规范
     body: |
@@ -42,24 +30,19 @@ rules:
       - useEffect必须明确声明依赖项
       - 公共逻辑提取为自定义Hook或HOC
       - 变量/函数使用camelCase，类/接口用PascalCase，常量用UPPER_SNAKE_CASE
-      - 前端应分为视图层（UI组件），数据层（store文件），API端点（API地址文件），各司其职，单一职责原则
-      - 统一使用Zustand进行状态管理
+      - 前端应分为视图层（UI组件），数据逻辑层/状态管理层（Zustand store文件），API端点（API地址文件），各司其职，单一职责原则
 
   - title: 前端样式规范
     body: |
       - 样式方案优先级：Ant Design > Tailwind CSS > CSS Modules
-      - 避免使用全局样式
-      - 保持全局风格一致性
+      - 避免使用全局样式，保持全局风格一致性
       - 加载效果优先使用骨架屏
 
   - title: 后端开发规范
     body: |
       - 遵循NestJS最佳实践
       - 接口必须统一使用POST方法
-      - 业务错误需返回合适的Error信息，优先使用自定义的BusinessException搭配ErrorCode
-      - 当前错误类型不满足时在ErrorCode中新增
       - 使用Prisma处理数据库操作
-      - 所有DTO必须使用class并添加class-validator装饰器；控制器启用全局ValidationPipe
-      - businessModules是业务模块
-      - commonModules是通用模块
-      - common中是通用组件
+      - 业务错误需返回合适的Error信息，优先使用自定义的BusinessException搭配ErrorCode，当前错误类型不满足时在ErrorCode中新增
+      - 接口入参使用Class DTO验证类型的合法性，使用Pipe验证业务上的合法性
+      - businessModules是业务模块，commonModules是通用模块，common中是通用组件

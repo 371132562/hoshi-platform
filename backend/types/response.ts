@@ -30,6 +30,10 @@ export enum ErrorCode {
   USER_CANNOT_DELETE_ADMIN = 40013, // 超管用户不可删除
   USER_CANNOT_EDIT_ADMIN = 40014, // 超管用户不可编辑
 
+  // 文章管理相关错误 (4xxxx)
+  ARTICLE_NOT_FOUND = 40021, // 文章不存在
+  ARTICLE_TITLE_EXIST = 40022, // 文章标题已存在
+
   // 系统内部错误 (5xxxx)
   SYSTEM_ERROR = 50000, // 通用系统内部错误
   UNKNOWN_ERROR = 50001, // 未知错误

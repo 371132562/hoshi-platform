@@ -63,27 +63,6 @@ export class UserService {
     this.logger.log(`[操作] 创建用户 - 编号: ${dto.code}, 姓名: ${dto.name}`);
 
     try {
-      if (dto.code === '88888888') {
-        this.logger.warn(`[验证失败] 创建用户 - 超管编号 ${dto.code} 不可用`);
-        throw new BusinessException(
-          ErrorCode.USER_CODE_EXIST,
-          '超管编号不可用',
-        );
-      }
-
-      // 编号唯一校验
-      const exist = await this.prisma.user.findFirst({
-        where: { code: dto.code, delete: 0 },
-      });
-
-      if (exist) {
-        this.logger.warn(`[验证失败] 创建用户 - 用户编号 ${dto.code} 已存在`);
-        throw new BusinessException(
-          ErrorCode.USER_CODE_EXIST,
-          '用户编号已存在',
-        );
-      }
-
       // 解密前端数据，提取密码部分
       const decryptedData = CryptoUtil.decryptData(dto.encryptedPassword);
       const password =

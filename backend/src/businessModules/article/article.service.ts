@@ -292,16 +292,8 @@ export class ArticleService {
         where: { id, delete: 0 },
       });
 
-      if (!articleToDelete) {
-        this.logger.warn(`[验证失败] 删除文章 - 文章ID ${id} 不存在或已被删除`);
-        throw new BusinessException(
-          ErrorCode.RESOURCE_NOT_FOUND,
-          `文章ID ${id} 不存在或已被删除`,
-        );
-      }
-
       this.logger.log(
-        `[操作] 删除文章 - 文章ID: ${id}, 标题: ${articleToDelete.title}`,
+        `[操作] 删除文章 - 文章ID: ${id}, 标题: ${articleToDelete?.title || '未知'}`,
       );
 
       // 2. 物理删除

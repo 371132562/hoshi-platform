@@ -8,6 +8,7 @@ import {
   UpdateRoleDto,
 } from '../../dto/role.dto';
 import { RoleService } from './role.service';
+import { RoleNameExistsValidationPipe } from './role-validation.pipes';
 
 @Controller('role')
 export class RoleController {
@@ -25,7 +26,10 @@ export class RoleController {
    * 创建角色
    */
   @Post('create')
-  async createRole(@Body() dto: CreateRoleDto) {
+  async createRole(
+    @Body() dto: CreateRoleDto,
+    @Body('name', RoleNameExistsValidationPipe) _name: string,
+  ) {
     return this.roleService.createRole(dto);
   }
 

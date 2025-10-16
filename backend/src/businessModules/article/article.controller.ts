@@ -14,6 +14,10 @@ import {
   UpsertArticleOrderDto,
 } from '../../dto/article.dto';
 import { ArticleService } from './article.service';
+import {
+  ArticleExistsValidationPipe,
+  ArticleTitleExistsValidationPipe,
+} from './article-validation.pipes';
 
 @Controller('article')
 export class ArticleController {
@@ -33,17 +37,26 @@ export class ArticleController {
   }
 
   @Post('create')
-  async createArticle(@Body() createArticleDto: CreateArticleDto) {
+  async createArticle(
+    @Body() createArticleDto: CreateArticleDto,
+    @Body('title', ArticleTitleExistsValidationPipe) _title: string,
+  ) {
     return this.articleService.create(createArticleDto);
   }
 
   @Post('update')
-  async updateArticle(@Body() updateArticleDto: UpdateArticleDto) {
+  async updateArticle(
+    @Body() updateArticleDto: UpdateArticleDto,
+    @Body('title', ArticleTitleExistsValidationPipe) _title: string,
+  ) {
     return this.articleService.update(updateArticleDto);
   }
 
   @Post('delete')
-  async deleteArticle(@Body() deleteArticleDto: DeleteArticleDto) {
+  async deleteArticle(
+    @Body() deleteArticleDto: DeleteArticleDto,
+    @Body('id', ArticleExistsValidationPipe) _id: string,
+  ) {
     return this.articleService.delete(deleteArticleDto.id);
   }
 

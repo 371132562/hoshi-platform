@@ -64,25 +64,6 @@ export class RoleService {
     this.logger.log(`[操作] 创建角色 - 名称: ${dto.name}`);
 
     try {
-      // 超管角色名admin不可创建
-      if (dto.name === 'admin') {
-        this.logger.warn(`[验证失败] 创建角色 - admin为系统保留角色名`);
-        throw new BusinessException(
-          ErrorCode.ROLE_NAME_EXIST,
-          'admin为系统保留角色名',
-        );
-      }
-
-      // 角色名唯一校验
-      const exist = await this.prisma.role.findFirst({
-        where: { name: dto.name, delete: 0 },
-      });
-
-      if (exist) {
-        this.logger.warn(`[验证失败] 创建角色 - 角色名 ${dto.name} 已存在`);
-        throw new BusinessException(ErrorCode.ROLE_NAME_EXIST, '角色名已存在');
-      }
-
       await this.prisma.role.create({
         data: {
           name: dto.name,

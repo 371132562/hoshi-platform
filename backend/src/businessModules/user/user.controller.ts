@@ -8,6 +8,7 @@ import {
   UserListResDto,
 } from '../../dto/user.dto';
 import { UserService } from './user.service';
+import { UserCodeExistsValidationPipe } from './user-validation.pipes';
 
 @Controller('user')
 export class UserController {
@@ -25,7 +26,10 @@ export class UserController {
    * 创建用户（加密）
    */
   @Post('create')
-  async createUser(@Body() dto: CreateUserEncryptedDto) {
+  async createUser(
+    @Body() dto: CreateUserEncryptedDto,
+    @Body('code', UserCodeExistsValidationPipe) _code: string,
+  ) {
     return this.userService.createUserEncrypted(dto);
   }
 
