@@ -12,13 +12,14 @@ import {
   Table,
   Tag
 } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { useRoleStore } from '../../../stores/roleStore'
 import { useUserStore } from '../../../stores/userStore'
 import { UserItem } from '../../../types'
 
 const UserManagement: React.FC = () => {
+  // Store 取值
   const userList = useUserStore(s => s.userList)
   const loading = useUserStore(s => s.loading)
   const fetchUserList = useUserStore(s => s.fetchUserList)
@@ -26,10 +27,10 @@ const UserManagement: React.FC = () => {
   const updateUser = useUserStore(s => s.updateUser)
   const deleteUser = useUserStore(s => s.deleteUser)
   const resetUserPassword = useUserStore(s => s.resetUserPassword)
-
   const roleList = useRoleStore(s => s.roleList)
   const fetchRoleList = useRoleStore(s => s.fetchRoleList)
 
+  // React Hooks: useState
   const [modalOpen, setModalOpen] = useState(false)
   const [editUser, setEditUser] = useState<UserItem | null>(null)
   const [form] = Form.useForm()
@@ -37,12 +38,13 @@ const UserManagement: React.FC = () => {
   const [resetUser, setResetUser] = useState<UserItem | null>(null)
   const [resetForm] = Form.useForm()
 
+  // React Hooks: useEffect
   useEffect(() => {
     fetchUserList()
     fetchRoleList()
-  }, [fetchUserList, fetchRoleList])
+  }, [])
 
-  // 打开新建/编辑弹窗
+  // 方法定义
   const openModal = (user?: UserItem) => {
     setEditUser(user || null)
     setModalOpen(true)
@@ -53,7 +55,6 @@ const UserManagement: React.FC = () => {
     }
   }
 
-  // 提交新建/编辑
   const handleOk = async () => {
     const values = await form.validateFields()
     let success = false
@@ -73,14 +74,12 @@ const UserManagement: React.FC = () => {
     }
   }
 
-  // 打开重置密码弹窗
   const openResetModal = (user: UserItem) => {
     setResetUser(user)
     setResetModalOpen(true)
     resetForm.resetFields()
   }
 
-  // 提交重置密码
   const handleResetOk = async () => {
     const values = await resetForm.validateFields()
     if (resetUser) {
@@ -95,74 +94,78 @@ const UserManagement: React.FC = () => {
     }
   }
 
-  const columns = [
-    {
-      title: '用户编号',
-      dataIndex: 'code',
-      key: 'code'
-    },
-    { title: '姓名', dataIndex: 'name', key: 'name' },
-    { title: '部门', dataIndex: 'department', key: 'department' },
-    { title: '邮箱', dataIndex: 'email', key: 'email' },
-    { title: '电话', dataIndex: 'phone', key: 'phone' },
-    {
-      title: '角色',
-      key: 'role',
-      render: (_: unknown, record: UserItem) => {
-        const roleName = record.role?.name || '未分配角色'
-        return roleName === 'admin' ? <Tag color="red">超级管理员</Tag> : <Tag>{roleName}</Tag>
-      }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      render: (_: unknown, record: UserItem) => (
-        <Space>
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={() => openResetModal(record)}
-          >
-            重置密码
-          </Button>
-          <Button
-            onClick={() => openModal(record)}
-            disabled={record.code === '88888888'}
-          >
-            编辑
-          </Button>
-          <Popconfirm
-            title="确定删除该用户？"
-            description={
-              <span>
-                此操作不可恢复，请谨慎操作。
-                <br />
-                <span style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                  将被删除：用户 {record.name}（{record.code}）
-                </span>
-              </span>
-            }
-            onConfirm={async () => {
-              const success = await deleteUser({ id: record.id })
-              if (success) {
-                message.success('用户删除成功')
-              }
-            }}
-            disabled={record.code === '88888888'}
-            okText="确定"
-            cancelText="取消"
-          >
+  // Const 变量 - 派生变量
+  const columns = useMemo(
+    () => [
+      {
+        title: '用户编号',
+        dataIndex: 'code',
+        key: 'code'
+      },
+      { title: '姓名', dataIndex: 'name', key: 'name' },
+      { title: '部门', dataIndex: 'department', key: 'department' },
+      { title: '邮箱', dataIndex: 'email', key: 'email' },
+      { title: '电话', dataIndex: 'phone', key: 'phone' },
+      {
+        title: '角色',
+        key: 'role',
+        render: (_: unknown, record: UserItem) => {
+          const roleName = record.role?.name || '未分配角色'
+          return roleName === 'admin' ? <Tag color="red">超级管理员</Tag> : <Tag>{roleName}</Tag>
+        }
+      },
+      {
+        title: '操作',
+        key: 'action',
+        render: (_: unknown, record: UserItem) => (
+          <Space>
             <Button
-              danger
+              color="primary"
+              variant="outlined"
+              onClick={() => openResetModal(record)}
+            >
+              重置密码
+            </Button>
+            <Button
+              onClick={() => openModal(record)}
               disabled={record.code === '88888888'}
             >
-              删除
+              编辑
             </Button>
-          </Popconfirm>
-        </Space>
-      )
-    }
-  ]
+            <Popconfirm
+              title="确定删除该用户？"
+              description={
+                <span>
+                  此操作不可恢复，请谨慎操作。
+                  <br />
+                  <span style={{ color: '#1890ff', fontWeight: 'bold' }}>
+                    将被删除：用户 {record.name}（{record.code}）
+                  </span>
+                </span>
+              }
+              onConfirm={async () => {
+                const success = await deleteUser({ id: record.id })
+                if (success) {
+                  message.success('用户删除成功')
+                }
+              }}
+              disabled={record.code === '88888888'}
+              okText="确定"
+              cancelText="取消"
+            >
+              <Button
+                danger
+                disabled={record.code === '88888888'}
+              >
+                删除
+              </Button>
+            </Popconfirm>
+          </Space>
+        )
+      }
+    ],
+    [openModal, openResetModal, deleteUser]
+  )
 
   return (
     <div className="w-full max-w-7xl">

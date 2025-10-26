@@ -59,8 +59,8 @@ export type RichEditorRef = {
 const RichEditor = forwardRef<RichEditorRef, RichEditorProps>(
   (
     {
-      value = '', // 默认为空字符串，防止非受控警告
-      onChange = () => {}, // 默认为空函数，防止非受控警告
+      value = '',
+      onChange = () => {},
       placeholder = '请输入内容...',
       height = '500px',
       readOnly = false,
@@ -68,28 +68,32 @@ const RichEditor = forwardRef<RichEditorRef, RichEditorProps>(
     },
     ref
   ) => {
-    // editor 实例，必须用 state 来存储，不能直接创建
+    // Props 已解构
+
+    // React Hooks: useState
     const [editor, setEditor] = useState<IDomEditor | null>(null)
-    // 使用 state 存储所有插入过的图片（仅文件名），用于计算删除列表
     const [allInsertedImages, setAllInsertedImages] = useState<string[]>([])
 
-    // 当外部传入的初始图片列表变化时，更新 allInsertedImages 状态
-    // 只在非只读模式下执行，因为只读模式下不需要追踪图片变化
+    // React Hooks: useEffect
     useEffect(() => {
       if (!readOnly) {
-        // 将外部传入的初始图片统一规范为文件名后再合并，使用 Set 去重
         setAllInsertedImages(prev => [...new Set([...prev, ...initialImages.map(extractFilename)])])
       }
-    }, [initialImages, readOnly]) // 依赖 readOnly 状态，确保模式切换时正确处理
+    }, [initialImages, readOnly])
 
-    // --- 编辑器配置 ---
+    useEffect(() => {
+      return () => {
+        if (editor == null) return
+        editor.destroy()
+        setEditor(null)
+      }
+    }, [editor])
 
-    // 工具栏配置，可以根据需求自定义
+    // Const 变量 - 派生变量
     const toolbarConfig: Partial<IToolbarConfig> = {
       excludeKeys: ['group-video', 'insertImage']
     }
 
-    // 编辑器核心配置
     const editorConfig: Partial<IEditorConfig> = {
       placeholder,
       readOnly,
@@ -174,14 +178,9 @@ const RichEditor = forwardRef<RichEditorRef, RichEditorProps>(
       }
     }
 
-    // --- useImperativeHandle 暴露方法给父组件 ---
+    // React Hooks: useImperativeHandle
     useImperativeHandle(ref, () => ({
-      /**
-       * 获取最终保留和已删除的图片
-       * 只在非只读模式下返回有意义的图片信息
-       */
       getImages: () => {
-        // 只读模式下不需要追踪图片变化，直接返回空数组
         if (readOnly) {
           return { images: [], deletedImages: [] }
         }
@@ -190,11 +189,8 @@ const RichEditor = forwardRef<RichEditorRef, RichEditorProps>(
           return { images: [], deletedImages: [] }
         }
 
-        // 1. 获取当前编辑器中所有图片元素，并将 src 统一规范为文件名
         const currentImageNodes = editor.getElemsByType('image') as unknown as ImageElement[]
         const images = currentImageNodes.map(node => extractFilename(node.src))
-
-        // 2. 对比所有插入过（统一为文件名）的图片和当前保留的图片，计算出已删除的图片
         const deletedImages = allInsertedImages.filter(src => !images.includes(src))
 
         return {
@@ -203,18 +199,6 @@ const RichEditor = forwardRef<RichEditorRef, RichEditorProps>(
         }
       }
     }))
-
-    // --- 生命周期管理 ---
-
-    // 组件销毁时，及时销毁 editor 实例，这点非常重要！
-    // 否则会导致内存泄漏
-    useEffect(() => {
-      return () => {
-        if (editor == null) return
-        editor.destroy()
-        setEditor(null)
-      }
-    }, [editor]) // 依赖于 editor 实例
 
     return (
       // 编辑器容器，设置边框和 z-index 以保证工具栏在页面上正常显示

@@ -6,15 +6,20 @@ import ArticleDisplay from '@/components/ArticleDisplay'
 import useArticleStore from '@/stores/articleStore'
 
 const Component = () => {
+  // Router hooks
   const navigate = useNavigate()
+
+  // Store 取值
   const getArticlesByPage = useArticleStore(state => state.getArticlesByPage)
   const pageArticles = useArticleStore(state => state.pageArticles)
   const orderConfigLoading = useArticleStore(state => state.orderConfigLoading)
 
+  // React Hooks: useEffect
   useEffect(() => {
     getArticlesByPage('home')
-  }, []) // 移除 getArticlesByPage 依赖项，因为它在 store 中是稳定的
+  }, [])
 
+  // 方法定义
   const goToConfig = () => {
     navigate('/article/order')
   }

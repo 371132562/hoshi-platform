@@ -7,13 +7,18 @@ import { useAuthStore } from '@/stores/authStore'
 
 // 登录页组件
 const LoginPage: React.FC = () => {
-  const [form] = Form.useForm()
-  const [submitting, setSubmitting] = useState(false)
-  const login = useAuthStore(s => s.login)
-  const error = useAuthStore(s => s.error)
+  // Router hooks
   const navigate = useNavigate()
 
-  // 登录提交
+  // Store 取值
+  const login = useAuthStore(s => s.login)
+  const error = useAuthStore(s => s.error)
+
+  // React Hooks: useState
+  const [form] = Form.useForm()
+  const [submitting, setSubmitting] = useState(false)
+
+  // 方法定义
   const onFinish = async (values: { code: string; password: string }) => {
     if (!values.code || !values.password) {
       message.open({ type: 'warning', content: '请输入用户编号和密码' })

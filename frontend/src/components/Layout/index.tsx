@@ -27,130 +27,55 @@ import { useAuthStore } from '@/stores/authStore'
 const { Header, Sider, Content /* Footer */ } = Layout
 
 export const Component: FC = () => {
+  // Router hooks
   const outlet = useOutlet()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+
+  // Store 取值
   const user = useAuthStore(state => state.user)
   const token = useAuthStore(state => state.token)
-  const fetchProfile = useAuthStore(state => state.fetchProfile)
-  const topRoutes = getTopMenuRoutes()
-  const sideRoutes = getSideMenuRoutes(
-    user?.role && user.role.name
-      ? { name: user.role.name, allowedRoutes: user.role.allowedRoutes || [] }
-      : undefined
-  )
   const logout = useAuthStore(state => state.logout)
+  const fetchProfile = useAuthStore(state => state.fetchProfile)
+
+  // React Hooks: useState
   const [collapsed, setCollapsed] = useState(false)
   const [openKeys, setOpenKeys] = useState<string[]>([])
-  const { pathname } = useLocation()
+
+  // React Hooks: useRef
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
-  // 主动获取用户信息
+  // React Hooks: useEffect
   useEffect(() => {
-    // 有token时，无条件获取用户信息来验证token有效性
     if (token) {
       fetchProfile()
     }
-  }, [token, fetchProfile])
+  }, [token])
 
-  const handleMenuClick: MenuProps['onClick'] = e => {
-    navigate(e.key)
-  }
+  // React Hooks: useMemo - 派生变量
+  const topRoutes = useMemo(() => getTopMenuRoutes(), [])
 
-  // 用户下拉菜单项，hover触发，内容更丰富
-  const userMenuItems: MenuProps['items'] = user
-    ? [
-        {
-          key: 'userInfo',
-          label: (
-            <div
-              className="min-w-[280px] max-w-[340px] rounded-lg bg-white px-4 py-3"
-              style={{ lineHeight: 1.6 }}
-            >
-              {/* 用户名 */}
-              <div className="mb-2 text-base font-semibold text-gray-800">{user.name}</div>
-              {/* 用户编号 */}
-              <div className="mb-2 flex items-center text-sm text-gray-600">
-                <span className="mr-2 text-gray-400">编号：</span>
-                <span className="font-mono">{user.code || '-'}</span>
-              </div>
-              {/* 角色名称 */}
-              <div className="mb-2 flex items-center text-sm text-gray-600">
-                <span className="mr-2 text-gray-400">角色：</span>
-                <span>
-                  {(user.role?.name === 'admin' ? (
-                    <Tag color="red">超级管理员</Tag>
-                  ) : (
-                    user.role?.name
-                  )) || '-'}
-                </span>
-              </div>
-              {/* 所属部门 */}
-              <div className="flex items-center text-sm text-gray-600">
-                <span className="mr-2 text-gray-400">部门：</span>
-                <span>{user.department || '-'}</span>
-              </div>
-            </div>
-          ),
-          disabled: true
-        },
-        {
-          type: 'divider'
-        },
-        {
-          key: 'logout',
-          label: <div className="px-2 py-1 text-red-600 hover:text-red-700">退出登录</div>,
-          icon: <LogoutOutlined />,
-          onClick: () => {
-            const success = logout()
-            if (success) {
-              message.success('退出成功')
-            }
-            navigate('/home')
-          }
-        }
-      ]
-    : [
-        {
-          key: 'guestInfo',
-          label: (
-            <div
-              className="min-w-[280px] max-w-[340px] rounded-lg bg-white px-4 py-3"
-              style={{ lineHeight: 1.6 }}
-            >
-              {/* 访客提示 */}
-              <div className="mb-2 text-base font-semibold text-gray-800">访客模式</div>
-              <div className="text-sm text-gray-600">登录后可使用全部功能</div>
-            </div>
-          ),
-          disabled: true
-        },
-        {
-          type: 'divider'
-        },
-        {
-          key: 'login',
-          label: <div className="px-2 py-1 text-blue-600 hover:text-blue-700">立即登录</div>,
-          icon: <LoginOutlined />,
-          onClick: () => {
-            navigate('/login')
-          }
-        }
-      ]
+  const sideRoutes = useMemo(
+    () =>
+      getSideMenuRoutes(
+        user?.role && user.role.name
+          ? { name: user.role.name, allowedRoutes: user.role.allowedRoutes || [] }
+          : undefined
+      ),
+    [user?.role]
+  )
 
-  // 计算路径相关的状态（合并所有依赖pathname的hooks）
   const { topNavSelectedKey, sideMenuSelectedKey, defaultOpenKeys, breadcrumbItems, currentRoute } =
     useMemo(() => {
       const pathSegments = pathname.split('/').filter(Boolean)
       const allRoutes = getAllRoutes()
 
-      // 查找当前路由
       const currentRoute = allRoutes.find(route => {
         const routePathPattern = route.path.replace(/\/:[^/]+/g, '/[^/]+')
         const regex = new RegExp(`^${routePathPattern}$`)
         return regex.test(pathname)
       })
 
-      // 计算面包屑项
       const breadcrumbItems = getBreadcrumbItems(pathname).map(item => ({
         title:
           item.component && item.path !== pathname ? (
@@ -169,51 +94,120 @@ export const Component: FC = () => {
       }
     }, [pathname])
 
-  // 处理菜单展开/收起
-  const handleOpenChange = (keys: string[]) => {
-    setOpenKeys(keys)
-  }
+  const topMenuItems: MenuProps['items'] = useMemo(
+    () =>
+      topRoutes.map(route => ({
+        key: route.path,
+        label: route.title,
+        icon: route.icon
+      })),
+    [topRoutes]
+  )
 
-  // 当路由变化时，自动展开对应的父菜单
-  useEffect(() => {
-    setOpenKeys(defaultOpenKeys)
-  }, [defaultOpenKeys])
+  const menuItems: MenuProps['items'] = useMemo(
+    () =>
+      sideRoutes.map(route => {
+        const item: {
+          key: string
+          icon?: ReactNode
+          label: ReactNode
+          children?: { key: string; label: ReactNode }[]
+        } = {
+          key: route.path,
+          icon: route.icon,
+          label: route.title
+        }
 
-  // 根据路由配置生成顶部菜单项
-  const topMenuItems: MenuProps['items'] = topRoutes.map(route => ({
-    key: route.path,
-    label: route.title,
-    icon: route.icon
-  }))
+        if (route.children && route.children.filter(child => !child.menuParent).length > 0) {
+          item.children = route.children
+            .filter(child => !child.menuParent)
+            .map(child => ({
+              key: child.path,
+              label: child.title
+            }))
+        }
 
-  // 根据路由配置生成侧边菜单项
-  const menuItems: MenuProps['items'] = sideRoutes.map(route => {
-    const item: {
-      key: string
-      icon?: ReactNode
-      label: ReactNode
-      children?: { key: string; label: ReactNode }[]
-    } = {
-      key: route.path,
-      icon: route.icon,
-      label: route.title
-    }
+        return item
+      }),
+    [sideRoutes]
+  )
 
-    if (route.children && route.children.filter(child => !child.menuParent).length > 0) {
-      item.children = route.children
-        .filter(child => !child.menuParent)
-        .map(child => ({
-          key: child.path,
-          label: child.title
-        }))
-    }
+  const userMenuItems: MenuProps['items'] = useMemo(
+    () =>
+      user
+        ? [
+            {
+              key: 'userInfo',
+              label: (
+                <div
+                  className="min-w-[280px] max-w-[340px] rounded-lg bg-white px-4 py-3"
+                  style={{ lineHeight: 1.6 }}
+                >
+                  <div className="mb-2 text-base font-semibold text-gray-800">{user.name}</div>
+                  <div className="mb-2 flex items-center text-sm text-gray-600">
+                    <span className="mr-2 text-gray-400">编号：</span>
+                    <span className="font-mono">{user.code || '-'}</span>
+                  </div>
+                  <div className="mb-2 flex items-center text-sm text-gray-600">
+                    <span className="mr-2 text-gray-400">角色：</span>
+                    <span>
+                      {(user.role?.name === 'admin' ? (
+                        <Tag color="red">超级管理员</Tag>
+                      ) : (
+                        user.role?.name
+                      )) || '-'}
+                    </span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <span className="mr-2 text-gray-400">部门：</span>
+                    <span>{user.department || '-'}</span>
+                  </div>
+                </div>
+              ),
+              disabled: true
+            },
+            { type: 'divider' },
+            {
+              key: 'logout',
+              label: <div className="px-2 py-1 text-red-600 hover:text-red-700">退出登录</div>,
+              icon: <LogoutOutlined />,
+              onClick: () => {
+                const success = logout()
+                if (success) {
+                  message.success('退出成功')
+                }
+                navigate('/home')
+              }
+            }
+          ]
+        : [
+            {
+              key: 'guestInfo',
+              label: (
+                <div
+                  className="min-w-[280px] max-w-[340px] rounded-lg bg-white px-4 py-3"
+                  style={{ lineHeight: 1.6 }}
+                >
+                  <div className="mb-2 text-base font-semibold text-gray-800">访客模式</div>
+                  <div className="text-sm text-gray-600">登录后可使用全部功能</div>
+                </div>
+              ),
+              disabled: true
+            },
+            { type: 'divider' },
+            {
+              key: 'login',
+              label: <div className="px-2 py-1 text-blue-600 hover:text-blue-700">立即登录</div>,
+              icon: <LoginOutlined />,
+              onClick: () => {
+                navigate('/login')
+              }
+            }
+          ],
+    [user, logout, navigate]
+  )
 
-    return item
-  })
-
-  // 路由守卫：检查权限
   const hasPermission = useMemo(() => {
-    // 顶部菜单对所有用户开放，无需权限检查
     const topMenuPaths = topRoutes.map(route => route.path)
     const isTopMenuRoute = topMenuPaths.some(
       path => pathname === path || pathname.startsWith(path + '/')
@@ -223,24 +217,33 @@ export const Component: FC = () => {
       return true
     }
 
-    // 侧边栏菜单需要登录用户才能访问
     if (!user) {
       return false
     }
 
-    // 超管可以访问所有侧边栏菜单
     if (user.role?.name === 'admin') return true
 
-    // 检查是否为menuParent的路由（无条件允许访问）
     if (currentRoute?.menuParent) {
       return true
     }
 
-    // 其他角色按allowedRoutes检查侧边栏菜单权限
     const allowed = user.role?.allowedRoutes || []
-    // 精确匹配或以参数结尾的动态路由
     return allowed.some(route => pathname === route || pathname.startsWith(route + '/'))
   }, [user, pathname, topRoutes, currentRoute])
+
+  // React Hooks: useEffect
+  useEffect(() => {
+    setOpenKeys(defaultOpenKeys)
+  }, [defaultOpenKeys])
+
+  // 方法定义
+  const handleMenuClick: MenuProps['onClick'] = e => {
+    navigate(e.key)
+  }
+
+  const handleOpenChange = (keys: string[]) => {
+    setOpenKeys(keys)
+  }
 
   return (
     <Layout className="h-screen w-full">
