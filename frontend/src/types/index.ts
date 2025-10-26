@@ -50,7 +50,7 @@ export type RouteItem = {
   title: string
   icon?: ReactNode
   component?: React.ComponentType | LazyExoticComponent<React.ComponentType>
-  hideInMenu?: boolean
+  menuParent?: string // 指定父级菜单路径，设置后自动隐藏在菜单中
   hideInBreadcrumb?: boolean
   children?: RouteItem[]
   adminOnly?: boolean // 仅admin可见

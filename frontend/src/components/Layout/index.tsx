@@ -16,7 +16,12 @@ import { Link, useLocation, useNavigate, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
 import Forbidden from '@/components/Forbidden'
-import { getBreadcrumbItems, getSideMenuRoutes, getTopMenuRoutes } from '@/router/routesConfig'
+import {
+  getAllRoutes,
+  getBreadcrumbItems,
+  getSideMenuRoutes,
+  getTopMenuRoutes
+} from '@/router/routesConfig'
 import { useAuthStore } from '@/stores/authStore'
 
 const { Header, Sider, Content /* Footer */ } = Layout
@@ -132,21 +137,37 @@ export const Component: FC = () => {
         }
       ]
 
-  // 计算顶部导航菜单的激活项
-  const topNavSelectedKey = useMemo(() => {
-    const pathSegments = pathname.split('/').filter(Boolean)
-    if (pathSegments.length === 0) return ['/home']
-    return [`/${pathSegments[0]}`]
-  }, [pathname])
+  // 计算路径相关的状态（合并所有依赖pathname的hooks）
+  const { topNavSelectedKey, sideMenuSelectedKey, defaultOpenKeys, breadcrumbItems, currentRoute } =
+    useMemo(() => {
+      const pathSegments = pathname.split('/').filter(Boolean)
+      const allRoutes = getAllRoutes()
 
-  // 根据当前路径计算应该展开的菜单项
-  const defaultOpenKeys = useMemo(() => {
-    const pathSegments = pathname.split('/').filter(i => i)
-    if (pathSegments.length > 1) {
-      return [`/${pathSegments[0]}`]
-    }
-    return []
-  }, [pathname])
+      // 查找当前路由
+      const currentRoute = allRoutes.find(route => {
+        const routePathPattern = route.path.replace(/\/:[^/]+/g, '/[^/]+')
+        const regex = new RegExp(`^${routePathPattern}$`)
+        return regex.test(pathname)
+      })
+
+      // 计算面包屑项
+      const breadcrumbItems = getBreadcrumbItems(pathname).map(item => ({
+        title:
+          item.component && item.path !== pathname ? (
+            <Link to={item.path}>{item.title}</Link>
+          ) : (
+            item.title
+          )
+      }))
+
+      return {
+        topNavSelectedKey: pathSegments.length === 0 ? ['/home'] : [`/${pathSegments[0]}`],
+        defaultOpenKeys: pathSegments.length > 1 ? [`/${pathSegments[0]}`] : [],
+        sideMenuSelectedKey: currentRoute?.menuParent ? [currentRoute.menuParent] : [pathname],
+        breadcrumbItems,
+        currentRoute
+      }
+    }, [pathname])
 
   // 处理菜单展开/收起
   const handleOpenChange = (keys: string[]) => {
@@ -178,9 +199,9 @@ export const Component: FC = () => {
       label: route.title
     }
 
-    if (route.children && route.children.filter(child => !child.hideInMenu).length > 0) {
+    if (route.children && route.children.filter(child => !child.menuParent).length > 0) {
       item.children = route.children
-        .filter(child => !child.hideInMenu)
+        .filter(child => !child.menuParent)
         .map(child => ({
           key: child.path,
           label: child.title
@@ -189,18 +210,6 @@ export const Component: FC = () => {
 
     return item
   })
-
-  // 获取面包屑项
-  const breadcrumbItems = useMemo(() => {
-    return getBreadcrumbItems(pathname).map(item => ({
-      title:
-        item.component && item.path !== pathname ? (
-          <Link to={item.path}>{item.title}</Link>
-        ) : (
-          item.title
-        )
-    }))
-  }, [pathname])
 
   // 路由守卫：检查权限
   const hasPermission = useMemo(() => {
@@ -222,11 +231,16 @@ export const Component: FC = () => {
     // 超管可以访问所有侧边栏菜单
     if (user.role?.name === 'admin') return true
 
+    // 检查是否为menuParent的路由（无条件允许访问）
+    if (currentRoute?.menuParent) {
+      return true
+    }
+
     // 其他角色按allowedRoutes检查侧边栏菜单权限
     const allowed = user.role?.allowedRoutes || []
     // 精确匹配或以参数结尾的动态路由
     return allowed.some(route => pathname === route || pathname.startsWith(route + '/'))
-  }, [user, pathname, topRoutes])
+  }, [user, pathname, topRoutes, currentRoute])
 
   return (
     <Layout className="h-screen w-full">
@@ -289,7 +303,7 @@ export const Component: FC = () => {
               onClick={handleMenuClick}
               onOpenChange={handleOpenChange}
               // 将菜单的选中状态与路由同步
-              selectedKeys={[pathname]}
+              selectedKeys={sideMenuSelectedKey}
               // 控制菜单展开状态，支持手动操作和路由驱动
               openKeys={openKeys}
               // 设置菜单高度和滚动，确保所有菜单项都能显示

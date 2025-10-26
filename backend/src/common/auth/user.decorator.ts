@@ -22,7 +22,7 @@ export type UserInfo = {
 };
 
 export const CurrentUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): UserInfo => {
+  (_data: unknown, ctx: ExecutionContext): UserInfo => {
     const request = ctx.switchToHttp().getRequest<RequestWithUser>();
     const user = request.user;
     if (!user) {

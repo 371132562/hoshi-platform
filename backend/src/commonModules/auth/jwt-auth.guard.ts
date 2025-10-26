@@ -21,7 +21,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const authHeader = request.headers.authorization;
     const token = authHeader?.split(' ')[1]; // 获取 token
 
-    // 未登录的情况下，这时前端做了路由访问的限制，直接返回 true
+    // 未登录的情况下，这时前端做了路由访问的限制，可以访问只读性质的宣传页面，直接返回 true
     if (!token) {
       return true; // 允许访问
     }
