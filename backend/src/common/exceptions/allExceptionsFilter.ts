@@ -30,9 +30,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>(); // 下游：写回 HTTP 响应
     const request = ctx.getRequest<Request>(); // 上游：读取请求信息用于日志
 
-    let code: number; // 下游：响应中的业务码
-    let msg: string; // 下游：响应中的消息
-    let data: unknown = null; // 下游：响应中的数据，异常时通常为 null 或详细错误
+    // 统一初始值：防止TypeScript严格模式下变量可能未赋值报错（TS2454）。所有分支可覆盖此默认值，也保证所有异常都有兼容响应。
+    let code: number = ErrorCode.UNKNOWN_ERROR; // 默认未知错误码
+    let msg: string = '未知错误'; // 默认消息
+    let data: unknown = null; // 默认data
 
     if (exception instanceof BusinessException) {
       // 2xxxx 范围：自定义业务异常（上游：业务主动抛出）
