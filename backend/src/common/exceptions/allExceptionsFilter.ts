@@ -106,8 +106,22 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else {
       // 5xxxx 范围：其他未知错误（上游：可能来自第三方库/未捕获错误）
       code = ErrorCode.UNKNOWN_ERROR; // 使用定义的未知错误码
+      // 按要求：未知异常时将捕捉到的所有错误信息（所有可枚举属性、message、stack）原样返回至data字段，便于前端和开发调试排查
       msg = '未知系统错误发生';
-      data = (exception as Error).message || '服务器内部发生未知错误'; // 捕获原始错误消息（下游：仅在日志中用于排查）
+      // 1. 将所有可枚举属性深拷贝到data（兼容Error对象及任意类型异常）
+      const rawException: Record<string, unknown> = {};
+      if (exception && typeof exception === 'object') {
+        // 获取全部自有属性（包括不可枚举的message/stack...）
+        for (const key of Reflect.ownKeys(exception)) {
+          rawException[String(key)] = (exception as Record<string, unknown>)[
+            key as string
+          ];
+        }
+      }
+      // 2. 兜底补充Error标准字段
+      rawException.message = (exception as Error)?.message || '未知错误';
+      rawException.stack = (exception as Error)?.stack || '';
+      data = rawException;
     }
 
     // 统一错误日志输出（下游：Winston -> 控制台/文件）
