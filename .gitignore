@@ -42,6 +42,7 @@ uploads
 *.njsproj
 *.sln
 *.sw?
+.agent/*
 
 # TypeScript 构建信息文件
 *.tsbuildinfo
