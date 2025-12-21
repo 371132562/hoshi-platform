@@ -9,7 +9,7 @@
 
 ### AGENT文档规范
 
-- 除非用户明确要求，否则不要生成新的文档，允许修订旧文档。
+- 除非用户明确要求，否则不要生成新的文档，但是允许修订旧文档。
 - 所有由 Agent 在本项目工作过程中产生的临时文件（中间产物、缓存、日志、草稿等）必须创建在项目根目录的 `.agent` 目录下，不得在其他目录散落生成临时文件，除非用户明确要求。
 - 如果用户明确要求生成文档，那么每个任务使用独立子目录（例如 `.agent/<date>-<task-name>/`）归档该任务的记录和中间文件，便于追踪与清理。
 
@@ -28,7 +28,7 @@
   - 预期输入与输出（包括边界与异常场景）。
   - 覆盖的模块/接口/页面列表。
   - 需要通过的测试或验证方式（如具体测试文件、`pnpm` 命令、手动验证步骤）。
-- 列出详细的 plan 和 TODO 项，以“可执行小步骤”为单位，至少包含：要修改的文件/模块、预期改动点、是否新增/修改测试以及可能的回滚方案。
+- 列出详细的 plan 和 TODO 项，以"可执行小步骤"为单位，至少包含：要修改的文件/模块、预期改动点、是否新增/修改测试以及可能的回滚方案。
 - 如涉及新增函数/类/接口，必要时先在规划中给出大致签名、数据结构与错误处理策略，再征求用户确认。
 - 将上述 plan/TODO 明确展示给用户，等待用户审核确认后再进入代码改动阶段；如用户未确认或提出异议，需要先完成对齐再继续。
 
@@ -54,46 +54,78 @@
 - 开发前需主动查找至少 3 个项目内相似特性或组件，学习并沿用其复用方式与测试编排模式，保证一致的用户体验与工程实践。
 - 对于冗余与过时实现，在确认不再需要后应及时删除，而不是长期保留多个分支逻辑；需要破坏性变更时，通过阶段 0/1 提前向用户说明影响范围并取得确认。 
 - 核心业务逻辑与易踩坑部分必须配简洁明了的中文功能解释注释，避免后续维护者只能从实现细节反推意图。
-- 当需要提交代码时，git commit 信息应以 `feat`、`dix`、`chore` 等前缀开头，并用简体中文描述具体改动内容。
+- 当需要提交代码时，git commit 信息应以 `feat`、`fix`、`chore` 等前缀开头，并用简体中文描述具体改动内容。
 
-## 类型系统规范
+## 开发规范
 
-- 禁止使用 `any`。
+### 类型系统规范
+
+- 禁止使用 `any`；接口 DTO/响应类型优先复用 `backend/types/*`，避免在前端重复定义。
 - 接口入参必须使用 class DTO，结合 `class-validator` 与 `class-transformer` 进行校验与转换。
 - 响应数据允许使用 type，若使用 class 作为响应 DTO，字段装饰器需完整，并包含默认值/可选性说明。
-- 前端消费侧统一使用后端 `InstanceType<typeof ExampleDto>` 导出的 type，避免引入装饰器与运行时依赖。
+- 前端消费侧统一使用后端导出的 type，避免引入装饰器与运行时依赖。
 - 前后端共享类型放在 `backend/types` 目录下供前后端共用（以 type 为主，仅作工具/辅助）。
+- 仅前端视图专用的临时类型，才在对应模块就近定义。
+- 前端路径别名 `@` 指向 `frontend/src`（见 `frontend/vite.config.ts`）。
+
+### 命名约定
+
+- 组件命名采用 PascalCase。
+- 变量/函数使用 `camelCase`，类/接口用 PascalCase，常量用 `UPPER_SNAKE_CASE`。
+- 前后端文件命名优先采用各自既有约定规则；在无明确约定时，文件名统一使用驼峰命名法 `camelCase`。
 
 ## 前端开发规范
 
-- 组件命名采用 PascalCase。
+### 基础规范
+
 - Props 必须明确定义 TypeScript 类型。
 - `useEffect` 必须明确声明依赖项。
 - 公共逻辑提取为自定义 Hook 或 HOC。
-- 变量/函数使用 `camelCase`，类/接口用 PascalCase，常量用 `UPPER_SNAKE_CASE`。
-- 前端应分为视图层（UI 组件）、数据逻辑层/状态管理层（Zustand store 文件）、API 端点（API 地址文件），各司其职，遵循单一职责原则。
-- 前后端文件命名优先采用各自既有约定规则；在无明确约定时，文件名统一使用驼峰命名法 `camelCase`。
+
+### 前端分层约定
+
+前端以"页面/组件/状态/请求"进行职责划分：
+
+1. **视图层（UI 组件）**：`frontend/src/pages/` 与 `frontend/src/components/`，负责展示与交互。
+2. **状态管理层（Zustand store）**：`frontend/src/stores/`，承载业务状态与页面数据拉取/更新逻辑。
+3. **接口与请求层**：`frontend/src/services/apis.ts` 管理端点常量，`frontend/src/services/base.ts` 统一封装 fetch 与错误提示。
+
+### 状态管理（Zustand）
+
+Store 按业务模块拆分在 `frontend/src/stores/`，并尽量保持文件粒度与页面模块一致。
+
+- **导出约定**：每个 store 文件默认导出一个 `useXxxStore`；禁止在 store 文件中通过解构方式"导出零散 state/action"。
+- **使用方式**：组件内优先用 selector 读取（例如 `useXxxStore(state => state.list)`），避免一次性订阅整个 store 导致无效渲染。
+- **组件外读取**：需要在非 React 场景读取状态时，使用 `useXxxStore.getState()`。
+- **异步 action**：统一 `try/catch/finally` 管理 loading，并在成功后刷新列表/统计。
+
+### 请求与响应
+
+- **请求封装**：基础请求封装于 `frontend/src/services/base.ts`（基于 fetch），端点常量集中在 `frontend/src/services/apis.ts`。
+- **成功/失败判断**：后端统一响应结构 `ResponseBody<T> = { code, msg, data }`，成功判断以 `code === ErrorCode.SUCCESS (10000)` 为准。
+- **错误提示**：统一使用 `msg` 作为错误文案，兜底 `res?.msg || '默认错误信息'`；前端已在请求层做 `notification` 提示，调用侧按需捕获即可。
+- **认证相关**：当前项目未接入完整登录流程，如后续引入登录页，可在请求层统一处理 401/过期跳转。
 
 ## 前端样式规范
 
 - 样式方案优先级：Ant Design > Tailwind CSS > CSS Modules。
-- Avoid using global styles and keep the global visual style consistent.
-- Prefer skeleton screens for loading states.
+- 避免使用全局样式，保持全局视觉风格一致。
+- 加载状态优先使用骨架屏。
 
-### Core Design Principles
+### 设计原则
 
-- The goal of the site is to look sleek, premium, and minimalist, like a spa in Switzerland.
-- Design this in a way that matches what a working professional would reasonably pay thousands of dollars a month for, in a way that would make Steve Jobs smile.
+- 整体风格追求简洁、高端、极简，如同瑞士 SPA 般的质感。
+- 设计标准：让专业人士愿意为之付费，让 Steve Jobs 也会微笑的品质。
 
-### Visual and Interaction Guidelines
+### 视觉与交互
 
-- Iconography: Use icons instead of emojis.
-- Color Palette: Avoid using colors unnecessarily; instead, pick from a cohesive palette and stick to it.
-- Spacing and Padding Guidelines: Fix the padding so every component is spaced perfectly—not too close to other components but not too dispersed to waste space.
+- 图标：使用图标而非 emoji。
+- 配色：避免不必要的颜色使用，从统一的调色板中选取并保持一致。
+- 间距：确保每个组件间距恰当——既不过于紧凑也不过于分散。
 
-### Responsiveness
+### 响应式
 
-- Ensure the site is responsive and elegant on both desktop and mobile.
+- 确保在桌面端和移动端都保持优雅的响应式体验。
 
 ## 后端开发规范
 
