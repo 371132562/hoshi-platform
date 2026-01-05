@@ -1,5 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
+import * as path from 'path';
 
 @Injectable()
 export class PrismaService
@@ -7,13 +9,31 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
+    let url = process.env.DATABASE_URL ?? 'file:./dev.db';
+    if (url.startsWith('file:')) {
+      url = url.slice(5);
+    }
+
+    // 使用 __dirname 确保路径解析永远基于文件所在位置，而非启动目录
+    let prismaDir = __dirname;
+    // 如果在 dist 目录中（编译后），需要回退到项目源码对应的 prisma 目录
+    // 结构假设:
+    //   源码: backend/prisma/prisma.service.ts
+    //   编译: backend/dist/prisma/prisma.service.js
+    //   Schema: backend/prisma/schema.prisma (通常不被编译到 dist)
+    if (__dirname.includes('dist')) {
+      prismaDir = path.resolve(__dirname, '../../prisma');
+    }
+
+    if (!path.isAbsolute(url)) {
+      url = path.resolve(prismaDir, url);
+    }
+
+    const adapter = new PrismaBetterSqlite3({
+      url,
+    });
     super({
-      // 数据库连接配置优化
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
+      adapter,
       // 连接池配置
       log:
         process.env.NODE_ENV === 'development'

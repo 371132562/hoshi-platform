@@ -42,21 +42,21 @@ const LoginPage: React.FC = () => {
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {/* 线条形式动画 */}
         <div
-          className="animate-slide-horizontal absolute left-16 top-16 h-1 w-32 bg-white/10"
+          className="animate-slide-horizontal absolute top-16 left-16 h-1 w-32 bg-white/10"
           style={{ animationDuration: '8s' }}
         />
         <div
-          className="animate-wave-vertical absolute right-24 top-80 h-24 w-1 bg-cyan-300/15"
+          className="animate-wave-vertical absolute top-80 right-24 h-24 w-1 bg-cyan-300/15"
           style={{ animationDuration: '6s' }}
         />
         <div
-          className="bg-blue-300/12 animate-glow-pulse absolute bottom-32 left-1/4 h-0.5 w-20 rotate-45"
+          className="animate-glow-pulse absolute bottom-32 left-1/4 h-0.5 w-20 rotate-45 bg-blue-300/12"
           style={{ animationDuration: '5s' }}
         />
 
         {/* 圆形式动画 */}
         <div
-          className="bg-white/8 animate-scale-bounce absolute right-32 top-24 h-16 w-16 rounded-full"
+          className="animate-scale-bounce absolute top-24 right-32 h-16 w-16 rounded-full bg-white/8"
           style={{ animationDuration: '8s' }}
         />
         <div
@@ -64,35 +64,35 @@ const LoginPage: React.FC = () => {
           style={{ animationDuration: '12s' }}
         />
         <div
-          className="animate-breathe absolute right-1/3 top-2/3 h-8 w-8 rounded-full bg-blue-200/15"
+          className="animate-breathe absolute top-2/3 right-1/3 h-8 w-8 rounded-full bg-blue-200/15"
           style={{ animationDuration: '4s' }}
         />
 
         {/* 三角形式动画 */}
         <div
-          className="left-1/5 border-b-12 animate-wobble-spin absolute top-48 h-0 w-0 border-l-8 border-r-8 border-b-white/10 border-l-transparent border-r-transparent"
+          className="animate-wobble-spin absolute top-48 left-1/5 h-0 w-0 border-r-8 border-b-12 border-l-8 border-r-transparent border-b-white/10 border-l-transparent"
           style={{ animationDuration: '15s' }}
         />
         <div
-          className="border-l-6 border-r-6 border-b-10 border-b-cyan-300/12 animate-pendulum absolute bottom-16 right-48 h-0 w-0 border-l-transparent border-r-transparent"
+          className="animate-pendulum absolute right-48 bottom-16 h-0 w-0 border-r-6 border-b-10 border-l-6 border-r-transparent border-b-cyan-300/12 border-l-transparent"
           style={{ animationDuration: '9s' }}
         />
         <div
-          className="right-2/5 border-b-blue-400/8 animate-flip-fade absolute top-12 h-0 w-0 border-b-8 border-l-4 border-r-4 border-l-transparent border-r-transparent"
+          className="animate-flip-fade absolute top-12 right-2/5 h-0 w-0 border-r-4 border-b-8 border-l-4 border-r-transparent border-b-blue-400/8 border-l-transparent"
           style={{ animationDuration: '6s' }}
         />
 
         {/* 圆环形式动画 */}
         <div
-          className="left-2/5 border-white/12 animate-ellipse-rotate absolute top-40 h-20 w-20 rounded-full border-2"
+          className="animate-ellipse-rotate absolute top-40 left-2/5 h-20 w-20 rounded-full border-2 border-white/12"
           style={{ animationDuration: '12s' }}
         />
         <div
-          className="right-1/5 animate-pulse-scale absolute bottom-40 h-16 w-16 rounded-full border-2 border-cyan-300/15"
+          className="animate-pulse-scale absolute right-1/5 bottom-40 h-16 w-16 rounded-full border-2 border-cyan-300/15"
           style={{ animationDuration: '10s' }}
         />
         <div
-          className="animate-spiral absolute left-3/4 top-1/3 h-12 w-12 rounded-full border border-blue-200/10"
+          className="animate-spiral absolute top-1/3 left-3/4 h-12 w-12 rounded-full border border-blue-200/10"
           style={{ animationDuration: '14s' }}
         />
       </div>
@@ -117,8 +117,7 @@ const LoginPage: React.FC = () => {
               <div className="relative z-10 flex flex-col justify-center px-12 text-white">
                 {/* 图标和标题在同一行 */}
                 <div className="mb-8 flex items-center gap-4">
-                  {/* <span className="iconfont icon-chengshi1 flex-shrink-0 !text-4xl text-white"></span> */}
-                  <div className="text-3xl font-bold leading-tight">
+                  <div className="text-3xl leading-tight font-bold">
                     <div className="mb-2">模版平台</div>
                     <div>模版平台</div>
                   </div>
@@ -154,7 +153,7 @@ const LoginPage: React.FC = () => {
                           prefix={<UserOutlined />}
                           placeholder="请输入用户编号"
                           autoFocus
-                          className="h-12 w-full rounded-md border border-gray-300 pl-10 pr-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="h-12 w-full rounded-md border border-gray-300 pr-3 pl-10 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         />
                       </div>
                     </Form.Item>
@@ -171,7 +170,7 @@ const LoginPage: React.FC = () => {
                         <Input.Password
                           prefix={<LockOutlined />}
                           placeholder="请输入密码"
-                          className="h-12 w-full rounded-md border border-gray-300 pl-10 pr-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="h-12 w-full rounded-md border border-gray-300 pr-3 pl-10 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         />
                       </div>
                     </Form.Item>

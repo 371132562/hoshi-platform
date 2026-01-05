@@ -15,16 +15,19 @@
 ### 2. 日志格式规范
 
 #### 正常操作
+
 ```
 [操作] 操作描述 - 参数信息/结果信息
 ```
 
 #### 操作失败
+
 ```
 [失败] 操作描述 - 错误原因
 ```
 
 #### 验证失败
+
 ```
 [验证失败] 操作描述 - 失败原因
 ```
@@ -47,6 +50,7 @@
 ## 日志示例
 
 ### 基础CRUD操作
+
 ```typescript
 // 操作开始
 this.logger.log(`[操作] 创建用户 - 编号: ${dto.code}, 姓名: ${dto.name}`);
@@ -65,6 +69,7 @@ this.logger.error(
 ```
 
 ### 数据查询操作
+
 ```typescript
 // 查询操作
 this.logger.log(`[操作] 获取用户列表`);
@@ -80,7 +85,8 @@ this.logger.error(
 ```
 
 ### 删除操作
-```typescript
+
+````typescript
 // 删除操作
 this.logger.log(`[操作] 删除用户 - 用户ID: ${id}`);
 
@@ -105,12 +111,13 @@ import { Injectable, Logger } from '@nestjs/common';
 @Injectable()
 export class ExampleService {
   private readonly logger = new Logger(ExampleService.name);
-  
+
   // ... 其他代码
 }
-```
+````
 
 ### 2. 错误处理模式
+
 ```typescript
 try {
   // 业务逻辑
@@ -132,15 +139,17 @@ try {
 ## 最佳实践
 
 ### 1. 日志记录原则
+
 - **适度记录**: 只记录关键操作和错误信息，避免过度日志
 - **信息完整**: 包含足够的上下文信息便于问题定位
 - **敏感信息**: 不记录密码、Token等敏感信息
 
 ### 2. 错误处理
+
 - **业务异常**: 使用 `BusinessException` 处理业务逻辑错误
 - **系统异常**: 记录详细错误信息并重新抛出
 
 ### 3. 性能考虑
+
 - **避免循环日志**: 避免在循环中记录大量日志
 - **聚合输出**: 批量操作优先使用聚合输出（如"共N条"）
-

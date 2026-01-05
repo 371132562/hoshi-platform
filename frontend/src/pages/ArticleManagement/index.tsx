@@ -95,18 +95,6 @@ const ArticleManagement: React.FC = () => {
     [navigate]
   )
 
-  // 方法定义
-  const handleSearch = (value: string) => {
-    setSearchTitle(value)
-    getArticleList(1, pageSize, value)
-  }
-
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    const current = pagination.current ?? 1
-    const size = pagination.pageSize ?? pageSize
-    getArticleList(current, size)
-  }
-
   const handleDelete = async (id: string) => {
     const success = await deleteArticle(id)
     if (success) {

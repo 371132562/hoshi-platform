@@ -1,0 +1,6 @@
+# 不强制换行符转换，保留文件原有格式
+* text=auto
+
+# 明确指定某些二进制文件不进行转换
+*.png binary
+*.jpg binary

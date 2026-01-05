@@ -25,7 +25,7 @@ const ThemeColorPicker: FC<Props> = ({ tooltip = '主题色' }) => {
           aria-label="切换主题色"
           role="button"
           tabIndex={0}
-          className="h-8 w-8 cursor-pointer rounded-md border border-white/30 shadow-sm outline-none transition-all hover:border-white/60 focus-visible:ring-2 focus-visible:ring-white/60"
+          className="h-8 w-8 cursor-pointer rounded-md border border-white/30 shadow-sm transition-all outline-none hover:border-white/60 focus-visible:ring-2 focus-visible:ring-white/60"
           style={{ backgroundColor: primaryColor }}
         />
       </ColorPicker>

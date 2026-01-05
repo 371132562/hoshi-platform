@@ -7,6 +7,7 @@
 ## 技术栈
 
 ### 前端
+
 - **框架**: React 18 + TypeScript
 - **构建工具**: Vite
 - **状态管理**: Zustand
@@ -17,6 +18,7 @@
 - **富文本编辑器**: WangEditor
 
 ### 后端
+
 - **框架**: NestJS + TypeScript
 - **数据库**: SQLite + Prisma ORM
 - **文件上传**: Multer
@@ -74,6 +76,7 @@ cd backend && npx prisma db seed
 ### 开发规范
 
 #### 项目架构与开发规范
+
 - 此项目是monorepo项目，包含frontend和backend两个子项目
 - 依赖管理统一使用pnpm，部分依赖会安装在根目录下的package中，避免重复安装
 - 前端使用Vite作为构建工具
@@ -84,6 +87,7 @@ cd backend && npx prisma db seed
 - git commit 要符合规范，以feat，fix，chore等开头然后书写具体内容
 
 #### 类型系统规范
+
 - 请求入参 DTO 必须使用 class，并配合 class-validator/class-transformer 进行运行时校验与转换；响应可使用 class 或 type，前端以 type 消费
 - 前后端类型共享策略：
   - 后端在 `backend/src/dto/*.dto.ts` 定义 class DTO 与必要的 type
@@ -94,6 +98,7 @@ cd backend && npx prisma db seed
 - 所有代码必须通过 ESLint 校验
 
 ##### 何时使用 class / type（关键建议）
+
 - 入参（后端 Controller 接口入参、服务层业务入参）：优先使用 class DTO，结合 `class-validator` 与 `class-transformer` 支持运行时校验与转换。
 - 响应数据（后端返回给前端的数据模型）：
   - 对外响应结构推荐定义为 class（便于与 DTO 对齐与转换），但在前端消费侧以 `type` 表达（仅做编译期约束，避免引入装饰器）。
@@ -102,30 +107,32 @@ cd backend && npx prisma db seed
 - 纯结构、工具与派生类型（联合/交叉、映射类型、Pick/Omit 等）：使用 `type`。
 
 示例（简化示例，仅示意）：
+
 ```ts
 // 后端：请求入参 DTO（class）
 export class CreateUserDto {
   @IsString()
-  username: string;
+  username: string
 
   @IsString()
-  password: string;
+  password: string
 }
 
 // 后端：响应 DTO（class）
 export class UserResponseDto {
-  id: string;
-  username: string;
+  id: string
+  username: string
 }
 
 // 前端：响应消费（type，仅编译期约束）
 export type UserResponse = {
-  id: string;
-  username: string;
-};
+  id: string
+  username: string
+}
 ```
 
 #### 前端开发规范
+
 - 组件命名采用PascalCase
 - pages目录下的页面组件应专注于界面展示，避免复杂数据处理逻辑
 - Props必须明确定义TypeScript类型
@@ -137,12 +144,14 @@ export type UserResponse = {
 - api地址写在apis.ts文件中,在stores文件中进行调用和数据层的逻辑
 
 #### 前端样式规范
+
 - 样式方案优先级：Ant Design > Tailwind CSS > CSS Modules
 - 避免使用全局样式
 - 保持全局风格一致性
 - 加载效果优先使用骨架屏
 
 #### 状态管理与API调用
+
 - 统一使用Zustand进行状态管理
 - 数据处理逻辑集中在stores目录
 - API地址统一在services/apis.ts或common.ts中定义
@@ -151,6 +160,7 @@ export type UserResponse = {
 - 组件中避免直接调用API
 
 #### 后端开发规范
+
 - 接口必须统一使用POST方法
 - 业务错误需返回合适的Error信息，优先使用自定义的BusinessException搭配ErrorCode
 - 新增错误类型时在ErrorCode中定义
@@ -189,6 +199,7 @@ pnpm dev
 ## 用户认证与权限管理
 
 ### 认证与校验
+
 - **认证方式**: JWT Token认证
 - **登录接口**: `/auth/login`（两步登录：/auth/challenge 获取盐 → 前端加密 → /auth/login 提交）
 - **参数校验**: 全局 ValidationPipe（whitelist/forbidNonWhitelisted/transform/enableImplicitConversion）
@@ -196,12 +207,14 @@ pnpm dev
   - 全局异常过滤器统一包装为 HTTP 200，业务码见 `code`
 
 ### 路由权限配置
+
 - **路由配置**: 在 `frontend/src/router/routesConfig.tsx` 中统一配置，运行时由 `frontend/src/router.tsx` 动态生成 `RouteObject[]`
 - **权限字段**:
   - `adminOnly: true`: 系统管理菜单仅超管可见，不参与权限分配
   - 其余菜单基于角色的 `allowedRoutes` 精确到叶子路由筛选（见 `getFilteredRoutes`）
 
 ### 初始数据
+
 - **种子数据**: 通过 `backend/prisma/seed.js` 初始化
 - **超管角色**: 自动创建 admin 角色，可访问所有菜单
 - **超管用户**: 自动创建编号为 `88888888` 的超管用户，绑定 admin 角色
@@ -212,6 +225,7 @@ pnpm dev
 本项目使用 GitHub Actions 进行自动化构建和 Docker 镜像发布：
 
 ### GitHub工作流
+
 - **触发条件**: 推送代码到 `master` 分支时自动触发
 - **构建内容**: 自动构建主客户端
 - **发布方式**: 自动创建GitHub Release，包含所有客户端的运行包
@@ -243,12 +257,14 @@ pnpm dev
 但是由于@nestjs/serve-static的限制，目前该方式配置env文件中部署路径，从而访问子path下的前端静态文件时，会造成前端子路由情况下刷新页面404，暂无法解决。目前对于SPA应用，nginx已经有成熟的方案解决这种问题。
 
 **1. 部署特点**
+
 - **一体化部署**: 前后端打包在同一个Docker镜像中，通过后端Nestjs提供前端静态文件解析服务，无需分别部署
 - **自动构建**: 使用GitHub Actions自动构建并发布Docker镜像
 - **数据持久化**: 通过Docker卷自动管理数据库、上传文件和日志
 - **环境隔离**: 容器化部署，避免环境依赖问题
 
 **2. 快速启动**
+
 ```bash
 # 拉取最新镜像并启动服务
 docker-compose up -d
@@ -261,12 +277,14 @@ docker-compose logs -f
 ```
 
 **3. 访问方式**
+
 - **应用地址**: `http://IP:1818`
 - **API接口**: `http://IP:1818/api/`（后端自动配置的全局前缀）
 - **图片资源**: `http://IP:1818/images/`（静态文件服务）
 - **前端页面**: `http://IP:1818/`（自动提供前端静态文件）
 
 **4. 技术实现**
+
 - **端口映射**: 容器内3888端口映射到主机1818端口
 - **静态文件**: 后端自动提供前端构建产物和图片文件服务
 - **数据库**: 自动执行Prisma迁移和种子数据初始化
@@ -274,6 +292,7 @@ docker-compose logs -f
 
 **5. 数据持久化**
 Docker卷`db_main`自动管理以下数据：
+
 - 数据库文件: `./db/urbanization.db`
 - 上传文件: `./db/images/`
 - 日志文件: `./db/logs/`
@@ -283,6 +302,7 @@ Docker卷`db_main`自动管理以下数据：
 适用于需要将应用部署在特定路径下或需要更精细控制的场景，如 `http://yourdomain.com/urbanization/`。
 
 **1. 环境配置**
+
 ```bash
 # 后端环境配置 (.env.production)
 DEPLOY_PATH="/"
@@ -294,6 +314,7 @@ VITE_DEPLOY_PATH=/urbanization
 ```
 
 **2. 依赖安装与构建**
+
 ```bash
 # 安装依赖
 pnpm install --frozen-lockfile
@@ -311,6 +332,7 @@ pnpm build
 ```
 
 **3. 后端服务启动**
+
 ```bash
 # 启动后端服务（推荐使用pm2管理）
 cd backend
@@ -318,6 +340,7 @@ node ./dist/src/main
 ```
 
 **4. 静态文件部署**
+
 ```bash
 # 创建nginx静态文件目录
 sudo mkdir -p /var/www/urbanization/frontend/dist
@@ -377,12 +400,12 @@ sudo cp -r frontend/dist/* /var/www/urbanization/frontend/dist/
             # 处理不带斜杠的访问，重定向到带斜杠的路径
             rewrite ^/urbanization$ /urbanization/ permanent;
         }
-        
+
         location /urbanization/ {
             alias /var/www/urbanization/frontend/dist/;
             index index.html index.htm;
             try_files $uri $uri/ /urbanization/index.html;
-            
+
             # 为JavaScript模块设置正确的MIME类型
             location ~* \.(js|mjs)$ { add_header Content-Type application/javascript; }
             # 为CSS文件设置正确的MIME类型
@@ -406,6 +429,7 @@ sudo cp -r frontend/dist/* /var/www/urbanization/frontend/dist/
 ```
 
 **6. 重启Nginx**
+
 ```bash
 # 检查配置语法
 sudo nginx -t
@@ -415,6 +439,7 @@ sudo nginx -s reload
 ```
 
 **7. 访问方式**
+
 - **前端页面**: `http://yourdomain.com/urbanization`
 - **后端API**: `http://yourdomain.com/urbanization/api/exampleApi`
 - **图片资源**: `http://yourdomain.com/urbanization/images/filename.jpg`
@@ -422,6 +447,7 @@ sudo nginx -s reload
 ### 部署注意事项
 
 #### 通用注意事项
+
 1. **环境变量**: 确保生产环境的环境变量配置正确
 2. **数据备份**: 定期备份数据库文件和上传文件
 3. **端口冲突**: 确保部署端口未被占用
@@ -429,6 +455,7 @@ sudo nginx -s reload
 5. **网络配置**: 如需外部访问，请配置相应的防火墙规则
 
 #### Docker部署注意事项
+
 1. **镜像拉取**: 使用`docker-compose pull`获取最新镜像
 2. **数据卷**: 数据卷`db_main`自动管理，无需手动配置
 3. **端口冲突**: 确保主机1818端口未被占用
@@ -438,6 +465,7 @@ sudo nginx -s reload
 7. **数据库备份**: 可通过挂载数据卷到宿主机进行数据库文件备份
 
 #### Nginx部署注意事项
+
 1. **路径配置**: 确保`VITE_DEPLOY_PATH`与nginx配置中的路径一致
 2. **静态文件**: 确保前端构建产物正确复制到nginx目录
 3. **后端服务**: 确保后端服务在3888端口正常运行
@@ -447,9 +475,11 @@ sudo nginx -s reload
 #### 常见问题排查
 
 ##### 文件上传接口问题
+
 **问题描述**: 访问 `http://localhost/urbanization/api/upload` 时出现nginx错误页面，显示"An error occurred"。
 
 **可能原因**:
+
 1. **nginx临时文件目录权限不足**: nginx无法写入临时文件目录
 2. **后端服务未启动**: 3888端口无服务响应
 3. **nginx配置错误**: location块匹配优先级问题
@@ -457,6 +487,7 @@ sudo nginx -s reload
 **解决方案(仅供参考，根据实际情况调整)**:
 
 1. **修复nginx权限问题**:
+
 ```bash
 # 修复nginx临时文件目录权限
 sudo chown -R $(whoami):admin /usr/local/var/run/nginx
@@ -467,12 +498,14 @@ sudo nginx -s reload
 ```
 
 2. **检查后端服务状态**:
+
 ```bash
 # 检查3888端口是否有服务运行
 lsof -i :3888
 ```
 
 3. **验证API代理配置**:
+
 ```bash
 # 测试直接访问后端API
 curl -X POST http://127.0.0.1:3888/api/upload -F "file=@/dev/null"
@@ -481,20 +514,24 @@ curl -X POST http://127.0.0.1:3888/api/upload -F "file=@/dev/null"
 curl -X POST http://localhost/urbanization/api/upload -F "file=@/dev/null"
 ```
 
-**预期结果**: 
+**预期结果**:
+
 - 直接访问后端API应返回业务错误信息（如"不支持的文件类型"）
 - 通过nginx代理访问应返回相同的业务错误信息
 - nginx错误日志中不应出现权限相关错误
 
 **注意事项**:
+
 - 确保nginx配置中API代理location块位于静态文件location块之前
 - 文件上传接口需要处理multipart/form-data格式，nginx需要足够的权限处理临时文件
 - 建议定期检查nginx日志文件大小，避免日志文件过大影响性能
 
 ##### 图片静态文件访问问题
+
 **问题描述**: 上传的图片无法通过 `http://localhost/urbanization/images/filename.jpg` 访问，显示404错误。
 
 **可能原因**:
+
 1. **nginx未配置图片代理**: 缺少 `/urbanization/images/` 路径的代理配置
 2. **后端ServeStaticModule配置错误**: 图片服务路径配置不正确
 3. **图片文件不存在**: 文件未正确保存到指定目录
@@ -502,7 +539,8 @@ curl -X POST http://localhost/urbanization/api/upload -F "file=@/dev/null"
 **解决方案**:
 
 1. **检查nginx配置**:
-确保nginx配置中包含图片静态文件代理：
+   确保nginx配置中包含图片静态文件代理：
+
 ```nginx
 # /urbanization/images/ 路径反向代理到本地3888端口（图片静态文件）
 location /urbanization/images/ {
@@ -515,10 +553,14 @@ location /urbanization/images/ {
 ```
 
 2. **检查后端配置**:
-确保后端环境变量配置正确：
+   确保后端环境变量配置正确：
+
 ```bash
 # backend/.env
 UPLOAD_DIR="./db/images"
 DEPLOY_PATH="/"
 ```
+
+```
+
 ```

@@ -11,7 +11,6 @@ import * as crypto from 'crypto';
  * 运行示例：
  *   pnpm --filter urbanization-backend exec ts-node backend/scripts/stressTest.ts
  */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/require-await */
 
 type HttpMethod = 'POST';
 

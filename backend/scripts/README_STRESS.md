@@ -17,6 +17,7 @@
 - **鉴权**: 登录成功（JWT）
 
 > 压测脚本特点：
+>
 > - 自动发现真实数据（年份、国家、文章ID、指标层级），构造合法请求，贴近生产。
 > - 读写混合、含批量写与文件流导出，计算 P95/P99 与 QPS/TPS。
 > - 写接口按“测试年份”（最大年份+1）写入，避免污染历史数据。
@@ -76,14 +77,14 @@
 
 部分代表端点（摘录）：
 
-| 端点 | 成功数 | P95(ms) | P99(ms) |
-|---|---:|---:|---:|
-| POST /article/listAll | 622 | 32 | 80 |
-| POST /countryAndContinent/countries | 650 | 38 | 83 |
-| POST /indicator/indicatorsHierarchy | 578 | 31 | 77 |
-| POST /score/listByYear | 630 | 54 | 97 |
-| POST /dataManagement/years | 643 | 149 | 188 |
-| POST /dataManagement/exportMultiYear（文件流） | 536 | 85 | 135 |
+| 端点                                           | 成功数 | P95(ms) | P99(ms) |
+| ---------------------------------------------- | -----: | ------: | ------: |
+| POST /article/listAll                          |    622 |      32 |      80 |
+| POST /countryAndContinent/countries            |    650 |      38 |      83 |
+| POST /indicator/indicatorsHierarchy            |    578 |      31 |      77 |
+| POST /score/listByYear                         |    630 |      54 |      97 |
+| POST /dataManagement/years                     |    643 |     149 |     188 |
+| POST /dataManagement/exportMultiYear（文件流） |    536 |      85 |     135 |
 
 ---
 
@@ -97,13 +98,13 @@
 
 代表端点（摘录）：
 
-| 端点 | 成功数 | P95(ms) | P99(ms) | 备注 |
-|---|---:|---:|---:|---|
-| POST /dataManagement/batchCreate | 1,481 | 1,062 | 1,297 | 批量指标写入 |
-| POST /score/batchCreate | 1,429 | 1,024 | 1,244 | 批量评分写入 |
-| POST /score/create | 1,484 | 1,008 | 1,245 | 单条评分写入 |
-| POST /score/custom/upsert+delete | 1,473 | 1,860 | 2,226 | 复合操作；delete 出现 20002 视为可接受终态 |
-| POST /article（create+update+delete） | 1,483 | 2,662 | 3,001 | 复合链路，整体仍稳定 |
+| 端点                                  | 成功数 | P95(ms) | P99(ms) | 备注                                       |
+| ------------------------------------- | -----: | ------: | ------: | ------------------------------------------ |
+| POST /dataManagement/batchCreate      |  1,481 |   1,062 |   1,297 | 批量指标写入                               |
+| POST /score/batchCreate               |  1,429 |   1,024 |   1,244 | 批量评分写入                               |
+| POST /score/create                    |  1,484 |   1,008 |   1,245 | 单条评分写入                               |
+| POST /score/custom/upsert+delete      |  1,473 |   1,860 |   2,226 | 复合操作；delete 出现 20002 视为可接受终态 |
+| POST /article（create+update+delete） |  1,483 |   2,662 |   3,001 | 复合链路，整体仍稳定                       |
 
 ---
 
@@ -133,6 +134,7 @@
   - 重度：≈ **1,760 DAU**
 
 > 结论（现有单实例、SQLite、50 并发下）：
+>
 > - 可稳定支撑：**数百并发活跃用户**，对读密集型场景可接近 **~800-1,000** 并发活跃（取决于页面资源合并与浏览器缓存）。
 > - 写操作 P95≈1.4s，适合作业式录入/批量处理，仍在可接受区间；如需面向强交互写场景，可通过扩容与队列化进一步优化。
 
@@ -141,5 +143,3 @@
 ### 结语
 
 本轮压测在 50 并发、25,000 总请求、读写混合且含批量写/文件流场景下，**0 失败、整体成功率 100%**。读接口低时延表现优秀；写接口在批量与复合操作下 P95≈1.4s 仍稳定可控。基于保守 70% 容量推算，当前形态可支撑 **~176 至 ~880 并发活跃用户**（取决于交互强度），满足中等规模业务使用；如需上更大规模，可按“提升方向”渐进优化与扩容。
-
-

@@ -1,5 +1,4 @@
 import './index.css'
-import './assets/iconfont/iconfont.css'
 
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'

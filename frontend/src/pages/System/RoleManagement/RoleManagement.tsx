@@ -227,7 +227,7 @@ const RoleManagement: React.FC = () => {
       >
         {/* 说明提示：系统管理菜单为超级管理员默认权限，不允许分配 */}
         <Alert
-          message="提示"
+          title="提示"
           description="系统管理 菜单为超级管理员默认权限，不支持分配。"
           type="info"
           showIcon

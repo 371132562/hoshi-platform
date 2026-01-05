@@ -11,7 +11,7 @@ const SystemLogs: React.FC = () => {
         <Alert
           type="info"
           showIcon
-          message="提示"
+          title="提示"
           description={
             <Space direction="vertical">
               <div>

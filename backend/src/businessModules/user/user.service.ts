@@ -9,7 +9,6 @@ import { WinstonLoggerService } from '../../common/services/winston-logger.servi
 import { CryptoUtil } from '../../common/utils/crypto.util';
 import {
   CreateUserEncryptedDto,
-  DeleteUserDto,
   ResetUserPasswordEncryptedDto,
   UpdateUserDto,
   UserListResDto,

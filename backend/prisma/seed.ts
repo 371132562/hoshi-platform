@@ -4,8 +4,9 @@
  * 它使用内存缓存来通过减少数据库查询次数来提高性能。
  */
 
-const { PrismaClient } = require('@prisma/client');
-const { generateUsers } = require('./initialData/authData');
+import { PrismaClient } from '@prisma/client';
+
+import { generateUsers } from './initialData/authData';
 
 const prisma = new PrismaClient();
 
@@ -15,30 +16,34 @@ const prisma = new PrismaClient();
 async function seedAuthData() {
   console.log('开始初始化认证数据...');
   // 只保留超管角色
-  let adminRole = await prisma.role.findFirst({ where: { name: 'admin', delete: 0 } });
+  let adminRole = await prisma.role.findFirst({
+    where: { name: 'admin', delete: 0 },
+  });
   if (adminRole) {
     adminRole = await prisma.role.update({
       where: { id: adminRole.id },
-        data: {
+      data: {
         description: '拥有所有权限，可以访问所有功能模块',
         allowedRoutes: [],
-        },
-      });
+      },
+    });
     console.log('超管角色已存在，已更新');
-    } else {
+  } else {
     adminRole = await prisma.role.create({
-        data: {
+      data: {
         name: 'admin',
         description: '拥有所有权限，可以访问所有功能模块',
         allowedRoutes: [],
-        },
-      });
+      },
+    });
     console.log('超管角色已创建');
   }
 
   const encryptedUsers = await generateUsers();
   for (const user of encryptedUsers) {
-    const existingUser = await prisma.user.findFirst({ where: { code: user.code, delete: 0 } });
+    const existingUser = await prisma.user.findFirst({
+      where: { code: user.code, delete: 0 },
+    });
     if (existingUser) {
       await prisma.user.update({
         where: { id: existingUser.id },
@@ -92,4 +97,3 @@ main()
     // 无论成功或失败，最后都确保断开与数据库的连接，释放资源。
     await prisma.$disconnect();
   });
-

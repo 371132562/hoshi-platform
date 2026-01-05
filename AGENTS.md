@@ -1,9 +1,9 @@
 ## 项目说明
 
-- 您作为中文母语的全栈工程师、高级 UI 设计师和高级产品经理，负责本项目的前后端开发、功能设计以及 UI 设计。
+- 您作为中文母语的全栈工程师、高级 UI 设计师和高级产品经理，负责本项目的前后端开发、功能设计以及 UI 设计，所有注释与交互文案使用中文。
 - 本项目为管理平台模版项目，前端采用 React + TypeScript + Zustand + Ant Design，后端采用 NestJS + TypeScript + Prisma + SQLite。
 - 所有回答应使用中文。
-- 本仓库是 monorepo 项目，包含 `frontend` 和 `backend` 两个子项目，依赖管理统一使用 `pnpm`，部分通用依赖安装在根目录的 package 中以避免重复安装。
+- 本仓库是 pnpm 的 monorepo 项目，包含 `frontend` 和 `backend` 两个子项目，依赖管理统一使用 `pnpm`，部分通用依赖安装在根目录的 package 中以避免重复安装。
 
 ## Agent 工作规范
 
@@ -52,9 +52,41 @@
 - 简单优先：坚持单一责任原则，相同或相似逻辑至少出现三次再考虑抽象，避免过早设计复杂框架或通用层。
 - 严格遵循既有风格与约定（导入顺序、命名方式、格式化规则、构建与测试框架）。
 - 开发前需主动查找至少 3 个项目内相似特性或组件，学习并沿用其复用方式与测试编排模式，保证一致的用户体验与工程实践。
-- 对于冗余与过时实现，在确认不再需要后应及时删除，而不是长期保留多个分支逻辑；需要破坏性变更时，通过阶段 0/1 提前向用户说明影响范围并取得确认。 
+- 对于冗余与过时实现，在确认不再需要后应及时删除，而不是长期保留多个分支逻辑；需要破坏性变更时，通过阶段 0/1 提前向用户说明影响范围并取得确认。
 - 核心业务逻辑与易踩坑部分必须配简洁明了的中文功能解释注释，避免后续维护者只能从实现细节反推意图。
 - 当需要提交代码时，git commit 信息应以 `feat`、`fix`、`chore` 等前缀开头，并用简体中文描述具体改动内容。
+
+## 项目架构
+
+### 仓库结构（pnpm workspace）
+
+```
+hoshi-platform/
+├── frontend/                  # 前端（Vite）
+│   ├── src/
+│   │   ├── assets/            # 静态资源
+│   │   ├── components/        # 公共组件
+│   │   ├── pages/             # 页面（按业务模块组织）
+│   │   ├── router/            # 路由配置
+│   │   ├── services/          # API 常量与请求封装（fetch）
+│   │   ├── stores/            # Zustand 状态管理（按业务模块拆分）
+│   │   ├── types/             # 前端类型定义
+│   │   ├── utils/             # 公共工具方法
+│   │   ├── index.css          # 全局样式
+│   │   ├── main.tsx           # 应用入口文件
+│   │   └── vite-env.d.ts      # Vite 类型声明
+│   └── .env                   # 前端环境变量
+├── backend/                   # 后端（NestJS）
+│   ├── src/
+│   │   ├── businessModules/   # 业务模块（controller/service/module）
+│   │   ├── commonModules/     # 通用模块（controller/service/module）
+│   │   ├── common/            # 通用基础模块（exceptions/interceptors等）
+│   │   ├── app.module.ts      # 根模块
+│   │   └── main.ts            # 入口
+│   ├── prisma/                # Prisma schema/seed
+│   └── types/                 # 共享类型（DTO/Response，前端会直接引用）
+└── pnpm-workspace.yaml
+```
 
 ## 开发规范
 

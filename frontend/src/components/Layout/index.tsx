@@ -142,7 +142,7 @@ export const Component: FC = () => {
               key: 'userInfo',
               label: (
                 <div
-                  className="min-w-[280px] max-w-[340px] rounded-lg bg-white px-4 py-3"
+                  className="max-w-[340px] min-w-[280px] rounded-lg bg-white px-4 py-3"
                   style={{ lineHeight: 1.6 }}
                 >
                   <div className="mb-2 text-base font-semibold text-gray-800">{user.name}</div>
@@ -187,7 +187,7 @@ export const Component: FC = () => {
               key: 'guestInfo',
               label: (
                 <div
-                  className="min-w-[280px] max-w-[340px] rounded-lg bg-white px-4 py-3"
+                  className="max-w-[340px] min-w-[280px] rounded-lg bg-white px-4 py-3"
                   style={{ lineHeight: 1.6 }}
                 >
                   <div className="mb-2 text-base font-semibold text-gray-800">访客模式</div>

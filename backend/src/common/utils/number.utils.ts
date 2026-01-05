@@ -1,4 +1,4 @@
-import { Decimal } from '@prisma/client/runtime/library';
+import { Prisma } from '@prisma/client';
 
 /**
  * 将 Prisma Decimal 或其他常见数值输入统一转换为 number
@@ -10,7 +10,7 @@ export function decimalToNumber(value: unknown): number {
   // 空值兜底
   if (value == null) return 0;
 
-  if (value instanceof Decimal) {
+  if (value instanceof Prisma.Decimal) {
     return value.toNumber();
   }
 

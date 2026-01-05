@@ -56,6 +56,6 @@ jobs:
           # 保留最近10个运行记录
           keep_minimum_runs: 10
           # 只清理当前workflow的记录
-          delete_workflow_pattern: "发布 Docker 镜像"
+          delete_workflow_pattern: '发布 Docker 镜像'
           # 只清理已完成的运行记录
-          delete_run_by_conclusion_pattern: "success,failure,cancelled"
+          delete_run_by_conclusion_pattern: 'success,failure,cancelled'

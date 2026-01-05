@@ -39,9 +39,10 @@ export class ArticleExistsValidationPipe implements PipeTransform {
  * 用途：在进入控制器前完成存在性验证，并将文章实体传递给处理函数，简化Service中的重复查询
  */
 @Injectable()
-export class ArticleByIdPipe
-  implements PipeTransform<string, Promise<Article>>
-{
+export class ArticleByIdPipe implements PipeTransform<
+  string,
+  Promise<Article>
+> {
   constructor(private readonly prisma: PrismaService) {}
 
   async transform(value: string): Promise<Article> {
