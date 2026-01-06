@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import type { Role } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import type { Role } from '@prisma/generated/client';
+import { Prisma } from '@prisma/generated/client';
 
-import { PrismaService } from '../../../prisma/prisma.service';
-import { ErrorCode } from '../../../types/response';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ErrorCode } from '../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import {

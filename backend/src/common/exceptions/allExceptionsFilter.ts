@@ -9,7 +9,7 @@ import {
 import { ThrottlerException } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 
-import { ErrorCode } from '../../../types/response';
+import { ErrorCode } from '../../types/response';
 import { WinstonLoggerService } from '../services/winston-logger.service';
 import { BusinessException } from './businessException';
 

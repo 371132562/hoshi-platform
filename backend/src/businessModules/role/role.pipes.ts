@@ -1,8 +1,8 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
-import type { Role } from '@prisma/client';
+import type { Role } from '@prisma/generated/client';
 
-import { PrismaService } from '../../../prisma/prisma.service';
-import { ErrorCode } from '../../../types/response';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ErrorCode } from '../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
 
 /**

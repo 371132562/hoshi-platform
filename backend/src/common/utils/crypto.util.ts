@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 
-import { ErrorCode } from '../../../types/response';
+import { ErrorCode } from '../../types/response';
 import { BusinessException } from '../exceptions/businessException';
 
 /**

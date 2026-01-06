@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { PrismaService } from '../../../prisma/prisma.service';
-import { ErrorCode } from '../../../types/response';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ErrorCode } from '../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
 import { TokenPayloadDto } from './auth.dto';
 

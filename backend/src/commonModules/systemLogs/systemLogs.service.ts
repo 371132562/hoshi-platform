@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { existsSync } from 'fs';
 import { join } from 'path';
 
-import { PrismaService } from '../../../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import {
   LogFileLevel,

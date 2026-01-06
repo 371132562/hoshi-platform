@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import type { User } from '@prisma/client';
+import type { User } from '@prisma/generated/client';
 
 import {
   CreateUserEncryptedDto,

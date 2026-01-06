@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/generated/client';
 import * as path from 'path';
 
 @Injectable()
@@ -8,30 +8,51 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
+  /**
+   * 解析数据库 URL，处理相对路径和 dist 目录编译后路径问题
+   * @param rawUrl 原始数据库 URL，支持 file: 前缀或纯路径
+   * @returns 带 file: 前缀的绝对路径 URL
+   */
+  private static resolveDatabaseUrl(rawUrl: string): string {
+    // 剥离 file: 前缀以便进行路径处理
+    const filePath = rawUrl.startsWith('file:') ? rawUrl.slice(5) : rawUrl;
+
+    // 绝对路径直接返回
+    if (path.isAbsolute(filePath)) {
+      return `file:${filePath}`;
+    }
+
+    // 相对路径需要基于 prisma 目录解析
+    // __dirname 在 CommonJS 模块下指向当前文件所在目录
+    // 编译后位于 dist/src/prisma/，源码位于 src/prisma/
+    // 目标是找到项目根目录 (backend/)，因为 prisma.config.ts 在那里
+
+
+    const startDir = __dirname;
+    // NestJS/SWC 编译后结构是 dist/prisma（不是 dist/src/prisma）
+    // 源码结构是 src/prisma
+    // 两者都只需向上回退两层到达 backend 根目录
+    const projectRoot = path.resolve(startDir, '../..');
+
+    const absolutePath = path.resolve(projectRoot, filePath);
+
+    // 确保数据库目录存在 (better-sqlite3 不会自动创建目录)
+    const dbDir = path.dirname(absolutePath);
+    // 使用 import * as fs from 'fs' 需要在文件头部添加，这里为了最小化改动使用 require 或假设上面加了 import
+    // 既然要加 import，我会在下一步一并加上
+    if (!require('fs').existsSync(dbDir)) {
+      require('fs').mkdirSync(dbDir, { recursive: true });
+    }
+
+    return `file:${absolutePath}`;
+  }
+
   constructor() {
-    let url = process.env.DATABASE_URL ?? 'file:./dev.db';
-    if (url.startsWith('file:')) {
-      url = url.slice(5);
-    }
+    const url = PrismaService.resolveDatabaseUrl(
+      process.env.DATABASE_URL ?? 'file:./local.db',
+    );
 
-    // 使用 __dirname 确保路径解析永远基于文件所在位置，而非启动目录
-    let prismaDir = __dirname;
-    // 如果在 dist 目录中（编译后），需要回退到项目源码对应的 prisma 目录
-    // 结构假设:
-    //   源码: backend/prisma/prisma.service.ts
-    //   编译: backend/dist/prisma/prisma.service.js
-    //   Schema: backend/prisma/schema.prisma (通常不被编译到 dist)
-    if (__dirname.includes('dist')) {
-      prismaDir = path.resolve(__dirname, '../../prisma');
-    }
-
-    if (!path.isAbsolute(url)) {
-      url = path.resolve(prismaDir, url);
-    }
-
-    const adapter = new PrismaBetterSqlite3({
-      url,
-    });
+    const adapter = new PrismaBetterSqlite3({ url });
     super({
       adapter,
       // 连接池配置

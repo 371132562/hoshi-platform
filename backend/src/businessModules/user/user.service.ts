@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import type { User } from '@prisma/client';
+import type { User } from '@prisma/generated/client';
 import * as bcrypt from 'bcrypt';
 
-import { PrismaService } from '../../../prisma/prisma.service';
-import { ErrorCode } from '../../../types/response';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ErrorCode } from '../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { CryptoUtil } from '../../common/utils/crypto.util';

@@ -6,7 +6,8 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
-export default tseslint.config(
+/** @type {import('eslint').Linter.Config[]} */
+export default [
   {
     ignores: [
       '**/dist/**',
@@ -17,9 +18,12 @@ export default tseslint.config(
     ]
   },
 
-  // Base configuration
+  // Base configuration defaults
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+
+  // Base configuration overrides
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx,js,mjs,cjs}'],
     languageOptions: {
       ecmaVersion: 2020,
@@ -80,4 +84,4 @@ export default tseslint.config(
 
   // Prettier must be last
   eslintPluginPrettierRecommended
-)
+]

@@ -29,15 +29,10 @@ export const users = [
 
 // 生成加密后的用户数据
 export const generateUsers = async () => {
-  const encryptedUsers = [];
-
-  for (const user of users) {
-    const encryptedPassword = await generatePassword(user.password);
-    encryptedUsers.push({
+  return Promise.all(
+    users.map(async (user) => ({
       ...user,
-      password: encryptedPassword,
-    });
-  }
-
-  return encryptedUsers;
+      password: await generatePassword(user.password),
+    })),
+  );
 };

@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import type { Article } from '@prisma/client';
+import type { Article } from '@prisma/generated/client';
 
 import {
   ArticleItem,

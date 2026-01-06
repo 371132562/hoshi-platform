@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { ErrorCode } from '../../../types/response';
+import { ErrorCode } from '../../types/response';
 
 /**
  * 业务异常（BusinessException）

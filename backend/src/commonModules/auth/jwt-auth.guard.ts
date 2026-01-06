@@ -7,7 +7,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
-import { ErrorCode } from '../../../types/response';
+import { ErrorCode } from '../../types/response';
 import { IS_PUBLIC_KEY } from '../../common/auth/public.decorator';
 
 @Injectable()

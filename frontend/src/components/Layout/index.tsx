@@ -16,8 +16,6 @@ import { Link, useLocation, useNavigate, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
 import Forbidden from '@/components/Forbidden'
-import ThemeColorPicker from '@/components/ThemeColorPicker'
-import ThemeSurfacePicker from '@/components/ThemeSurfacePicker'
 import {
   getAllRoutes,
   getBreadcrumbItems,
@@ -262,12 +260,7 @@ export const Component: FC = () => {
           style={{ minWidth: 0 }}
         />
         <div className="flex-grow" />
-        <div className="mr-3 flex-shrink-0">
-          <ThemeColorPicker />
-        </div>
-        <div className="mr-4 flex-shrink-0">
-          <ThemeSurfacePicker />
-        </div>
+
         <div className="flex-shrink-0">
           {/* 用户头像及信息浮窗，hover触发 */}
           <Dropdown

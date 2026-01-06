@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/generated/client';
 
 /**
  * 将 Prisma Decimal 或其他常见数值输入统一转换为 number

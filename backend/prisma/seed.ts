@@ -4,11 +4,22 @@
  * 它使用内存缓存来通过减少数据库查询次数来提高性能。
  */
 
-import { PrismaClient } from '@prisma/client';
-
+import * as path from 'path';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaClient } from './generated/client';
 import { generateUsers } from './initialData/authData';
 
-const prisma = new PrismaClient();
+// 解析数据库 URL
+const rawUrl = process.env.DATABASE_URL ?? 'file:./db/local.db';
+let url = rawUrl.startsWith('file:') ? rawUrl.slice(5) : rawUrl;
+
+// 解析绝对路径：假设脚本在 backend 根目录下运行（pnpm prisma db seed）
+if (!path.isAbsolute(url)) {
+  url = path.resolve(process.cwd(), url);
+}
+
+const adapter = new PrismaBetterSqlite3({ url });
+const prisma = new PrismaClient({ adapter });
 
 /**
  * 认证相关数据初始化（角色和用户）

@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
     base: env.VITE_DEPLOY_PATH || '/',
     server: {
       host: '0.0.0.0',
+      port: 5550,
       proxy: {
         '/api': {
           target: 'http://localhost:3888',
