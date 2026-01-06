@@ -145,8 +145,8 @@ export const Component: FC = () => {
                 >
                   <div className="mb-2 text-base font-semibold text-gray-800">{user.name}</div>
                   <div className="mb-2 flex items-center text-sm text-gray-600">
-                    <span className="mr-2 text-gray-400">编号：</span>
-                    <span className="font-mono">{user.code || '-'}</span>
+                    <span className="mr-2 text-gray-400">用户名：</span>
+                    <span className="font-mono">{user.username || '-'}</span>
                   </div>
                   <div className="mb-2 flex items-center text-sm text-gray-600">
                     <span className="mr-2 text-gray-400">角色：</span>

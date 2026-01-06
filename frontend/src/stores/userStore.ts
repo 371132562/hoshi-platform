@@ -21,13 +21,13 @@ import { decryptSalt, encryptData } from '../utils/crypto'
 
 // 临时类型定义，用于前端表单
 type CreateUserFormData = {
-  code: string
+  username: string
   name: string
   department: string
   email?: string
   phone?: string
   password: string
-  roleId?: string
+  roleId: string
 }
 
 type ResetPasswordFormData = {

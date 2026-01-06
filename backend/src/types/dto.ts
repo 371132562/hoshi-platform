@@ -1,22 +1,22 @@
 /* 统一导出所有 DTO class 和对应的 type */
 
 // 用户模块
-export * from '../src/businessModules/user/user.dto';
+export * from '../businessModules/user/user.dto';
 
 // 角色模块
-export * from '../src/businessModules/role/role.dto';
+export * from '../businessModules/role/role.dto';
 
 // 文章模块
-export * from '../src/businessModules/article/article.dto';
+export * from '../businessModules/article/article.dto';
 
 // 认证模块
-export * from '../src/commonModules/auth/auth.dto';
+export * from '../commonModules/auth/auth.dto';
 
 // 系统日志模块
-export * from '../src/commonModules/systemLogs/systemLogs.dto';
+export * from '../commonModules/systemLogs/systemLogs.dto';
 
 // 上传模块
-export * from '../src/commonModules/upload/upload.dto';
+export * from '../commonModules/upload/upload.dto';
 
 /**
  * 通用类型定义

@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Article, ArticleOrder } from '@prisma/generated/client';
 import { BusinessException } from 'src/common/exceptions/businessException';
 
-import { PrismaService } from '../../prisma/prisma.service';
-import { ErrorCode } from '../../types/response';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { ImageProcessorUtils } from '../../common/upload';
 import { ConcurrencyService } from '../../commonModules/concurrency/concurrency.service';
 import { UploadService } from '../../commonModules/upload/upload.service';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ErrorCode } from '../../types/response';
 import {
   ArticleItem,
   ArticleListResponse,

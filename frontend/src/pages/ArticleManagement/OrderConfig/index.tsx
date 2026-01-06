@@ -97,6 +97,31 @@ const SortableItem: React.FC<SortableItemProps> = ({
   )
 }
 
+// 文章排序骨架屏组件（移到组件外部，避免每次渲染时重新创建）
+const OrderConfigSkeleton: React.FC = () => (
+  <div>
+    <div className="mb-4">
+      <Skeleton.Input
+        active
+        className="mb-4 h-10 w-80"
+      />
+    </div>
+    <div className="mb-4 space-y-4">
+      {[...Array(3)].map((_, i) => (
+        <Skeleton.Input
+          key={i}
+          active
+          className="h-12 w-full"
+        />
+      ))}
+    </div>
+    <Skeleton.Button
+      active
+      className="h-10 w-full"
+    />
+  </div>
+)
+
 const PAGES = [{ key: 'home', label: '首页' }]
 
 const OrderConfig = () => {
@@ -115,6 +140,13 @@ const OrderConfig = () => {
     []
   )
   const [previewVisible, setPreviewVisible] = useState(false)
+  // 使用渲染期间状态调整模式 (Adjust state during rendering) 代替 useEffect
+  // 这种模式是 React 官方推荐的用于"Props/Store 变化时重置 State"的方案
+  const [prevPageArticles, setPrevPageArticles] = useState(pageArticles)
+  if (pageArticles !== prevPageArticles) {
+    setPrevPageArticles(pageArticles)
+    setSelectedArticles(pageArticles.map(article => ({ ...article, uniqueId: uuidv4() })))
+  }
 
   useEffect(() => {
     getAllArticles()
@@ -125,10 +157,6 @@ const OrderConfig = () => {
       getArticlesByPage(activePage)
     }
   }, [activePage, getArticlesByPage])
-
-  useEffect(() => {
-    setSelectedArticles(pageArticles.map(article => ({ ...article, uniqueId: uuidv4() })))
-  }, [pageArticles])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -201,29 +229,6 @@ const OrderConfig = () => {
   const selectedArticleIds = new Set(selectedArticles.map(item => item.id).filter(Boolean))
 
   // 文章排序骨架屏组件
-  const OrderConfigSkeleton = () => (
-    <div>
-      <div className="mb-4">
-        <Skeleton.Input
-          active
-          className="mb-4 h-10 w-80"
-        />
-      </div>
-      <div className="mb-4 space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <Skeleton.Input
-            key={i}
-            active
-            className="h-12 w-full"
-          />
-        ))}
-      </div>
-      <Skeleton.Button
-        active
-        className="h-10 w-full"
-      />
-    </div>
-  )
 
   return (
     <div className="w-full max-w-4xl">

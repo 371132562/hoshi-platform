@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/generated/client';
+import * as fs from 'fs';
 import * as path from 'path';
 
 @Injectable()
@@ -27,7 +28,6 @@ export class PrismaService
     // 编译后位于 dist/src/prisma/，源码位于 src/prisma/
     // 目标是找到项目根目录 (backend/)，因为 prisma.config.ts 在那里
 
-
     const startDir = __dirname;
     // NestJS/SWC 编译后结构是 dist/prisma（不是 dist/src/prisma）
     // 源码结构是 src/prisma
@@ -38,10 +38,8 @@ export class PrismaService
 
     // 确保数据库目录存在 (better-sqlite3 不会自动创建目录)
     const dbDir = path.dirname(absolutePath);
-    // 使用 import * as fs from 'fs' 需要在文件头部添加，这里为了最小化改动使用 require 或假设上面加了 import
-    // 既然要加 import，我会在下一步一并加上
-    if (!require('fs').existsSync(dbDir)) {
-      require('fs').mkdirSync(dbDir, { recursive: true });
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
     }
 
     return `file:${absolutePath}`;

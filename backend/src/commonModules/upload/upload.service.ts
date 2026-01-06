@@ -5,8 +5,6 @@ import { existsSync } from 'fs'; // 导入 existsSync
 import { readdir, readFile, unlink } from 'fs/promises'; // 导入 fs/promises 中的 unlink 用于异步删除文件
 import { join } from 'path';
 
-import { PrismaService } from '../../prisma/prisma.service';
-import { ErrorCode } from '../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { ImageProcessorUtils } from '../../common/upload/image-processor.utils';
@@ -14,6 +12,8 @@ import {
   getImagePath,
   UPLOAD_DIR,
 } from '../../common/upload/multer-config.utils'; // 导入 getImagePath 和 UPLOAD_DIR
+import { PrismaService } from '../../prisma/prisma.service';
+import { ErrorCode } from '../../types/response';
 
 // 可插拔的"图片在用收集器"类型定义
 export type InUseImageCollector = () => Promise<Set<string>>;

@@ -5,7 +5,6 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
-import { PrismaModule } from './prisma/prisma.module';
 import { ArticleModule } from './businessModules/article/article.module';
 import { RoleModule } from './businessModules/role/role.module';
 import { UserModule } from './businessModules/user/user.module';
@@ -18,6 +17,7 @@ import { AuthModule } from './commonModules/auth/auth.module';
 import { JwtAuthGuard } from './commonModules/auth/jwt-auth.guard';
 import { SystemLogsModule } from './commonModules/systemLogs/systemLogs.module';
 import { UploadModule } from './commonModules/upload/upload.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [

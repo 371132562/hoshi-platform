@@ -1,6 +1,7 @@
 import * as xlsx from 'xlsx';
 
-import { ExportFormat } from '../../../types/dto';
+import { ExportFormat } from '@/types/dto';
+
 import dayjs from './date-time.utils';
 
 /**

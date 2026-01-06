@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
-import { PrismaService } from '../../prisma/prisma.service';
-import { ErrorCode } from '../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { CryptoUtil } from '../../common/utils/crypto.util';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ErrorCode } from '../../types/response';
 import {
   ChallengeResponse,
   LoginResponseDto,
@@ -51,11 +51,11 @@ export class AuthService {
    * 两步登录 - 第二步：接收前端crypto加密数据并校验
    */
   async loginWithHash(dto: LoginWithHashDto): Promise<LoginResponseDto> {
-    const { code } = dto;
-    this.logger.log(`[操作] 用户登录 - 用户编号: ${code}`);
+    const { username } = dto;
+    this.logger.log(`[操作] 用户登录 - 用户名: ${username}`);
     try {
       const user = await this.prisma.user.findFirst({
-        where: { code, delete: 0 },
+        where: { username, delete: 0 },
         include: {
           role: {
             select: {
@@ -70,7 +70,7 @@ export class AuthService {
         },
       });
       if (!user) {
-        this.logger.warn(`[验证失败] 用户登录 - 用户编号 ${code} 不存在`);
+        this.logger.warn(`[验证失败] 用户登录 - 用户名 ${username} 不存在`);
         throw new BusinessException(ErrorCode.USER_NOT_FOUND, '用户不存在');
       }
 
@@ -82,14 +82,14 @@ export class AuthService {
       // 使用bcrypt.compare验证密码
       const isValid = await bcrypt.compare(password, user.password);
       if (!isValid) {
-        this.logger.warn(`[验证失败] 用户登录 - 用户编号 ${code} 密码错误`);
+        this.logger.warn(`[验证失败] 用户登录 - 用户名 ${username} 密码错误`);
         throw new BusinessException(ErrorCode.PASSWORD_INCORRECT, '密码错误');
       }
 
       const payload: TokenPayloadDto = {
         sub: user.id,
         userId: user.id,
-        code: user.code,
+        username: user.username,
         name: user.name,
         userName: user.name,
         roleId: user.roleId || undefined,
@@ -97,23 +97,21 @@ export class AuthService {
       };
       const token = this.jwtService.sign(payload);
       this.logger.log(
-        `[操作] 用户登录成功 - 用户编号: ${code}, 姓名: ${user.name}`,
+        `[操作] 用户登录成功 - 用户名: ${username}, 姓名: ${user.name}`,
       );
       return {
         token,
         user: {
           id: user.id,
-          code: user.code,
+          username: user.username,
           name: user.name,
           department: user.department,
           email: user.email || null,
           phone: user.phone || null,
-          role: user.role
-            ? {
-                name: user.role.name,
-                allowedRoutes: (user.role.allowedRoutes as string[]) || [],
-              }
-            : null,
+          role: {
+            name: user.role!.name,
+            allowedRoutes: (user.role!.allowedRoutes as string[]) || [],
+          },
         },
       };
     } catch (error) {
@@ -163,22 +161,20 @@ export class AuthService {
       }
 
       this.logger.log(
-        `[操作] 获取用户信息 - 用户ID: ${userId}, 编号: ${user.code}, 姓名: ${user.name}`,
+        `[操作] 获取用户信息 - 用户ID: ${userId}, 用户名: ${user.username}, 姓名: ${user.name}`,
       );
 
       return {
         id: user.id,
-        code: user.code,
+        username: user.username,
         name: user.name,
         department: user.department,
         email: user.email || null,
         phone: user.phone || null,
-        role: user.role
-          ? {
-              name: user.role.name,
-              allowedRoutes: (user.role.allowedRoutes as string[]) || [],
-            }
-          : null,
+        role: {
+          name: user.role!.name,
+          allowedRoutes: (user.role!.allowedRoutes as string[]) || [],
+        },
       };
     } catch (error) {
       if (error instanceof BusinessException) {

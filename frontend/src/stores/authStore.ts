@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthStore>()(
           const salt = decryptSalt(encryptedSalt)
           const encryptedData = encryptData(salt, data.password)
           const res = await http.post<LoginResponse>(loginApiUrl, {
-            code: data.code,
+            username: data.username,
             encryptedData
           })
           set({ token: res.data.token, user: res.data.user, loading: false, error: null })

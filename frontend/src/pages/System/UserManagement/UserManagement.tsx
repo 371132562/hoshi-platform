@@ -98,9 +98,9 @@ const UserManagement: React.FC = () => {
   const columns = useMemo(
     () => [
       {
-        title: '用户编号',
-        dataIndex: 'code',
-        key: 'code'
+        title: '用户名',
+        dataIndex: 'username',
+        key: 'username'
       },
       { title: '姓名', dataIndex: 'name', key: 'name' },
       { title: '部门', dataIndex: 'department', key: 'department' },
@@ -128,7 +128,7 @@ const UserManagement: React.FC = () => {
             </Button>
             <Button
               onClick={() => openModal(record)}
-              disabled={record.code === '88888888'}
+              disabled={record.username === 'admin'}
             >
               编辑
             </Button>
@@ -139,7 +139,7 @@ const UserManagement: React.FC = () => {
                   此操作不可恢复，请谨慎操作。
                   <br />
                   <span style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                    将被删除：用户 {record.name}（{record.code}）
+                    将被删除：用户 {record.name}（{record.username}）
                   </span>
                 </span>
               }
@@ -149,13 +149,13 @@ const UserManagement: React.FC = () => {
                   message.success('用户删除成功')
                 }
               }}
-              disabled={record.code === '88888888'}
+              disabled={record.username === 'admin'}
               okText="确定"
               cancelText="取消"
             >
               <Button
                 danger
-                disabled={record.code === '88888888'}
+                disabled={record.username === 'admin'}
               >
                 删除
               </Button>
@@ -201,14 +201,14 @@ const UserManagement: React.FC = () => {
           initialValues={{ name: '', department: '' }}
         >
           <Form.Item
-            name="code"
-            label="用户编号"
-            rules={[{ required: true, message: '请输入用户编号' }]}
+            name="username"
+            label="用户名"
+            rules={[{ required: true, message: '请输入用户名' }]}
           >
             <Input
               disabled={!!editUser}
               maxLength={20}
-              placeholder="请输入用户编号"
+              placeholder="请输入用户名"
             />
           </Form.Item>
           <Form.Item

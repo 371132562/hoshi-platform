@@ -71,8 +71,9 @@ export default [
     files: ['backend/**/*.ts'],
     languageOptions: {
       parserOptions: {
-        project: ['./backend/tsconfig.json'],
-        tsconfigRootDir: import.meta.dirname
+        // 使用 projectService 替代 project，这是 typescript-eslint v8 的推荐方式
+        // 它会自动查找最近的 tsconfig.json，可能能绕过 Windows 路径分隔符问题
+        projectService: true
       }
     },
     rules: {

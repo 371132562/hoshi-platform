@@ -117,25 +117,25 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.RoleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  allowedRoutes: 'allowedRoutes',
+  createTime: 'createTime',
+  updateTime: 'updateTime',
+  delete: 'delete'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
-  code: 'code',
+  username: 'username',
   name: 'name',
   department: 'department',
   email: 'email',
   phone: 'phone',
   password: 'password',
   roleId: 'roleId',
-  createTime: 'createTime',
-  updateTime: 'updateTime',
-  delete: 'delete'
-};
-
-exports.Prisma.RoleScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  description: 'description',
-  allowedRoutes: 'allowedRoutes',
   createTime: 'createTime',
   updateTime: 'updateTime',
   delete: 'delete'
@@ -165,9 +165,9 @@ exports.Prisma.ImageScalarFieldEnum = {
   filename: 'filename',
   originalName: 'originalName',
   hash: 'hash',
-  delete: 'delete',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  delete: 'delete'
 };
 
 exports.Prisma.SortOrder = {
@@ -177,11 +177,6 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 
 exports.Prisma.JsonNullValueFilter = {
@@ -195,10 +190,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 
 exports.Prisma.ModelName = {
-  User: 'User',
   Role: 'Role',
+  User: 'User',
   Article: 'Article',
   ArticleOrder: 'ArticleOrder',
   Image: 'Image'

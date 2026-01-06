@@ -1,6 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { Card, DatePicker, Form, Input, Select, Skeleton, Space, Table, Tooltip } from 'antd'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 import { useSystemLogsStore } from '@/stores/systemLogsStore'
 import { dayjs } from '@/utils/dayjs'
@@ -77,7 +77,7 @@ const SystemLogsUser: React.FC = () => {
   /** 用户日志文件选项（用于Select组件） */
   const userFiles = useSystemLogsStore(state => state.userFiles)
   const userFileOptions = useMemo(
-    () => userFiles.map(f => ({ label: f.filename, value: f.filename })),
+    () => userFiles.map((f: { filename: string }) => ({ label: f.filename, value: f.filename })),
     [userFiles]
   )
   /** 用户选项列表（用于用户选择） */
@@ -93,9 +93,14 @@ const SystemLogsUser: React.FC = () => {
 
   // ==================== 本地状态 ====================
   /** 表格数据源，从store的readUserResult转换而来 */
-  const [dataSource, setDataSource] = useState<Array<{ key: string; ts: string; message: string }>>(
-    []
-  )
+  const dataSource = useMemo(() => {
+    if (!readUserResult) return []
+    return readUserResult.map((l, idx) => ({
+      key: `${idx}`,
+      ts: l.ts,
+      message: l.message
+    }))
+  }, [readUserResult])
 
   // ==================== 过滤后的数据源 ====================
   /** 根据关键词和时间范围过滤后的数据源 */
@@ -160,23 +165,6 @@ const SystemLogsUser: React.FC = () => {
   }
 
   // ==================== 副作用处理 ====================
-  /**
-   * 同步store数据到表格
-   * 当readUserResult更新时，转换为表格需要的格式
-   */
-  useEffect(() => {
-    if (readUserResult) {
-      const rows = (readUserResult || []).map((l, idx) => ({
-        key: `${idx}`,
-        ts: l.ts,
-        message: l.message
-      }))
-      setDataSource(rows)
-    } else {
-      // 如果readUserResult为空，清空表格
-      setDataSource([])
-    }
-  }, [readUserResult])
 
   /**
    * 组件初始化
@@ -265,7 +253,9 @@ const SystemLogsUser: React.FC = () => {
               placeholder="请选择用户或输入姓名/编号搜索"
               style={{ width: 240 }}
               filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                String(option?.label ?? '')
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
               onChange={handleUserChange}
               options={userOptions}
@@ -287,7 +277,9 @@ const SystemLogsUser: React.FC = () => {
               notFoundContent={userFilesLoading ? '加载中...' : '暂无日志文件'}
               disabled={!userId}
               filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                String(option?.label ?? '')
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
             />
           </Form.Item>

@@ -18,7 +18,7 @@ export const roles = [
 // 只保留超管用户，移除roleName字段
 export const users = [
   {
-    code: '88888888',
+    username: 'admin',
     name: '超级管理员',
     department: '超级管理员',
     email: '',

@@ -12,28 +12,6 @@ datasource db {
   provider = "sqlite"
 }
 
-// 用户表
-model User {
-  id         String   @id @default(uuid()) // 主键ID（UUID）
-  code       String   @unique // 用户编号（唯一）
-  name       String // 用户姓名
-  department String // 所属部门
-  email      String? // 邮箱地址（可选）
-  phone      String? // 电话号码（可选）
-  password   String // 密码（加密存储）
-  roleId     String? // 角色ID（可选，允许用户暂时没有角色）
-  role       Role?    @relation(fields: [roleId], references: [id]) // 关联到角色表
-  createTime DateTime @default(now())
-  updateTime DateTime @updatedAt
-  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
-
-  @@unique([code, delete]) // 邮箱在未删除状态下唯一
-  @@index([id])
-  @@index([code, delete])
-  @@index([email, delete])
-  @@index([roleId])
-}
-
 // 角色表
 model Role {
   id            String   @id @default(uuid()) // 主键ID（UUID）
@@ -49,6 +27,27 @@ model Role {
   @@index([name, delete])
 }
 
+// 用户表
+model User {
+  id         String   @id @default(uuid()) // 主键ID（UUID）
+  username   String   @unique // 用户名（唯一）
+  name       String // 用户姓名
+  department String // 所属部门
+  email      String? // 邮箱地址（可选）
+  phone      String? // 电话号码（可选）
+  password   String // 密码（加密存储）
+  roleId     String // 角色ID（必填）
+  role       Role     @relation(fields: [roleId], references: [id]) // 关联到角色表
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
+
+  @@unique([username, delete]) // 用户名在未删除状态下唯一
+  @@index([id])
+  @@index([username, delete])
+  @@index([email, delete])
+  @@index([roleId])
+}
 
 // 文章管理表
 model Article {
@@ -82,9 +81,9 @@ model Image {
   filename     String   @unique // 生成的文件名
   originalName String // 原始文件名
   hash         String // 文件哈希值
-  delete       Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  delete       Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@unique([hash, delete])
   @@index([id, delete])

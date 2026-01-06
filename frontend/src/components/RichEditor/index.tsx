@@ -4,7 +4,7 @@ import '@wangeditor/editor/dist/css/style.css'
 // 从 wangeditor 核心库和 React 封装库中引入所需类型和组件
 import type { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
 import { Editor, Toolbar } from '@wangeditor/editor-for-react'
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
 
 import { extractFilename } from '@/utils'
 
@@ -72,14 +72,18 @@ const RichEditor = forwardRef<RichEditorRef, RichEditorProps>(
 
     // React Hooks: useState
     const [editor, setEditor] = useState<IDomEditor | null>(null)
-    const [allInsertedImages, setAllInsertedImages] = useState<string[]>([])
+    // 使用函数式初始化，从 initialImages 创建初始集合
+    const [allInsertedImages, setAllInsertedImages] = useState<string[]>(() =>
+      readOnly ? [] : initialImages.map(extractFilename)
+    )
 
-    // React Hooks: useEffect
-    useEffect(() => {
-      if (!readOnly) {
-        setAllInsertedImages(prev => [...new Set([...prev, ...initialImages.map(extractFilename)])])
-      }
-    }, [initialImages, readOnly])
+    // 添加图片到追踪列表的回调函数
+    const addImageToTracking = useCallback((filename: string) => {
+      setAllInsertedImages(prev => {
+        if (prev.includes(filename)) return prev
+        return [...prev, filename]
+      })
+    }, [])
 
     useEffect(() => {
       return () => {
@@ -158,9 +162,9 @@ const RichEditor = forwardRef<RichEditorRef, RichEditorProps>(
             const { src } = imageNode
             // 只在非只读模式下追踪图片，避免不必要的状态更新
             if (!readOnly) {
-              // 统一按文件名追踪，使用 Set 去重，确保唯一
+              // 统一按文件名追踪，使用回调函数确保唯一
               const filename = extractFilename(src)
-              setAllInsertedImages(prevSrcs => [...new Set([...prevSrcs, filename])])
+              addImageToTracking(filename)
             }
           },
           parseImageSrc: (src: string) => {

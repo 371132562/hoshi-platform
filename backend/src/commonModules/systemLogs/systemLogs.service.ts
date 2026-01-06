@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { existsSync } from 'fs';
 import { join } from 'path';
 
-import { PrismaService } from '../../prisma/prisma.service';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import {
   LogFileLevel,
   LogLineItem,
@@ -333,18 +333,18 @@ export class SystemLogsService {
       }
 
       const dirs = readdirSync(usersDir, { withFileTypes: true });
-      const codes = dirs.filter((d) => d.isDirectory()).map((d) => d.name);
+      const usernames = dirs.filter((d) => d.isDirectory()).map((d) => d.name);
 
-      // 查询用户表，匹配编号 -> 姓名
+      // 查询用户表，匹配用户名 -> 姓名
       const users = await this.prisma.user.findMany({
-        where: { code: { in: codes }, delete: 0 },
-        select: { code: true, name: true },
+        where: { username: { in: usernames }, delete: 0 },
+        select: { username: true, name: true },
       });
-      const codeToName = new Map(users.map((u) => [u.code, u.name]));
+      const usernameToName = new Map(users.map((u) => [u.username, u.name]));
 
-      const list = codes.map((code) => ({
-        userCode: code,
-        userName: codeToName.get(code) || '',
+      const list = usernames.map((username) => ({
+        userCode: username,
+        userName: usernameToName.get(username) || '',
       }));
 
       const result = { list };

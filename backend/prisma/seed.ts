@@ -53,7 +53,7 @@ async function seedAuthData() {
   const encryptedUsers = await generateUsers();
   for (const user of encryptedUsers) {
     const existingUser = await prisma.user.findFirst({
-      where: { code: user.code, delete: 0 },
+      where: { username: user.username, delete: 0 },
     });
     if (existingUser) {
       await prisma.user.update({
@@ -67,11 +67,11 @@ async function seedAuthData() {
           roleId: adminRole.id,
         },
       });
-      console.log(`超管用户 "${user.name}" (${user.code}) 已更新`);
+      console.log(`超管用户 "${user.name}" (${user.username}) 已更新`);
     } else {
       await prisma.user.create({
         data: {
-          code: user.code,
+          username: user.username,
           name: user.name,
           department: user.department,
           email: user.email,
@@ -80,7 +80,7 @@ async function seedAuthData() {
           roleId: adminRole.id,
         },
       });
-      console.log(`超管用户 "${user.name}" (${user.code}) 已创建`);
+      console.log(`超管用户 "${user.name}" (${user.username}) 已创建`);
     }
   }
   console.log('认证数据初始化完成！');

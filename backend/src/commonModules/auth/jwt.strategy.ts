@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
+import { BusinessException } from '../../common/exceptions/businessException';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
-import { BusinessException } from '../../common/exceptions/businessException';
 import { TokenPayloadDto } from './auth.dto';
 
 @Injectable()
@@ -52,7 +52,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // 返回用户信息，这些信息会被注入到请求对象中
       return {
         userId: user.id,
-        userCode: user.code,
+        username: user.username,
         userName: user.name,
         department: user.department,
         email: user.email,

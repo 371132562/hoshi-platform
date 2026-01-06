@@ -1,6 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { Card, DatePicker, Form, Input, Select, Skeleton, Space, Table, Tooltip } from 'antd'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 import { useSystemLogsStore } from '@/stores/systemLogsStore'
 import { dayjs } from '@/utils/dayjs'
@@ -77,15 +77,22 @@ const SystemLogsFull: React.FC = () => {
 
   // 由原始 files 直接计算 Select 选项
   const fileOptions = useMemo(
-    () => files.map(f => ({ label: f.filename, value: f.filename })),
+    () => files.map((f: { filename: string }) => ({ label: f.filename, value: f.filename })),
     [files]
   )
 
   // ==================== 本地状态 ====================
   /** 表格数据源，从store的readResult转换而来 */
-  const [dataSource, setDataSource] = useState<Array<{ key: string; ts: string; message: string }>>(
-    []
-  )
+  // ==================== 本地状态 ====================
+  /** 表格数据源，从store的readResult转换而来 */
+  const dataSource = useMemo(() => {
+    if (!readResult) return []
+    return readResult.map((l, idx) => ({
+      key: `${idx}`,
+      ts: l.ts,
+      message: l.message
+    }))
+  }, [readResult])
 
   // ==================== 过滤后的数据源 ====================
   /** 根据关键词和时间范围过滤后的数据源 */
@@ -141,19 +148,6 @@ const SystemLogsFull: React.FC = () => {
    * 同步store数据到表格
    * 当readResult更新时，转换为表格需要的格式
    */
-  useEffect(() => {
-    if (readResult) {
-      const rows = (readResult || []).map((l, idx) => ({
-        key: `${idx}`,
-        ts: l.ts,
-        message: l.message
-      }))
-      setDataSource(rows)
-    } else {
-      // 如果readResult为空（例如，切换文件后），清空表格
-      setDataSource([])
-    }
-  }, [readResult])
 
   /**
    * 组件初始化
@@ -228,7 +222,9 @@ const SystemLogsFull: React.FC = () => {
               style={{ width: 260 }}
               options={fileOptions}
               filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                String(option?.label ?? '')
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
             />
           </Form.Item>

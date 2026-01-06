@@ -10,12 +10,12 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
  */
 export type UserItem = {
   id: string;
-  code: string;
+  username: string;
   name: string;
   department: string;
   email: string | null;
   phone: string | null;
-  role?: { name?: string; allowedRoutes?: string[] } | null;
+  role: { name?: string; allowedRoutes?: string[] };
 };
 
 /**
@@ -23,8 +23,8 @@ export type UserItem = {
  */
 export class CreateUserDto {
   @IsString()
-  @IsNotEmpty({ message: '用户编码不能为空' })
-  code: string;
+  @IsNotEmpty({ message: '用户名不能为空' })
+  username: string;
 
   @IsString()
   @IsNotEmpty({ message: '用户姓名不能为空' })
@@ -46,9 +46,9 @@ export class CreateUserDto {
   @IsNotEmpty({ message: '密码不能为空' })
   password: string;
 
-  @IsOptional()
   @IsString()
-  roleId?: string;
+  @IsNotEmpty({ message: '角色不能为空' })
+  roleId: string;
 }
 export type CreateUser = InstanceType<typeof CreateUserDto>;
 
@@ -62,7 +62,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  code?: string;
+  username?: string;
 
   @IsOptional()
   @IsString()
@@ -142,8 +142,8 @@ export type ResetPassword = InstanceType<typeof ResetPasswordDto>;
  */
 export class CreateUserEncryptedDto {
   @IsString()
-  @IsNotEmpty({ message: '用户编码不能为空' })
-  code: string;
+  @IsNotEmpty({ message: '用户名不能为空' })
+  username: string;
 
   @IsString()
   @IsNotEmpty({ message: '用户姓名不能为空' })
@@ -165,9 +165,9 @@ export class CreateUserEncryptedDto {
   @IsNotEmpty({ message: '加密密码不能为空' })
   encryptedPassword: string;
 
-  @IsOptional()
   @IsString()
-  roleId?: string;
+  @IsNotEmpty({ message: '角色不能为空' })
+  roleId: string;
 }
 export type CreateUserEncrypted = InstanceType<typeof CreateUserEncryptedDto>;
 

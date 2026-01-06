@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import type { User } from '@prisma/generated/client';
 import * as bcrypt from 'bcrypt';
 
-import { PrismaService } from '../../prisma/prisma.service';
-import { ErrorCode } from '../../types/response';
 import { BusinessException } from '../../common/exceptions/businessException';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { CryptoUtil } from '../../common/utils/crypto.util';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ErrorCode } from '../../types/response';
 import {
   CreateUserEncryptedDto,
   ResetUserPasswordEncryptedDto,
@@ -38,12 +38,12 @@ export class UserService {
 
       const userList = users.map((user) => ({
         id: user.id,
-        code: user.code,
+        username: user.username,
         name: user.name,
         department: user.department,
         email: user.email ?? null,
         phone: user.phone ?? null,
-        role: user.role ? { name: user.role.name } : null,
+        role: { name: user.role!.name },
       }));
 
       return userList;
@@ -60,7 +60,9 @@ export class UserService {
    * 创建用户（加密）
    */
   async createUserEncrypted(dto: CreateUserEncryptedDto) {
-    this.logger.log(`[操作] 创建用户 - 编号: ${dto.code}, 姓名: ${dto.name}`);
+    this.logger.log(
+      `[操作] 创建用户 - 用户名: ${dto.username}, 姓名: ${dto.name}`,
+    );
 
     try {
       // 解密前端数据，提取密码部分
@@ -73,7 +75,7 @@ export class UserService {
 
       await this.prisma.user.create({
         data: {
-          code: dto.code,
+          username: dto.username,
           name: dto.name,
           department: dto.department,
           email: dto.email,
@@ -84,7 +86,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[操作] 创建用户成功 - 编号: ${dto.code}, 姓名: ${dto.name}`,
+        `[操作] 创建用户成功 - 用户名: ${dto.username}, 姓名: ${dto.name}`,
       );
       return true;
     } catch (error) {
@@ -105,12 +107,12 @@ export class UserService {
   async updateUser(user: User, dto: UpdateUserDto) {
     try {
       this.logger.log(
-        `[操作] 编辑用户 - ID: ${user.id}, 编号: ${user.code}, 姓名: ${user.name}`,
+        `[操作] 编辑用户 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.name}`,
       );
 
-      if (user.code === '88888888') {
+      if (user.username === 'admin') {
         this.logger.warn(
-          `[验证失败] 编辑用户 - 超管用户 ${user.code} 不可编辑`,
+          `[验证失败] 编辑用户 - 超管用户 ${user.username} 不可编辑`,
         );
         throw new BusinessException(
           ErrorCode.USER_CANNOT_EDIT_ADMIN,
@@ -130,7 +132,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[操作] 编辑用户成功 - ID: ${user.id}, 编号: ${user.code}, 姓名: ${dto.name || user.name}`,
+        `[操作] 编辑用户成功 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${dto.name || user.name}`,
       );
       return true;
     } catch (error) {
@@ -151,12 +153,12 @@ export class UserService {
   async deleteUser(user: User) {
     try {
       this.logger.log(
-        `[操作] 删除用户 - ID: ${user.id}, 编号: ${user.code}, 姓名: ${user.name}`,
+        `[操作] 删除用户 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.name}`,
       );
 
-      if (user.code === '88888888') {
+      if (user.username === 'admin') {
         this.logger.warn(
-          `[验证失败] 删除用户 - 超管用户 ${user.code} 不可删除`,
+          `[验证失败] 删除用户 - 超管用户 ${user.username} 不可删除`,
         );
         throw new BusinessException(
           ErrorCode.USER_CANNOT_DELETE_ADMIN,
@@ -170,7 +172,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[操作] 删除用户成功 - ID: ${user.id}, 编号: ${user.code}, 姓名: ${user.name}`,
+        `[操作] 删除用户成功 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.name}`,
       );
       return true;
     } catch (error) {
@@ -194,7 +196,7 @@ export class UserService {
       const user = await this.prisma.user.findUnique({ where: { id: dto.id } });
       this.logger.log(
         user
-          ? `[操作] 重置用户密码 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`
+          ? `[操作] 重置用户密码 - ID: ${dto.id}, 用户名: ${user.username}, 姓名: ${user.name}`
           : `[操作] 重置用户密码 - ID: ${dto.id}`,
       );
       if (!user || user.delete !== 0) {
@@ -216,7 +218,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[操作] 重置用户密码成功 - ID: ${dto.id}, 编号: ${user.code}, 姓名: ${user.name}`,
+        `[操作] 重置用户密码成功 - ID: ${dto.id}, 用户名: ${user.username}, 姓名: ${user.name}`,
       );
       return true;
     } catch (error) {

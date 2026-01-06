@@ -1,9 +1,9 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
 import type { Role } from '@prisma/generated/client';
 
+import { BusinessException } from '../../common/exceptions/businessException';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
-import { BusinessException } from '../../common/exceptions/businessException';
 
 /**
  * 角色名唯一性验证Pipe
