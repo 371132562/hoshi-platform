@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router'
 
 import ResetPasswordModal from '@/components/ResetPasswordModal'
 import { useAuthStore } from '@/stores/authStore'
+import { SYSTEM_ADMIN_ROLE_NAME } from '@/types'
 
 /**
  * 用户头像下拉菜单组件
@@ -37,7 +38,7 @@ const UserDropdown: FC = () => {
                   <div className="mb-2 flex items-center text-sm text-gray-600">
                     <span className="mr-2 text-gray-400">角色：</span>
                     <span>
-                      {(user.role?.name === 'admin' ? (
+                      {(user.role?.name === SYSTEM_ADMIN_ROLE_NAME ? (
                         <Tag color="red">超级管理员</Tag>
                       ) : (
                         user.role?.name

@@ -113,3 +113,6 @@ export type {
 
 // 上传相关类型
 export type { DeleteOrphans, OrphanImagesResponse, UploadResponse }
+
+// 系统常量
+export { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'

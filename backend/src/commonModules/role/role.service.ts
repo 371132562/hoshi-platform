@@ -5,6 +5,7 @@ import { Prisma } from '@prisma/generated/client';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { SYSTEM_ADMIN_ROLE_NAME } from '../../types/constants';
 import { ErrorCode } from '../../types/response';
 import {
   AssignRoleRoutesDto,
@@ -93,7 +94,7 @@ export class RoleService {
     try {
       this.logger.log(`[操作] 编辑角色 - ID: ${role.id}, 名称: ${role.name}`);
 
-      if (role.name === 'admin') {
+      if (role.name === SYSTEM_ADMIN_ROLE_NAME) {
         this.logger.warn(
           `[验证失败] 编辑角色 - 超管角色 ${role.name} 不可编辑`,
         );
@@ -152,7 +153,7 @@ export class RoleService {
     try {
       this.logger.log(`[操作] 删除角色 - ID: ${role.id}, 名称: ${role.name}`);
 
-      if (role.name === 'admin') {
+      if (role.name === SYSTEM_ADMIN_ROLE_NAME) {
         this.logger.warn(
           `[验证失败] 删除角色 - 超管角色 ${role.name} 不可删除`,
         );
@@ -215,7 +216,7 @@ export class RoleService {
         throw new BusinessException(ErrorCode.ROLE_NOT_FOUND, '角色不存在');
       }
 
-      if (role.name === 'admin') {
+      if (role.name === SYSTEM_ADMIN_ROLE_NAME) {
         this.logger.warn(
           `[验证失败] 分配角色菜单权限 - 超管角色 ${role.name} 不可编辑`,
         );

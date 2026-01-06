@@ -1,3 +1,4 @@
+import { PlusOutlined } from '@ant-design/icons'
 import { Button, Input, message, Popconfirm, Space, Table } from 'antd'
 import type { TablePaginationConfig } from 'antd/es/table/interface'
 import React, { useEffect, useMemo } from 'react'
@@ -111,6 +112,13 @@ const ArticleManagement: React.FC = () => {
           onSearch={handleSearch}
           style={{ width: 200 }}
         />
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => navigate('/article/create')}
+        >
+          新增文章
+        </Button>
       </div>
       <Table
         columns={columns}

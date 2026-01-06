@@ -17,7 +17,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { getMenuOptionsForRoleEdit } from '../../../router/routesConfig'
 import { useRoleStore } from '../../../stores/roleStore'
-import { RoleListItemDto } from '../../../types'
+import { RoleListItemDto, SYSTEM_ADMIN_ROLE_NAME } from '../../../types'
 
 // 角色管理页面
 const RoleManagement: React.FC = () => {
@@ -102,7 +102,8 @@ const RoleManagement: React.FC = () => {
         title: '角色名称',
         dataIndex: 'name',
         key: 'name',
-        render: (v: string) => (v === 'admin' ? <Tag color="red">超级管理员</Tag> : v)
+        render: (v: string) =>
+          v === SYSTEM_ADMIN_ROLE_NAME ? <Tag color="red">超级管理员</Tag> : v
       },
       { title: '描述', dataIndex: 'description', key: 'description' },
       { title: '用户数', dataIndex: 'userCount', key: 'userCount' },
@@ -115,13 +116,13 @@ const RoleManagement: React.FC = () => {
               color="primary"
               variant="outlined"
               onClick={() => openAssignModal(record)}
-              disabled={record.name === 'admin'}
+              disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
             >
               分配权限
             </Button>
             <Button
               onClick={() => openModal(record)}
-              disabled={record.name === 'admin'}
+              disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
             >
               编辑
             </Button>
@@ -142,13 +143,13 @@ const RoleManagement: React.FC = () => {
                   message.success('角色删除成功')
                 }
               }}
-              disabled={record.name === 'admin'}
+              disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
               okText="确定"
               cancelText="取消"
             >
               <Button
                 danger
-                disabled={record.name === 'admin'}
+                disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
               >
                 删除
               </Button>
@@ -199,7 +200,7 @@ const RoleManagement: React.FC = () => {
             rules={[{ required: true, message: '请输入角色名称' }]}
           >
             <Input
-              disabled={editRole?.name === 'admin'}
+              disabled={editRole?.name === SYSTEM_ADMIN_ROLE_NAME}
               maxLength={20}
               placeholder="请输入角色名称"
               showCount

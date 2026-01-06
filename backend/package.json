@@ -87,6 +87,7 @@
   },
   "exports": {
     "./types/*": "./src/types/*",
-    "./src/common/*": "./src/common/*"
+    "./src/common/*": "./src/common/*",
+    "./src/types/*": "./src/types/*"
   }
 }

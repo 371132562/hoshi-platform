@@ -1,7 +1,7 @@
 import { FileTextOutlined, HomeOutlined, SettingOutlined } from '@ant-design/icons'
 import React, { lazy } from 'react'
 
-import { RouteItem } from '@/types'
+import { RouteItem, SYSTEM_ADMIN_ROLE_NAME } from '@/types'
 
 // 使用React.lazy实现懒加载（默认导出）
 const ArticleManagement = lazy(() => import('@/pages/ArticleManagement'))
@@ -23,7 +23,12 @@ export const routes: RouteItem[] = [
     menuPosition: 'side',
     children: [
       { path: '/article/list', title: '文章列表', component: ArticleManagement },
-      { path: '/article/create', title: '新增文章', component: ModifyArticle },
+      {
+        path: '/article/create',
+        title: '新增文章',
+        component: ModifyArticle,
+        menuParent: '/article/list'
+      },
       { path: '/article/order', title: '配置文章顺序', component: OrderConfig },
       {
         path: '/article/modify/:id',
@@ -73,7 +78,7 @@ export const getSideMenuRoutes = (userRole?: {
   allowedRoutes: string[]
 }): RouteItem[] => {
   // 超管：全部侧边菜单
-  if (userRole?.name === 'admin') {
+  if (userRole?.name === SYSTEM_ADMIN_ROLE_NAME) {
     return routes.filter(r => r.menuPosition === 'side')
   }
 
@@ -244,7 +249,7 @@ export const getLayoutData = (
   if (isTopMenuRoute) {
     hasPermission = true
   } else if (user) {
-    if (user.role?.name === 'admin') {
+    if (user.role?.name === SYSTEM_ADMIN_ROLE_NAME) {
       hasPermission = true
     } else if (currentRoute?.menuParent) {
       hasPermission = true
