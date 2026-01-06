@@ -39,6 +39,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
               allowedRoutes: true,
             },
           },
+          organization: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       });
 
@@ -54,9 +60,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         userId: user.id,
         username: user.username,
         userName: user.name,
-        department: user.department,
-        email: user.email,
         phone: user.phone,
+        organizationId: user.organizationId,
+        organization: user.organization
+          ? { id: user.organization.id, name: user.organization.name }
+          : null,
         roleId: user.roleId,
         roleName: user.role?.name,
         role: user.role

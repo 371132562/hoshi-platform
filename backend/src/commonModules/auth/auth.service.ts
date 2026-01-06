@@ -67,6 +67,12 @@ export class AuthService {
               updateTime: true,
             },
           },
+          organization: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       });
       if (!user) {
@@ -105,7 +111,10 @@ export class AuthService {
           id: user.id,
           username: user.username,
           name: user.name,
-          department: user.department ?? null,
+          organizationId: user.organizationId ?? null,
+          organization: user.organization
+            ? { id: user.organization.id, name: user.organization.name }
+            : null,
           phone: user.phone || null,
           role: {
             name: user.role!.name,
@@ -146,6 +155,12 @@ export class AuthService {
               updateTime: true,
             },
           },
+          organization: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       });
 
@@ -167,7 +182,10 @@ export class AuthService {
         id: user.id,
         username: user.username,
         name: user.name,
-        department: user.department ?? null,
+        organizationId: user.organizationId ?? null,
+        organization: user.organization
+          ? { id: user.organization.id, name: user.organization.name }
+          : null,
         phone: user.phone || null,
         role: {
           name: user.role!.name,

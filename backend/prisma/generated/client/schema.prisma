@@ -12,6 +12,28 @@ datasource db {
   provider = "sqlite"
 }
 
+// 组织表 (树状结构)
+model Organization {
+  id          String  @id @default(uuid()) // 主键
+  name        String // 组织名称
+  parentId    String? // 父组织ID，根节点可能为空或指向特定Root
+  sort        Int     @default(0) // 排序值，越小越靠前
+  description String? // 描述
+
+  // 自关联关系
+  parent   Organization?  @relation("OrgHierarchy", fields: [parentId], references: [id])
+  children Organization[] @relation("OrgHierarchy")
+
+  // 与用户表的关联
+  users User[]
+
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+  delete     Int      @default(0) // 软删除，0表示未删除，1表示已删除
+
+  @@index([parentId, delete])
+}
+
 // 角色表
 model Role {
   id            String   @id @default(uuid()) // 主键ID（UUID）
@@ -29,17 +51,18 @@ model Role {
 
 // 用户表
 model User {
-  id         String   @id @default(uuid()) // 主键ID（UUID）
-  username   String // 用户名（唯一）
-  name       String // 用户姓名
-  department String? // 所属部门
-  phone      String? // 电话号码（可选）
-  password   String // 密码（加密存储）
-  roleId     String // 角色ID（必填）
-  role       Role     @relation(fields: [roleId], references: [id]) // 关联到角色表
-  createTime DateTime @default(now())
-  updateTime DateTime @updatedAt
-  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
+  id             String        @id @default(uuid()) // 主键ID（UUID）
+  username       String // 用户名（唯一）
+  name           String // 用户姓名
+  phone          String? // 电话号码（可选）
+  password       String // 密码（加密存储）
+  roleId         String // 角色ID（必填）
+  role           Role          @relation(fields: [roleId], references: [id]) // 关联到角色表
+  organizationId String? // 所属组织ID
+  organization   Organization? @relation(fields: [organizationId], references: [id]) // 关联到组织表
+  createTime     DateTime      @default(now())
+  updateTime     DateTime      @updatedAt
+  delete         Int           @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@unique([username, delete]) // 用户名在未删除状态下唯一
   @@index([id])

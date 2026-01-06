@@ -10,12 +10,14 @@ import {
   Space,
   Spin,
   Table,
-  Tag
+  Tag,
+  TreeSelect
 } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import ResetPasswordModal from '@/components/ResetPasswordModal'
 
+import { useOrganizationStore } from '../../../stores/organizationStore'
 import { useRoleStore } from '../../../stores/roleStore'
 import { useUserStore } from '../../../stores/userStore'
 import { SYSTEM_ADMIN_ROLE_NAME, UserItem } from '../../../types'
@@ -30,6 +32,8 @@ const UserManagement: React.FC = () => {
   const deleteUser = useUserStore(s => s.deleteUser)
   const roleList = useRoleStore(s => s.roleList)
   const fetchRoleList = useRoleStore(s => s.fetchRoleList)
+  const organizationList = useOrganizationStore(s => s.organizationList)
+  const fetchOrganizationList = useOrganizationStore(s => s.fetchOrganizationList)
 
   // React Hooks: useState
   const [modalOpen, setModalOpen] = useState(false)
@@ -42,6 +46,7 @@ const UserManagement: React.FC = () => {
   useEffect(() => {
     fetchUserList()
     fetchRoleList()
+    fetchOrganizationList()
   }, [])
 
   // 方法定义
@@ -88,7 +93,6 @@ const UserManagement: React.FC = () => {
         key: 'username'
       },
       { title: '姓名', dataIndex: 'name', key: 'name' },
-      { title: '部门', dataIndex: 'department', key: 'department' },
       { title: '电话', dataIndex: 'phone', key: 'phone' },
       {
         title: '角色',
@@ -186,7 +190,7 @@ const UserManagement: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ name: '', department: '' }}
+          initialValues={{ name: '' }}
         >
           <Form.Item
             name="username"
@@ -290,12 +294,15 @@ const UserManagement: React.FC = () => {
             />
           </Form.Item>
           <Form.Item
-            name="department"
-            label="部门"
+            name="organizationId"
+            label="所属组织"
           >
-            <Input
-              maxLength={20}
-              placeholder="请输入部门"
+            <TreeSelect
+              treeData={organizationList}
+              fieldNames={{ label: 'name', value: 'id', children: 'children' }}
+              allowClear
+              placeholder="请选择所属组织"
+              treeDefaultExpandAll
             />
           </Form.Item>
           <Form.Item

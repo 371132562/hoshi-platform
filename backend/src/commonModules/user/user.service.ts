@@ -40,7 +40,7 @@ export class UserService {
         id: user.id,
         username: user.username,
         name: user.name,
-        department: user.department ?? null,
+        organizationId: user.organizationId ?? null,
         phone: user.phone ?? null,
         role: { name: user.role!.name },
       }));
@@ -76,7 +76,6 @@ export class UserService {
         data: {
           username: dto.username,
           name: dto.name,
-          department: dto.department,
           phone: dto.phone,
           password: hashedPassword,
           roleId: dto.roleId,
@@ -122,7 +121,6 @@ export class UserService {
         where: { id: user.id },
         data: {
           name: dto.name ?? user.name,
-          department: dto.department ?? user.department,
           phone: dto.phone ?? user.phone,
           roleId: dto.roleId ?? user.roleId,
         },

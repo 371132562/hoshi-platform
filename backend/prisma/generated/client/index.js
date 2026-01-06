@@ -90,6 +90,17 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.OrganizationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  parentId: 'parentId',
+  sort: 'sort',
+  description: 'description',
+  createTime: 'createTime',
+  updateTime: 'updateTime',
+  delete: 'delete'
+};
+
 exports.Prisma.RoleScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -104,10 +115,10 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
   name: 'name',
-  department: 'department',
   phone: 'phone',
   password: 'password',
   roleId: 'roleId',
+  organizationId: 'organizationId',
   createTime: 'createTime',
   updateTime: 'updateTime',
   delete: 'delete'
@@ -151,6 +162,11 @@ exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
@@ -162,13 +178,9 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
-};
-
 
 exports.Prisma.ModelName = {
+  Organization: 'Organization',
   Role: 'Role',
   User: 'User',
   Article: 'Article',
@@ -183,10 +195,10 @@ const config = {
   "clientVersion": "7.2.0",
   "engineVersion": "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3",
   "activeProvider": "sqlite",
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// 指定生成器，这里是 Prisma Client for JavaScript\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client\" // 自定义输出目录，便于版本控制和 Docker 打包\n}\n\n// 定义数据源，这里使用 SQLite\ndatasource db {\n  provider = \"sqlite\"\n}\n\n// 角色表\nmodel Role {\n  id            String   @id @default(uuid()) // 主键ID（UUID）\n  name          String // 角色名称（唯一）\n  description   String? // 角色描述\n  allowedRoutes Json     @default(\"[]\") // 允许访问的前端路由地址（JSON数组）\n  users         User[] // 关联到用户表\n  createTime    DateTime @default(now())\n  updateTime    DateTime @updatedAt\n  delete        Int      @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@index([id])\n  @@index([name, delete])\n}\n\n// 用户表\nmodel User {\n  id         String   @id @default(uuid()) // 主键ID（UUID）\n  username   String // 用户名（唯一）\n  name       String // 用户姓名\n  department String? // 所属部门\n  phone      String? // 电话号码（可选）\n  password   String // 密码（加密存储）\n  roleId     String // 角色ID（必填）\n  role       Role     @relation(fields: [roleId], references: [id]) // 关联到角色表\n  createTime DateTime @default(now())\n  updateTime DateTime @updatedAt\n  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@unique([username, delete]) // 用户名在未删除状态下唯一\n  @@index([id])\n  @@index([username, delete])\n  @@index([roleId])\n}\n\n// 文章管理表\nmodel Article {\n  id         String   @id @default(uuid()) // 主键ID\n  title      String // 文章标题\n  content    String // 文章内容\n  images     Json     @default(\"[]\") // 文章内包含的图片 为图片id组成的数组\n  createTime DateTime @default(now())\n  updateTime DateTime @updatedAt\n  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@index([id, delete])\n}\n\n// 文章展示顺序排布表\nmodel ArticleOrder {\n  id         String   @id @default(uuid()) // 主键ID\n  page       String // 对应页面key\n  articles   Json     @default(\"[]\") //包含的所有文章 为文章id组成的数组\n  createTime DateTime @default(now())\n  updateTime DateTime @updatedAt\n  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@index([page, delete])\n}\n\n// 上传的图片\nmodel Image {\n  id           String   @id @default(uuid())\n  filename     String   @unique // 生成的文件名\n  originalName String // 原始文件名\n  hash         String // 文件哈希值\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n  delete       Int      @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@unique([hash, delete])\n  @@index([id, delete])\n}\n"
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// 指定生成器，这里是 Prisma Client for JavaScript\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client\" // 自定义输出目录，便于版本控制和 Docker 打包\n}\n\n// 定义数据源，这里使用 SQLite\ndatasource db {\n  provider = \"sqlite\"\n}\n\n// 组织表 (树状结构)\nmodel Organization {\n  id          String  @id @default(uuid()) // 主键\n  name        String // 组织名称\n  parentId    String? // 父组织ID，根节点可能为空或指向特定Root\n  sort        Int     @default(0) // 排序值，越小越靠前\n  description String? // 描述\n\n  // 自关联关系\n  parent   Organization?  @relation(\"OrgHierarchy\", fields: [parentId], references: [id])\n  children Organization[] @relation(\"OrgHierarchy\")\n\n  // 与用户表的关联\n  users User[]\n\n  createTime DateTime @default(now())\n  updateTime DateTime @updatedAt\n  delete     Int      @default(0) // 软删除，0表示未删除，1表示已删除\n\n  @@index([parentId, delete])\n}\n\n// 角色表\nmodel Role {\n  id            String   @id @default(uuid()) // 主键ID（UUID）\n  name          String // 角色名称（唯一）\n  description   String? // 角色描述\n  allowedRoutes Json     @default(\"[]\") // 允许访问的前端路由地址（JSON数组）\n  users         User[] // 关联到用户表\n  createTime    DateTime @default(now())\n  updateTime    DateTime @updatedAt\n  delete        Int      @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@index([id])\n  @@index([name, delete])\n}\n\n// 用户表\nmodel User {\n  id             String        @id @default(uuid()) // 主键ID（UUID）\n  username       String // 用户名（唯一）\n  name           String // 用户姓名\n  phone          String? // 电话号码（可选）\n  password       String // 密码（加密存储）\n  roleId         String // 角色ID（必填）\n  role           Role          @relation(fields: [roleId], references: [id]) // 关联到角色表\n  organizationId String? // 所属组织ID\n  organization   Organization? @relation(fields: [organizationId], references: [id]) // 关联到组织表\n  createTime     DateTime      @default(now())\n  updateTime     DateTime      @updatedAt\n  delete         Int           @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@unique([username, delete]) // 用户名在未删除状态下唯一\n  @@index([id])\n  @@index([username, delete])\n  @@index([roleId])\n}\n\n// 文章管理表\nmodel Article {\n  id         String   @id @default(uuid()) // 主键ID\n  title      String // 文章标题\n  content    String // 文章内容\n  images     Json     @default(\"[]\") // 文章内包含的图片 为图片id组成的数组\n  createTime DateTime @default(now())\n  updateTime DateTime @updatedAt\n  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@index([id, delete])\n}\n\n// 文章展示顺序排布表\nmodel ArticleOrder {\n  id         String   @id @default(uuid()) // 主键ID\n  page       String // 对应页面key\n  articles   Json     @default(\"[]\") //包含的所有文章 为文章id组成的数组\n  createTime DateTime @default(now())\n  updateTime DateTime @updatedAt\n  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@index([page, delete])\n}\n\n// 上传的图片\nmodel Image {\n  id           String   @id @default(uuid())\n  filename     String   @unique // 生成的文件名\n  originalName String // 原始文件名\n  hash         String // 文件哈希值\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n  delete       Int      @default(0) // 软删除标记，0表示未删除，1表示已删除\n\n  @@unique([hash, delete])\n  @@index([id, delete])\n}\n"
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Role\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"allowedRoutes\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"RoleToUser\"},{\"name\":\"createTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updateTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"department\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"roleId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"object\",\"type\":\"Role\",\"relationName\":\"RoleToUser\"},{\"name\":\"createTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updateTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"Article\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"images\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updateTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"ArticleOrder\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"page\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"articles\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updateTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"Image\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"filename\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"originalName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Organization\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"parentId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sort\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"parent\",\"kind\":\"object\",\"type\":\"Organization\",\"relationName\":\"OrgHierarchy\"},{\"name\":\"children\",\"kind\":\"object\",\"type\":\"Organization\",\"relationName\":\"OrgHierarchy\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"OrganizationToUser\"},{\"name\":\"createTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updateTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"Role\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"allowedRoutes\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"RoleToUser\"},{\"name\":\"createTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updateTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"roleId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"object\",\"type\":\"Role\",\"relationName\":\"RoleToUser\"},{\"name\":\"organizationId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"organization\",\"kind\":\"object\",\"type\":\"Organization\",\"relationName\":\"OrganizationToUser\"},{\"name\":\"createTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updateTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"Article\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"images\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updateTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"ArticleOrder\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"page\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"articles\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updateTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"Image\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"filename\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"originalName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"delete\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.compilerWasm = {
       getRuntime: async () => require('./query_compiler_bg.js'),

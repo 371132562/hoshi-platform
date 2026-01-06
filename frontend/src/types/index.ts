@@ -8,6 +8,7 @@ import type {
   AssignRoleRoutes,
   // 认证相关类型
   CreateArticle,
+  CreateOrganizationDto,
   CreateRole,
   // 用户管理相关类型
   CreateUserEncrypted,
@@ -23,6 +24,8 @@ import type {
   LoginResponse,
   LogLineItem,
   LogUsersResDto,
+  // 组织管理相关类型
+  Organization,
   OrphanImagesResponse,
   PaginatedResponse,
   ReadLog,
@@ -33,6 +36,7 @@ import type {
   SystemLogFilesResDto,
   TokenPayloadDto,
   UpdateArticle,
+  UpdateOrganizationDto,
   UpdateRole,
   UpdateUser,
   UploadResponse,
@@ -113,6 +117,9 @@ export type {
 
 // 上传相关类型
 export type { DeleteOrphans, OrphanImagesResponse, UploadResponse }
+
+// 组织管理相关类型
+export type { CreateOrganizationDto, Organization, UpdateOrganizationDto }
 
 // 系统常量
 export { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'

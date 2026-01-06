@@ -13,6 +13,7 @@ import { RequestContextMiddleware } from './common/middlewares/request-context.m
 import { LoggerModule } from './common/services/logger.module';
 import { AuthModule } from './commonModules/auth/auth.module';
 import { JwtAuthGuard } from './commonModules/auth/jwt-auth.guard';
+import { OrganizationModule } from './commonModules/organization/organization.module';
 import { RoleModule } from './commonModules/role/role.module';
 import { SystemLogsModule } from './commonModules/systemLogs/systemLogs.module';
 import { UploadModule } from './commonModules/upload/upload.module';
@@ -46,6 +47,7 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule, // 认证模块
     RoleModule, // 角色管理模块
     UserModule, // 用户管理模块
+    OrganizationModule, // 组织管理模块
 
     //业务模块
     ArticleModule, // 文章管理模块

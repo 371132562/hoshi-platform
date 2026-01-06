@@ -4,8 +4,9 @@
  * 它使用内存缓存来通过减少数据库查询次数来提高性能。
  */
 
-import * as path from 'path';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import * as path from 'path';
+
 import { PrismaClient } from './generated/client';
 import { generateUsers } from './initialData/authData';
 
@@ -60,8 +61,6 @@ async function seedAuthData() {
         where: { id: existingUser.id },
         data: {
           name: user.name,
-          department: user.department,
-          email: user.email,
           phone: user.phone,
           password: user.password,
           roleId: adminRole.id,
@@ -73,8 +72,6 @@ async function seedAuthData() {
         data: {
           username: user.username,
           name: user.name,
-          department: user.department,
-          email: user.email,
           phone: user.phone,
           password: user.password,
           roleId: adminRole.id,
@@ -95,6 +92,26 @@ async function seedAuthData() {
 async function main() {
   // 认证相关数据初始化
   await seedAuthData();
+  // 组织相关数据初始化
+  await seedOrganizationData();
+}
+
+/**
+ * 组织相关数据初始化
+ */
+async function seedOrganizationData() {
+  console.log('开始初始化组织数据...');
+  const rootOrg = await prisma.organization.upsert({
+    where: { id: '0' },
+    update: {},
+    create: {
+      id: '0',
+      name: '根组织',
+      sort: 0,
+      description: '系统默认根节点',
+    },
+  });
+  console.log('组织数据初始化完成！根组织ID:', rootOrg.id);
 }
 
 // 脚本的执行入口点。

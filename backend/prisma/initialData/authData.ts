@@ -20,8 +20,6 @@ export const users = [
   {
     username: 'admin',
     name: '超级管理员',
-    department: '超级管理员',
-    email: '',
     phone: '',
     password: '88888888',
   },

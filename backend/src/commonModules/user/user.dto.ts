@@ -12,7 +12,8 @@ export type UserItem = {
   id: string;
   username: string;
   name: string;
-  department: string | null;
+  organizationId: string | null;
+  organization?: { id: string; name: string } | null;
   phone: string | null;
   role: { name?: string; allowedRoutes?: string[] };
 };
@@ -35,7 +36,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  department?: string;
+  organizationId?: string;
 
   @IsOptional()
   @IsString()
@@ -62,10 +63,6 @@ export class UserListDto {
   @IsOptional()
   @IsString()
   name?: string;
-
-  @IsOptional()
-  @IsString()
-  department?: string;
 }
 export type UserList = InstanceType<typeof UserListDto>;
 
@@ -98,7 +95,7 @@ export class CreateUserEncryptedDto {
 
   @IsOptional()
   @IsString()
-  department?: string;
+  organizationId?: string;
 
   @IsOptional()
   @IsString()

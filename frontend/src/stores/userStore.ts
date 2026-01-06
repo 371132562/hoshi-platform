@@ -23,8 +23,7 @@ import { decryptSalt, encryptData } from '../utils/crypto'
 type CreateUserFormData = {
   username: string
   name: string
-  department: string
-  email?: string
+  organizationId?: string
   phone?: string
   password: string
   roleId: string

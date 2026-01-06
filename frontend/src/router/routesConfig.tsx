@@ -11,6 +11,9 @@ const Home = lazy(() => import('@/pages/Home'))
 const RoleManagement = lazy(() => import('@/pages/System/RoleManagement/RoleManagement'))
 const SystemMaintenance = lazy(() => import('@/pages/System/SystemMaintenance'))
 const UserManagement = lazy(() => import('@/pages/System/UserManagement/UserManagement'))
+const OrganizationManagement = lazy(
+  () => import('@/pages/System/OrganizationManagement/OrganizationManagement')
+)
 const SystemLogs = lazy(() => import('@/pages/System/SystemLogs'))
 
 // 统一的路由配置数组，通过 menuPosition 区分顶部与侧边栏
@@ -47,8 +50,9 @@ export const routes: RouteItem[] = [
     adminOnly: true,
     menuPosition: 'side',
     children: [
-      { path: '/system/userManagement', title: '用户管理', component: UserManagement },
+      { path: '/system/organization', title: '组织管理', component: OrganizationManagement },
       { path: '/system/roleManagement', title: '角色管理', component: RoleManagement },
+      { path: '/system/userManagement', title: '用户管理', component: UserManagement },
       { path: '/system/logs', title: '系统日志', component: SystemLogs },
       { path: '/system/maintenance', title: '系统维护', component: SystemMaintenance }
     ]

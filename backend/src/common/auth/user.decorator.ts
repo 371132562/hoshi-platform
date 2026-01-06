@@ -8,7 +8,6 @@ export type UserInfo = {
   userId: string;
   userCode: string;
   userName: string;
-  department?: string;
   phone?: string;
   roleId?: string;
   roleName?: string;

@@ -38,3 +38,9 @@ export const systemLogsRead = '/system/logs/read' // 读取系统日志内容
 export const systemUserLogsListFiles = '/system/logs/user/files' // 获取用户日志文件列表
 export const systemUserLogsRead = '/system/logs/user/read' // 读取用户日志内容
 export const systemUserLogsList = '/system/logs/user/list' // 获取用户日志列表
+
+// 组织管理API
+export const organizationListApi = '/organization/list' // 获取组织树
+export const organizationCreateApi = '/organization/create' // 创建组织
+export const organizationUpdateApi = '/organization/update' // 更新组织
+export const organizationDeleteApi = '/organization/delete' // 删除组织

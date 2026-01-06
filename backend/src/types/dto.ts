@@ -18,6 +18,9 @@ export * from '../commonModules/systemLogs/systemLogs.dto';
 // 上传模块
 export * from '../commonModules/upload/upload.dto';
 
+// 组织模块
+export * from '../commonModules/organization/organization.dto';
+
 /**
  * 通用类型定义
  */
