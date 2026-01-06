@@ -21,8 +21,8 @@ import {
  * 用于用户选择下拉框的选项数据格式
  */
 type UserOption = {
-  label: string // 用户显示名称：姓名/编号 或 编号
-  value: string // 用户编号
+  label: string // 用户显示名称：姓名/用户名 或 用户名
+  value: string // 用户名
 }
 
 /**
@@ -70,11 +70,11 @@ type SystemLogsState = {
   /** 获取用户日志文件列表 */
   listUserFiles: (payload: UserLogFilesReq) => Promise<boolean>
   /** 读取用户日志内容 */
-  readUserLog: (payload: ReadLog & { userId: string }) => Promise<boolean>
+  readUserLog: (payload: ReadLog & { username: string }) => Promise<boolean>
   /** 列出日志用户 */
   listUsers: () => Promise<LogUsersResDto>
   /** 带防抖的用户文件列表刷新 */
-  refreshUserFilesWithDebounce: (userId: string, force?: boolean) => Promise<boolean>
+  refreshUserFilesWithDebounce: (username: string, force?: boolean) => Promise<boolean>
   /** 加载初始用户列表 */
   loadInitialUsers: () => Promise<void>
 
@@ -200,9 +200,10 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
     set({ usersLoading: true })
     try {
       const res = await request.post<LogUsersResDto>(systemUserLogsList)
-      const userOptions = (res.data?.list || []).map(i => ({
-        label: i.userName ? `${i.userName}/${i.userCode}` : i.userCode,
-        value: i.userCode
+      const list = res.data?.list || []
+      const userOptions = list.map((i: { name: string; username: string }) => ({
+        label: i.name ? `${i.name}/${i.username}` : i.username,
+        value: i.username
       }))
       set({ userOptions })
       return res.data
@@ -217,10 +218,10 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
   /**
    * 带防抖的用户文件列表刷新
    * 避免频繁调用API，提升用户体验
-   * @param userId 用户编号
+   * @param username 用户名
    * @param force 是否强制刷新，忽略防抖限制
    */
-  async refreshUserFilesWithDebounce(userId: string, force = false) {
+  async refreshUserFilesWithDebounce(username: string, force = false) {
     const now = Date.now()
     const { lastRefreshTime } = get()
 
@@ -230,7 +231,7 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
     }
 
     set({ lastRefreshTime: now })
-    return await get().listUserFiles({ userId })
+    return await get().listUserFiles({ username })
   },
 
   /**
@@ -241,9 +242,9 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
     try {
       const res = await get().listUsers()
       if (res.list && res.list.length > 0) {
-        const userOptions = res.list.map(i => ({
-          label: i.userName ? `${i.userName}/${i.userCode}` : i.userCode,
-          value: i.userCode
+        const userOptions = res.list.map((i: { name: string; username: string }) => ({
+          label: i.name ? `${i.name}/${i.username}` : i.username,
+          value: i.username
         }))
         set({ userOptions })
       }

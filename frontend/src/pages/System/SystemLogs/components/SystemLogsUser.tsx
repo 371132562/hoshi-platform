@@ -20,8 +20,8 @@ const SystemLogsUser: React.FC = () => {
   const [form] = Form.useForm()
 
   // ==================== 实时表单值监听 ====================
-  /** 实时监听用户ID变化 */
-  const userId = Form.useWatch('userId', form)
+  /** 实时监听用户名变化 */
+  const username = Form.useWatch('username', form)
   /** 实时监听文件名变化 */
   const filename = Form.useWatch('filename', form)
   /** 实时监听关键词变化 */
@@ -153,12 +153,12 @@ const SystemLogsUser: React.FC = () => {
    * 当用户ID和文件名都选择后自动调用查询接口
    */
   const autoFetchLogs = async () => {
-    if (!userId || !filename) {
+    if (!username || !filename) {
       return // 没有选择用户或文件，不执行查询
     }
 
     // 调用store方法读取用户日志
-    const success = await readUserLog({ userId, filename })
+    const success = await readUserLog({ username, filename })
     if (!success) {
       // 统一错误在base处理，这里不再提示
     }
@@ -180,19 +180,19 @@ const SystemLogsUser: React.FC = () => {
    */
   useEffect(() => {
     autoFetchLogs()
-  }, [userId, filename])
+  }, [username, filename])
 
   // ==================== 事件处理 ====================
   /**
    * 用户选择改变处理
    * 清空文件选择并刷新该用户的文件列表
    */
-  const handleUserChange = async (userId: string | undefined) => {
+  const handleUserChange = async (username: string | undefined) => {
     // 清空文件选择
     form.setFieldValue('filename', undefined)
 
-    if (userId) {
-      const success = await refreshUserFilesWithDebounce(userId, true)
+    if (username) {
+      const success = await refreshUserFilesWithDebounce(username, true)
       if (!success) {
         // 统一错误在base处理，这里不再提示
       }
@@ -219,7 +219,7 @@ const SystemLogsUser: React.FC = () => {
                   <p>
                     <strong>操作步骤：</strong>
                   </p>
-                  <p>1. 选择用户编号</p>
+                  <p>1. 选择用户名</p>
                   <p>2. 选择日志文件</p>
                   <p>3. 输入关键词（可选）</p>
                   <p>4. 选择时间范围（可选）</p>
@@ -242,15 +242,15 @@ const SystemLogsUser: React.FC = () => {
           className="flex flex-wrap items-center gap-x-4"
         >
           <Form.Item
-            name="userId"
-            label="用户（姓名/编号）"
+            name="username"
+            label="用户（姓名/用户名）"
             className="!mb-2"
           >
             <Select
               loading={usersLoading}
               showSearch
               allowClear
-              placeholder="请选择用户或输入姓名/编号搜索"
+              placeholder="请选择用户或输入姓名/用户名搜索"
               style={{ width: 240 }}
               filterOption={(input, option) =>
                 String(option?.label ?? '')
@@ -275,7 +275,7 @@ const SystemLogsUser: React.FC = () => {
               style={{ width: 260 }}
               options={userFileOptions}
               notFoundContent={userFilesLoading ? '加载中...' : '暂无日志文件'}
-              disabled={!userId}
+              disabled={!username}
               filterOption={(input, option) =>
                 String(option?.label ?? '')
                   .toLowerCase()
