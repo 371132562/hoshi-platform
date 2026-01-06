@@ -14,6 +14,8 @@ import {
 } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import ResetPasswordModal from '@/components/ResetPasswordModal'
+
 import { useRoleStore } from '../../../stores/roleStore'
 import { useUserStore } from '../../../stores/userStore'
 import { UserItem } from '../../../types'
@@ -26,7 +28,6 @@ const UserManagement: React.FC = () => {
   const createUser = useUserStore(s => s.createUser)
   const updateUser = useUserStore(s => s.updateUser)
   const deleteUser = useUserStore(s => s.deleteUser)
-  const resetUserPassword = useUserStore(s => s.resetUserPassword)
   const roleList = useRoleStore(s => s.roleList)
   const fetchRoleList = useRoleStore(s => s.fetchRoleList)
 
@@ -36,7 +37,6 @@ const UserManagement: React.FC = () => {
   const [form] = Form.useForm()
   const [resetModalOpen, setResetModalOpen] = useState(false)
   const [resetUser, setResetUser] = useState<UserItem | null>(null)
-  const [resetForm] = Form.useForm()
 
   // React Hooks: useEffect
   useEffect(() => {
@@ -77,21 +77,6 @@ const UserManagement: React.FC = () => {
   const openResetModal = (user: UserItem) => {
     setResetUser(user)
     setResetModalOpen(true)
-    resetForm.resetFields()
-  }
-
-  const handleResetOk = async () => {
-    const values = await resetForm.validateFields()
-    if (resetUser) {
-      const success = await resetUserPassword({
-        id: String(resetUser.id),
-        newPassword: values.newPassword
-      })
-      if (success) {
-        message.success('密码重置成功')
-        setResetModalOpen(false)
-      }
-    }
   }
 
   // Const 变量 - 派生变量
@@ -211,6 +196,41 @@ const UserManagement: React.FC = () => {
               placeholder="请输入用户名"
             />
           </Form.Item>
+          {!editUser && (
+            <>
+              <Form.Item
+                name="password"
+                label="初始密码"
+                rules={[{ required: true, message: '请输入初始密码' }]}
+              >
+                <Input.Password
+                  maxLength={32}
+                  placeholder="请输入初始密码"
+                />
+              </Form.Item>
+              <Form.Item
+                name="confirmPassword"
+                label="确认密码"
+                dependencies={['password']}
+                rules={[
+                  { required: true, message: '请再次输入密码' },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue('password') === value) {
+                        return Promise.resolve()
+                      }
+                      return Promise.reject(new Error('两次输入的密码不一致'))
+                    }
+                  })
+                ]}
+              >
+                <Input.Password
+                  maxLength={32}
+                  placeholder="请再次输入密码"
+                />
+              </Form.Item>
+            </>
+          )}
           <Form.Item
             name="roleId"
             label="角色"
@@ -263,7 +283,6 @@ const UserManagement: React.FC = () => {
           <Form.Item
             name="department"
             label="部门"
-            rules={[{ required: true, message: '请输入部门' }]}
           >
             <Input
               maxLength={20}
@@ -288,44 +307,15 @@ const UserManagement: React.FC = () => {
               placeholder="请输入电话"
             />
           </Form.Item>
-          {!editUser && (
-            <Form.Item
-              name="password"
-              label="初始密码"
-              rules={[{ required: true, message: '请输入初始密码' }]}
-            >
-              <Input.Password
-                maxLength={32}
-                placeholder="请输入初始密码"
-              />
-            </Form.Item>
-          )}
         </Form>
       </Modal>
       {/* 重置密码弹窗 */}
-      <Modal
-        title="重置用户密码"
+      <ResetPasswordModal
         open={resetModalOpen}
-        onOk={handleResetOk}
+        userId={resetUser ? String(resetUser.id) : ''}
+        userName={resetUser?.name}
         onCancel={() => setResetModalOpen(false)}
-        destroyOnHidden
-      >
-        <Form
-          form={resetForm}
-          layout="vertical"
-        >
-          <Form.Item
-            name="newPassword"
-            label="新密码"
-            rules={[{ required: true, message: '请输入新密码' }]}
-          >
-            <Input.Password
-              maxLength={32}
-              placeholder="请输入新密码"
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+      />
     </div>
   )
 }

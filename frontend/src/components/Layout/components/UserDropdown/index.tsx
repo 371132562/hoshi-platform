@@ -1,18 +1,22 @@
-import { LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons'
+import { KeyOutlined, LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons'
 import { Avatar, Dropdown, MenuProps, message, Tag } from 'antd'
-import { FC, useMemo } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
 
+import ResetPasswordModal from '@/components/ResetPasswordModal'
 import { useAuthStore } from '@/stores/authStore'
 
 /**
  * 用户头像下拉菜单组件
- * 提取自 Layout 组件，负责展示用户信息及退出登录操作
+ * 提取自 Layout 组件，负责展示用户信息、修改密码及退出登录操作
  */
 const UserDropdown: FC = () => {
   const navigate = useNavigate()
   const user = useAuthStore(state => state.user)
   const logout = useAuthStore(state => state.logout)
+
+  // 修改密码弹窗状态
+  const [resetModalOpen, setResetModalOpen] = useState(false)
 
   const userMenuItems: MenuProps['items'] = useMemo(
     () =>
@@ -50,9 +54,17 @@ const UserDropdown: FC = () => {
             },
             { type: 'divider' },
             {
+              key: 'changePassword',
+              label: <div className="px-2 py-1">修改密码</div>,
+              icon: <KeyOutlined />,
+              onClick: () => {
+                setResetModalOpen(true)
+              }
+            },
+            {
               key: 'logout',
               label: <div className="px-2 py-1 text-red-600 hover:text-red-700">退出登录</div>,
-              icon: <LogoutOutlined />,
+              icon: <LogoutOutlined className="!text-red-600" />,
               onClick: () => {
                 const success = logout()
                 if (success) {
@@ -90,30 +102,42 @@ const UserDropdown: FC = () => {
   )
 
   return (
-    <div className="flex-shrink-0">
-      <Dropdown
-        menu={{ items: userMenuItems }}
-        placement="bottomRight"
-        trigger={['hover']}
-        classNames={{ root: 'user-info-dropdown' }}
-      >
-        <div
-          className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-white/10"
-          title={user?.name || '访客'}
+    <>
+      <div className="flex-shrink-0">
+        <Dropdown
+          menu={{ items: userMenuItems }}
+          placement="bottomRight"
+          trigger={['hover']}
+          classNames={{ root: 'user-info-dropdown' }}
         >
-          <Avatar
-            icon={<UserOutlined />}
-            className={`h-8 w-8 cursor-pointer text-sm hover:opacity-80 ${
-              user ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500 hover:bg-gray-600'
-            }`}
-            style={{ width: 32, height: 32 }}
-          />
-          <span className="max-w-[120px] truncate text-sm font-medium text-white">
-            {user?.name || '访客'}
-          </span>
-        </div>
-      </Dropdown>
-    </div>
+          <div
+            className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-white/10"
+            title={user?.name || '访客'}
+          >
+            <Avatar
+              icon={<UserOutlined />}
+              className={`h-8 w-8 cursor-pointer text-sm hover:opacity-80 ${
+                user ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500 hover:bg-gray-600'
+              }`}
+              style={{ width: 32, height: 32 }}
+            />
+            <span className="max-w-[120px] truncate text-sm font-medium text-white">
+              {user?.name || '访客'}
+            </span>
+          </div>
+        </Dropdown>
+      </div>
+
+      {/* 修改密码弹窗 */}
+      {user && (
+        <ResetPasswordModal
+          open={resetModalOpen}
+          userId={String(user.id)}
+          userName={user.name}
+          onCancel={() => setResetModalOpen(false)}
+        />
+      )}
+    </>
   )
 }
 
