@@ -104,7 +104,7 @@ const ArticleManagement: React.FC = () => {
   }
 
   return (
-    <div className="w-full max-w-7xl">
+    <div className="w-full">
       <div className="mb-4 flex justify-between">
         <Search
           placeholder="请输入标题搜索"

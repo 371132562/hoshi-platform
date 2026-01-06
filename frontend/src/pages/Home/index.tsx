@@ -55,7 +55,7 @@ const Component = () => {
   }
 
   return (
-    <div className="w-full max-w-7xl">
+    <div className="w-full">
       <ArticleDisplay articles={pageArticles} />
     </div>
   )

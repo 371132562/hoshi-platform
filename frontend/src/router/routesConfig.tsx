@@ -130,9 +130,17 @@ export const getMenuOptionsForRoleEdit = () => {
 // 根据路径获取面包屑项
 export const getBreadcrumbItems = (
   pathname: string
-): { path: string; title: string; component: React.ComponentType | undefined }[] => {
+): {
+  path: string
+  title: string
+  component: React.ComponentType | React.LazyExoticComponent<React.ComponentType> | undefined
+}[] => {
   const allRoutes = getAllRoutes()
-  const result: { path: string; title: string; component: React.ComponentType | undefined }[] = []
+  const result: {
+    path: string
+    title: string
+    component: React.ComponentType | React.LazyExoticComponent<React.ComponentType> | undefined
+  }[] = []
 
   // 构建路径映射表，支持动态路由
   const pathMap = new Map<string, RouteItem>()
@@ -176,7 +184,7 @@ export const getBreadcrumbItems = (
           result.push({
             path: parentRoute.path,
             title: parentRoute.title,
-            component: parentRoute.component
+            component: typeof parentRoute.component === 'string' ? undefined : parentRoute.component
           })
         }
       }
@@ -184,10 +192,78 @@ export const getBreadcrumbItems = (
       result.push({
         path: currentPath,
         title: matchingRoute.title,
-        component: matchingRoute.component
+        component: typeof matchingRoute.component === 'string' ? undefined : matchingRoute.component
       })
     }
   })
 
   return result
+}
+
+/**
+ * 布局数据获取函数
+ * 整合菜单、权限、选中状态等逻辑，减少 Layout 组件的计算压力
+ */
+export const getLayoutData = (
+  pathname: string,
+  user?: { role?: { name?: string; allowedRoutes?: string[] } } | null
+) => {
+  const allRoutes = getAllRoutes()
+  const pathSegments = pathname.split('/').filter(Boolean)
+
+  // 1. 获取菜单路由
+  const topMenuRoutes = getTopMenuRoutes()
+  const sideMenuRoutes = getSideMenuRoutes(
+    user?.role?.name
+      ? { name: user.role.name, allowedRoutes: user.role.allowedRoutes || [] }
+      : undefined
+  )
+
+  // 2. 计算当前路由信息
+  const currentRoute = allRoutes.find(route => {
+    const routePathPattern = route.path.replace(/\/:[^/]+/g, '/[^/]+')
+    const regex = new RegExp(`^${routePathPattern}$`)
+    return regex.test(pathname)
+  })
+
+  // 3. 计算选中与展开状态
+  const topNavSelectedKey = pathSegments.length === 0 ? ['/home'] : [`/${pathSegments[0]}`]
+  const defaultOpenKeys = pathSegments.length > 1 ? [`/${pathSegments[0]}`] : []
+  const sideMenuSelectedKey = currentRoute?.menuParent ? [currentRoute.menuParent] : [pathname]
+
+  // 4. 计算面包屑
+  const breadcrumbItems = getBreadcrumbItems(pathname)
+
+  // 5. 权限判断
+  let hasPermission = false
+  const topMenuPaths = topMenuRoutes.map(route => route.path)
+  const isTopMenuRoute = topMenuPaths.some(
+    path => pathname === path || pathname.startsWith(path + '/')
+  )
+
+  if (isTopMenuRoute) {
+    hasPermission = true
+  } else if (user) {
+    if (user.role?.name === 'admin') {
+      hasPermission = true
+    } else if (currentRoute?.menuParent) {
+      hasPermission = true
+    } else {
+      const allowed = user.role?.allowedRoutes || []
+      hasPermission = allowed.some(
+        (route: string) => pathname === route || pathname.startsWith(route + '/')
+      )
+    }
+  }
+
+  return {
+    topMenuRoutes,
+    sideMenuRoutes,
+    topNavSelectedKey,
+    sideMenuSelectedKey,
+    defaultOpenKeys,
+    breadcrumbItems,
+    currentRoute,
+    hasPermission
+  }
 }

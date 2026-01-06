@@ -6,7 +6,7 @@ import SystemLogsUser from './components/SystemLogsUser'
 // 系统日志父页面：使用Tabs承载两个子页面
 const SystemLogs: React.FC = () => {
   return (
-    <div className="w-full max-w-7xl">
+    <div className="w-full">
       <div className="mb-4">
         <Alert
           type="info"

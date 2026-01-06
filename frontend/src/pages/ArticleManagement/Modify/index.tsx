@@ -137,7 +137,7 @@ const ArticleModify: FC = () => {
   // 编辑模式下，详情未加载完毕时显示骨架屏
   if (isEditMode && (detailLoading || !articleDetail)) {
     return (
-      <div className="w-full max-w-7xl">
+      <div className="w-full">
         <Skeleton
           active
           title={{ width: '30%' }}
@@ -154,7 +154,7 @@ const ArticleModify: FC = () => {
   }
 
   return (
-    <div className="w-full max-w-7xl">
+    <div className="w-full">
       {/* 页面头部：标题和操作按钮 */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold"></h1>

@@ -8,13 +8,9 @@ import Forbidden from '@/components/Forbidden'
 import LoadingFallback from '@/components/LoadingFallback'
 import NetworkErrorFallback from '@/components/NetworkErrorFallback'
 import { UserInfoStatus, useUserInfo } from '@/hooks/useUserInfo'
-import {
-  getAllRoutes,
-  getBreadcrumbItems,
-  getSideMenuRoutes,
-  getTopMenuRoutes
-} from '@/router/routesConfig'
+import { getLayoutData } from '@/router/routesConfig'
 import { useAuthStore } from '@/stores/authStore'
+import { RouteItem } from '@/types'
 
 import UserDropdown from './components/UserDropdown'
 
@@ -39,110 +35,70 @@ export const Component: FC = () => {
   // 使用增强的用户信息获取 Hook
   const { status: userInfoStatus, error: userInfoError } = useUserInfo()
 
-  // React Hooks: useMemo - 派生变量
-  const topRoutes = useMemo(() => getTopMenuRoutes(), [])
+  // 1. 调用 getLayoutData 获取布局所需的所有派生数据
+  const {
+    topMenuItems,
+    menuItems,
+    topNavSelectedKey,
+    sideMenuSelectedKey,
+    breadcrumbItems,
+    defaultOpenKeys,
+    hasPermission
+  } = useMemo(() => {
+    const data = getLayoutData(pathname, user)
 
-  const sideRoutes = useMemo(
-    () =>
-      getSideMenuRoutes(
-        user?.role && user.role.name
-          ? { name: user.role.name, allowedRoutes: user.role.allowedRoutes || [] }
-          : undefined
-      ),
-    [user?.role]
-  )
+    // 转换菜单格式为 Ant Design 要求的 items
+    const topMenuItems: MenuProps['items'] = data.topMenuRoutes.map((route: RouteItem) => ({
+      key: route.path,
+      label: route.title,
+      icon: route.icon
+    }))
 
-  const { topNavSelectedKey, sideMenuSelectedKey, defaultOpenKeys, breadcrumbItems, currentRoute } =
-    useMemo(() => {
-      const pathSegments = pathname.split('/').filter(Boolean)
-      const allRoutes = getAllRoutes()
-
-      const currentRoute = allRoutes.find(route => {
-        const routePathPattern = route.path.replace(/\/:[^/]+/g, '/[^/]+')
-        const regex = new RegExp(`^${routePathPattern}$`)
-        return regex.test(pathname)
-      })
-
-      const breadcrumbItems = getBreadcrumbItems(pathname).map(item => ({
-        title:
-          item.component && item.path !== pathname ? (
-            <Link to={item.path}>{item.title}</Link>
-          ) : (
-            item.title
-          )
-      }))
-
-      return {
-        topNavSelectedKey: pathSegments.length === 0 ? ['/home'] : [`/${pathSegments[0]}`],
-        defaultOpenKeys: pathSegments.length > 1 ? [`/${pathSegments[0]}`] : [],
-        sideMenuSelectedKey: currentRoute?.menuParent ? [currentRoute.menuParent] : [pathname],
-        breadcrumbItems,
-        currentRoute
-      }
-    }, [pathname])
-
-  const topMenuItems: MenuProps['items'] = useMemo(
-    () =>
-      topRoutes.map(route => ({
+    const menuItems: MenuProps['items'] = data.sideMenuRoutes.map((route: RouteItem) => {
+      const item: {
+        key: string
+        icon?: ReactNode
+        label: ReactNode
+        children?: { key: string; label: ReactNode }[]
+      } = {
         key: route.path,
-        label: route.title,
-        icon: route.icon
-      })),
-    [topRoutes]
-  )
+        icon: route.icon,
+        label: route.title
+      }
 
-  const menuItems: MenuProps['items'] = useMemo(
-    () =>
-      sideRoutes.map(route => {
-        const item: {
-          key: string
-          icon?: ReactNode
-          label: ReactNode
-          children?: { key: string; label: ReactNode }[]
-        } = {
-          key: route.path,
-          icon: route.icon,
-          label: route.title
-        }
+      if (
+        route.children &&
+        route.children.filter((child: RouteItem) => !child.menuParent).length > 0
+      ) {
+        item.children = route.children
+          .filter((child: RouteItem) => !child.menuParent)
+          .map((child: RouteItem) => ({
+            key: child.path,
+            label: child.title
+          }))
+      }
 
-        if (route.children && route.children.filter(child => !child.menuParent).length > 0) {
-          item.children = route.children
-            .filter(child => !child.menuParent)
-            .map(child => ({
-              key: child.path,
-              label: child.title
-            }))
-        }
+      return item
+    })
 
-        return item
-      }),
-    [sideRoutes]
-  )
+    const breadcrumbItems = data.breadcrumbItems.map(item => ({
+      title:
+        item.component && item.path !== pathname ? (
+          <Link to={item.path}>{item.title}</Link>
+        ) : (
+          item.title
+        )
+    }))
 
-  const hasPermission = useMemo(() => {
-    const topMenuPaths = topRoutes.map(route => route.path)
-    const isTopMenuRoute = topMenuPaths.some(
-      path => pathname === path || pathname.startsWith(path + '/')
-    )
-
-    if (isTopMenuRoute) {
-      return true
+    return {
+      topMenuItems,
+      menuItems,
+      ...data,
+      breadcrumbItems
     }
+  }, [pathname, user])
 
-    if (!user) {
-      return false
-    }
-
-    if (user.role?.name === 'admin') return true
-
-    if (currentRoute?.menuParent) {
-      return true
-    }
-
-    const allowed = user.role?.allowedRoutes || []
-    return allowed.some((route: string) => pathname === route || pathname.startsWith(route + '/'))
-  }, [user, pathname, topRoutes, currentRoute])
-
+  // 当路由驱动的默认展开项变化时，同步到本地状态（用于手动折叠后的恢复或初次进入）
   useEffect(() => {
     setOpenKeys(defaultOpenKeys)
   }, [defaultOpenKeys])
@@ -205,7 +161,7 @@ export const Component: FC = () => {
             </div>
             <div
               ref={scrollRef}
-              className="box-border flex flex-grow flex-col items-center overflow-y-auto rounded-lg bg-white p-6 shadow-md"
+              className="box-border flex flex-grow flex-col overflow-y-auto rounded-lg bg-white p-6 shadow-md"
               style={{
                 // 为滚动条预留空间，防止内容宽度变化
                 scrollbarGutter: 'stable'

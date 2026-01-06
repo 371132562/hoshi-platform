@@ -168,7 +168,7 @@ const UserManagement: React.FC = () => {
   )
 
   return (
-    <div className="w-full max-w-7xl">
+    <div className="w-full">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold"></h2>
         <Button

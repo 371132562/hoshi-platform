@@ -231,7 +231,7 @@ const OrderConfig = () => {
   // 文章排序骨架屏组件
 
   return (
-    <div className="w-full max-w-4xl">
+    <div className="w-full">
       <div className="mb-4 flex items-center justify-between">
         <div />
         <Space>

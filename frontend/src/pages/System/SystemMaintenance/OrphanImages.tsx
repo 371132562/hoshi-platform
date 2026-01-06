@@ -41,7 +41,7 @@ const OrphanImages: FC = () => {
   }
 
   return (
-    <div className="w-full max-w-6xl">
+    <div className="w-full">
       {/* 可展开的说明信息 */}
       <Collapse
         className="!mb-4"
