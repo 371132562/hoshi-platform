@@ -6,8 +6,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
 import { ArticleModule } from './businessModules/article/article.module';
-import { RoleModule } from './businessModules/role/role.module';
-import { UserModule } from './businessModules/user/user.module';
 import { AllExceptionsFilter } from './common/exceptions/allExceptionsFilter';
 import { TransformInterceptor } from './common/interceptors/response.interceptor';
 import { UserContextInterceptor } from './common/interceptors/user-context.interceptor';
@@ -15,8 +13,10 @@ import { RequestContextMiddleware } from './common/middlewares/request-context.m
 import { LoggerModule } from './common/services/logger.module';
 import { AuthModule } from './commonModules/auth/auth.module';
 import { JwtAuthGuard } from './commonModules/auth/jwt-auth.guard';
+import { RoleModule } from './commonModules/role/role.module';
 import { SystemLogsModule } from './commonModules/systemLogs/systemLogs.module';
 import { UploadModule } from './commonModules/upload/upload.module';
+import { UserModule } from './commonModules/user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -44,10 +44,10 @@ import { PrismaModule } from './prisma/prisma.module';
     LoggerModule, // 全局日志模块
     UploadModule, // 上传模块
     AuthModule, // 认证模块
+    RoleModule, // 角色管理模块
+    UserModule, // 用户管理模块
 
     //业务模块
-    RoleModule,
-    UserModule,
     ArticleModule, // 文章管理模块
     SystemLogsModule, // 系统日志模块
   ],

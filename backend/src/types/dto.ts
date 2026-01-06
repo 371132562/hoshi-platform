@@ -1,10 +1,10 @@
 /* 统一导出所有 DTO class 和对应的 type */
 
 // 用户模块
-export * from '../businessModules/user/user.dto';
+export * from '../commonModules/user/user.dto';
 
 // 角色模块
-export * from '../businessModules/role/role.dto';
+export * from '../commonModules/role/role.dto';
 
 // 文章模块
 export * from '../businessModules/article/article.dto';

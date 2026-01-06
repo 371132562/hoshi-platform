@@ -40,7 +40,7 @@ import type {
   UserListResDto,
   UserLogFilesReq,
   UserProfileDto
-} from 'template-backend/types/dto'
+} from 'template-backend/src/types/dto'
 
 /**
  * 路由项类型定义

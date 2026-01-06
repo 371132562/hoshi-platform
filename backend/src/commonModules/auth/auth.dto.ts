@@ -4,7 +4,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
  * 认证相关 DTO 类定义
  */
 // 用户和角色类型从 user.dto 导入
-import type { UserItem } from '../../businessModules/user/user.dto';
+import type { UserItem } from '../user/user.dto';
 
 /**
  * 登录 DTO

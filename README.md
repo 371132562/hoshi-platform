@@ -90,8 +90,8 @@ cd backend && npx prisma db seed
 
 - 请求入参 DTO 必须使用 class，并配合 class-validator/class-transformer 进行运行时校验与转换；响应可使用 class 或 type，前端以 type 消费
 - 前后端类型共享策略：
-  - 后端在 `backend/src/dto/*.dto.ts` 定义 class DTO 与必要的 type
-  - `backend/types/dto.ts` 统一 `export *` 暴露 DTO 与相关类型
+  - 后端在 `backend/src/types/dto.ts` 定义 class DTO 与必要的 type
+  - `backend/src/types/dto.ts` 统一 `export *` 暴露 DTO 与相关类型
   - 前端仅导入 type（或通过 `InstanceType<typeof XxxDto>` 推导），避免打包装饰器逻辑
 - 仍然优先使用 `type`（而非 interface）声明通用结构与工具类型；禁止使用 any
 - 所有请求/响应结构必须有明确的 TypeScript 类型

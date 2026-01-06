@@ -1,21 +1,13 @@
-import { LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons' // 导入图标
-import {
-  Avatar,
-  Breadcrumb,
-  Dropdown,
-  FloatButton,
-  Layout,
-  Menu,
-  MenuProps,
-  message,
-  Tag
-} from 'antd'
+import { Breadcrumb, FloatButton, Layout, Menu, MenuProps } from 'antd'
 import { FC, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Link, useLocation, useNavigate, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
 import Forbidden from '@/components/Forbidden'
+import LoadingFallback from '@/components/LoadingFallback'
+import NetworkErrorFallback from '@/components/NetworkErrorFallback'
+import { UserInfoStatus, useUserInfo } from '@/hooks/useUserInfo'
 import {
   getAllRoutes,
   getBreadcrumbItems,
@@ -23,6 +15,8 @@ import {
   getTopMenuRoutes
 } from '@/router/routesConfig'
 import { useAuthStore } from '@/stores/authStore'
+
+import UserDropdown from './components/UserDropdown'
 
 const { Header, Sider, Content /* Footer */ } = Layout
 
@@ -34,9 +28,6 @@ export const Component: FC = () => {
 
   // Store 取值
   const user = useAuthStore(state => state.user)
-  const token = useAuthStore(state => state.token)
-  const logout = useAuthStore(state => state.logout)
-  const fetchProfile = useAuthStore(state => state.fetchProfile)
 
   // React Hooks: useState
   const [collapsed, setCollapsed] = useState(false)
@@ -45,12 +36,8 @@ export const Component: FC = () => {
   // React Hooks: useRef
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
-  // React Hooks: useEffect
-  useEffect(() => {
-    if (token) {
-      fetchProfile()
-    }
-  }, [token])
+  // 使用增强的用户信息获取 Hook
+  const { status: userInfoStatus, error: userInfoError } = useUserInfo()
 
   // React Hooks: useMemo - 派生变量
   const topRoutes = useMemo(() => getTopMenuRoutes(), [])
@@ -132,81 +119,6 @@ export const Component: FC = () => {
     [sideRoutes]
   )
 
-  const userMenuItems: MenuProps['items'] = useMemo(
-    () =>
-      user
-        ? [
-            {
-              key: 'userInfo',
-              label: (
-                <div
-                  className="max-w-[340px] min-w-[280px] rounded-lg bg-white px-4 py-3"
-                  style={{ lineHeight: 1.6 }}
-                >
-                  <div className="mb-2 text-base font-semibold text-gray-800">{user.name}</div>
-                  <div className="mb-2 flex items-center text-sm text-gray-600">
-                    <span className="mr-2 text-gray-400">用户名：</span>
-                    <span className="font-mono">{user.username || '-'}</span>
-                  </div>
-                  <div className="mb-2 flex items-center text-sm text-gray-600">
-                    <span className="mr-2 text-gray-400">角色：</span>
-                    <span>
-                      {(user.role?.name === 'admin' ? (
-                        <Tag color="red">超级管理员</Tag>
-                      ) : (
-                        user.role?.name
-                      )) || '-'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <span className="mr-2 text-gray-400">部门：</span>
-                    <span>{user.department || '-'}</span>
-                  </div>
-                </div>
-              ),
-              disabled: true
-            },
-            { type: 'divider' },
-            {
-              key: 'logout',
-              label: <div className="px-2 py-1 text-red-600 hover:text-red-700">退出登录</div>,
-              icon: <LogoutOutlined />,
-              onClick: () => {
-                const success = logout()
-                if (success) {
-                  message.success('退出成功')
-                }
-                navigate('/home')
-              }
-            }
-          ]
-        : [
-            {
-              key: 'guestInfo',
-              label: (
-                <div
-                  className="max-w-[340px] min-w-[280px] rounded-lg bg-white px-4 py-3"
-                  style={{ lineHeight: 1.6 }}
-                >
-                  <div className="mb-2 text-base font-semibold text-gray-800">访客模式</div>
-                  <div className="text-sm text-gray-600">登录后可使用全部功能</div>
-                </div>
-              ),
-              disabled: true
-            },
-            { type: 'divider' },
-            {
-              key: 'login',
-              label: <div className="px-2 py-1 text-blue-600 hover:text-blue-700">立即登录</div>,
-              icon: <LoginOutlined />,
-              onClick: () => {
-                navigate('/login')
-              }
-            }
-          ],
-    [user, logout, navigate]
-  )
-
   const hasPermission = useMemo(() => {
     const topMenuPaths = topRoutes.map(route => route.path)
     const isTopMenuRoute = topMenuPaths.some(
@@ -228,22 +140,12 @@ export const Component: FC = () => {
     }
 
     const allowed = user.role?.allowedRoutes || []
-    return allowed.some(route => pathname === route || pathname.startsWith(route + '/'))
+    return allowed.some((route: string) => pathname === route || pathname.startsWith(route + '/'))
   }, [user, pathname, topRoutes, currentRoute])
 
-  // React Hooks: useEffect
   useEffect(() => {
     setOpenKeys(defaultOpenKeys)
   }, [defaultOpenKeys])
-
-  // 方法定义
-  const handleMenuClick: MenuProps['onClick'] = e => {
-    navigate(e.key)
-  }
-
-  const handleOpenChange = (keys: string[]) => {
-    setOpenKeys(keys)
-  }
 
   return (
     <Layout className="h-screen w-full">
@@ -255,39 +157,13 @@ export const Component: FC = () => {
           mode="horizontal"
           items={topMenuItems}
           selectedKeys={topNavSelectedKey}
-          onClick={handleMenuClick}
+          onClick={e => navigate(e.key)}
           className="flex-grow-0"
           style={{ minWidth: 0 }}
         />
         <div className="flex-grow" />
 
-        <div className="flex-shrink-0">
-          {/* 用户头像及信息浮窗，hover触发 */}
-          <Dropdown
-            menu={{ items: userMenuItems }}
-            placement="bottomRight"
-            trigger={['hover']} // 改为hover触发
-            overlayClassName="user-info-dropdown"
-          >
-            <div
-              className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-white/10"
-              title={user?.name || '访客'}
-            >
-              {/* 用户头像 */}
-              <Avatar
-                icon={<UserOutlined />}
-                className={`h-8 w-8 cursor-pointer text-sm hover:opacity-80 ${
-                  user ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500 hover:bg-gray-600'
-                }`}
-                style={{ width: 32, height: 32 }}
-              />
-              {/* 用户名显示在头像旁边 */}
-              <span className="max-w-[120px] truncate text-sm font-medium text-white">
-                {user?.name || '访客'}
-              </span>
-            </div>
-          </Dropdown>
-        </div>
+        <UserDropdown />
       </Header>
       <Layout className="flex-grow">
         {/* 只有登录用户才显示侧边栏 */}
@@ -301,11 +177,11 @@ export const Component: FC = () => {
             className="flex flex-col"
           >
             <Menu
-              theme="dark"
+              theme="light"
               mode="inline"
               items={menuItems}
-              onClick={handleMenuClick}
-              onOpenChange={handleOpenChange}
+              onClick={e => navigate(e.key)}
+              onOpenChange={setOpenKeys}
               // 将菜单的选中状态与路由同步
               selectedKeys={sideMenuSelectedKey}
               // 控制菜单展开状态，支持手动操作和路由驱动
@@ -322,7 +198,7 @@ export const Component: FC = () => {
           </Sider>
         )}
         <Layout>
-          <Content className="!flex flex-grow flex-col bg-gray-100 p-6">
+          <Content className="!flex flex-grow flex-col bg-gray-100 p-6 pt-4">
             {/* 添加面包屑导航 */}
             <div className="mb-2">
               <Breadcrumb items={breadcrumbItems} />
@@ -335,14 +211,32 @@ export const Component: FC = () => {
                 scrollbarGutter: 'stable'
               }}
             >
-              {/* 路由守卫：无权限跳转403 */}
-              {!hasPermission ? (
+              {/* 路由守卫：根据状态显示不同内容 */}
+              {userInfoStatus === UserInfoStatus.LOADING ? (
+                // 正在加载用户信息
+                <LoadingFallback />
+              ) : userInfoStatus === UserInfoStatus.NETWORK_ERROR ? (
+                // 网络错误，显示重试界面
+                <NetworkErrorFallback error={userInfoError || '网络连接异常'} />
+              ) : userInfoStatus === UserInfoStatus.AUTH_FAILED ? (
+                // 认证失败，跳转到登录页
+                (() => {
+                  navigate('/login')
+                  return <LoadingFallback />
+                })()
+              ) : userInfoStatus === UserInfoStatus.SUCCESS && !hasPermission ? (
+                // 用户已登录但无权限访问当前页面
                 <Forbidden />
-              ) : (
+              ) : userInfoStatus === UserInfoStatus.SUCCESS ? (
+                // 用户已登录且有权限，渲染业务页面
                 <ErrorBoundary FallbackComponent={ErrorPage}>{outlet}</ErrorBoundary>
+              ) : (
+                // 其他未知状态，显示加载中
+                <LoadingFallback />
               )}
             </div>
           </Content>
+
           <FloatButton.BackTop
             target={() => scrollRef.current as HTMLElement}
             visibilityHeight={800}
