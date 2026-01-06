@@ -295,13 +295,13 @@ const UserManagement: React.FC = () => {
           </Form.Item>
           <Form.Item
             name="organizationId"
-            label="所属组织"
+            label="所属部门"
           >
             <TreeSelect
               treeData={organizationList}
               fieldNames={{ label: 'name', value: 'id', children: 'children' }}
               allowClear
-              placeholder="请选择所属组织"
+              placeholder="请选择所属部门"
               treeDefaultExpandAll
             />
           </Form.Item>

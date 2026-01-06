@@ -121,7 +121,6 @@ exports.Prisma.OrganizationScalarFieldEnum = {
   id: 'id',
   name: 'name',
   parentId: 'parentId',
-  sort: 'sort',
   description: 'description',
   createTime: 'createTime',
   updateTime: 'updateTime',

@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
     setSubmitting(false)
     if (success) {
       message.open({ type: 'success', content: '登录成功' })
-      navigate('/home')
+      navigate('/admin/article/list')
     }
   }
 

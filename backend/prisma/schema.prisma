@@ -12,12 +12,11 @@ datasource db {
   provider = "sqlite"
 }
 
-// 组织表 (树状结构)
+// 部门表 (树状结构)
 model Organization {
   id          String   @id @default(uuid()) // 主键
-  name        String   // 组织名称
-  parentId    String?  // 父组织ID，根节点可能为空或指向特定Root
-  sort        Int      @default(0) // 排序值，越小越靠前
+  name        String   // 部门名称
+  parentId    String?  // 父部门ID，根节点为空
   description String?  // 描述
   
   // 自关联关系

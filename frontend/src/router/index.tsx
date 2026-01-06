@@ -2,15 +2,17 @@ import { Suspense } from 'react'
 import { createBrowserRouter, Navigate, RouteObject } from 'react-router'
 
 import ErrorPage from '@/components/Error'
-import { Component as Layout } from '@/components/Layout'
+import { AdminLayout } from '@/components/Layout/AdminLayout'
+import { PublicLayout } from '@/components/Layout/PublicLayout'
 import LoadingFallback from '@/components/LoadingFallback'
 import LoginPage from '@/pages/Login'
 import { RouteItem } from '@/types'
 
-import { routes } from './routesConfig'
+import { adminRoutes } from './adminRoutes'
+import { publicRoutes } from './publicRoutes'
 
 // 根据路由配置生成路由
-const generateRoutes = (): RouteObject[] => {
+const generateRoutes = (routes: RouteItem[]): RouteObject[] => {
   const generateChildrenRoutes = (routes: RouteItem[]): RouteObject[] => {
     return routes.flatMap(route => {
       const result: RouteObject[] = []
@@ -36,7 +38,7 @@ const generateRoutes = (): RouteObject[] => {
     })
   }
 
-  // 基于统一路由数组生成所有可渲染路由
+  // 基于路由数组生成所有可渲染路由
   const allRoutes = generateChildrenRoutes(routes)
 
   // 去重
@@ -68,16 +70,22 @@ const router = createBrowserRouter(
       element: <LoginPage />,
       errorElement: <ErrorPage />
     },
+    // 前台布局（公开页面，顶部导航）
     {
-      element: <Layout />,
-      // 将错误元素放在布局路由上，它可以捕获所有子路由的渲染错误
+      element: <PublicLayout />,
       errorElement: <ErrorPage />,
-      children: generateRoutes()
+      children: generateRoutes(publicRoutes)
+    },
+    // 后台布局（管理页面，侧边导航，需登录）
+    {
+      path: '/admin',
+      element: <AdminLayout />,
+      errorElement: <ErrorPage />,
+      children: generateRoutes(adminRoutes)
     }
   ],
   {
     // 设置路由基础路径，如果部署在子目录下需要修改这里
-    // 例如部署在 /urbanization/ 子目录下，则设置为 '/urbanization'
     basename: getBasename()
   }
 )

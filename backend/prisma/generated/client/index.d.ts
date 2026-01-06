@@ -1400,12 +1400,10 @@ export namespace Prisma {
   }
 
   export type OrganizationAvgAggregateOutputType = {
-    sort: number | null
     delete: number | null
   }
 
   export type OrganizationSumAggregateOutputType = {
-    sort: number | null
     delete: number | null
   }
 
@@ -1413,7 +1411,6 @@ export namespace Prisma {
     id: string | null
     name: string | null
     parentId: string | null
-    sort: number | null
     description: string | null
     createTime: Date | null
     updateTime: Date | null
@@ -1424,7 +1421,6 @@ export namespace Prisma {
     id: string | null
     name: string | null
     parentId: string | null
-    sort: number | null
     description: string | null
     createTime: Date | null
     updateTime: Date | null
@@ -1435,7 +1431,6 @@ export namespace Prisma {
     id: number
     name: number
     parentId: number
-    sort: number
     description: number
     createTime: number
     updateTime: number
@@ -1445,12 +1440,10 @@ export namespace Prisma {
 
 
   export type OrganizationAvgAggregateInputType = {
-    sort?: true
     delete?: true
   }
 
   export type OrganizationSumAggregateInputType = {
-    sort?: true
     delete?: true
   }
 
@@ -1458,7 +1451,6 @@ export namespace Prisma {
     id?: true
     name?: true
     parentId?: true
-    sort?: true
     description?: true
     createTime?: true
     updateTime?: true
@@ -1469,7 +1461,6 @@ export namespace Prisma {
     id?: true
     name?: true
     parentId?: true
-    sort?: true
     description?: true
     createTime?: true
     updateTime?: true
@@ -1480,7 +1471,6 @@ export namespace Prisma {
     id?: true
     name?: true
     parentId?: true
-    sort?: true
     description?: true
     createTime?: true
     updateTime?: true
@@ -1578,7 +1568,6 @@ export namespace Prisma {
     id: string
     name: string
     parentId: string | null
-    sort: number
     description: string | null
     createTime: Date
     updateTime: Date
@@ -1608,7 +1597,6 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     parentId?: boolean
-    sort?: boolean
     description?: boolean
     createTime?: boolean
     updateTime?: boolean
@@ -1623,7 +1611,6 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     parentId?: boolean
-    sort?: boolean
     description?: boolean
     createTime?: boolean
     updateTime?: boolean
@@ -1635,7 +1622,6 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     parentId?: boolean
-    sort?: boolean
     description?: boolean
     createTime?: boolean
     updateTime?: boolean
@@ -1647,14 +1633,13 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     parentId?: boolean
-    sort?: boolean
     description?: boolean
     createTime?: boolean
     updateTime?: boolean
     delete?: boolean
   }
 
-  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "parentId" | "sort" | "description" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["organization"]>
+  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "parentId" | "description" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["organization"]>
   export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     parent?: boolean | Organization$parentArgs<ExtArgs>
     children?: boolean | Organization$childrenArgs<ExtArgs>
@@ -1679,7 +1664,6 @@ export namespace Prisma {
       id: string
       name: string
       parentId: string | null
-      sort: number
       description: string | null
       createTime: Date
       updateTime: Date
@@ -2113,7 +2097,6 @@ export namespace Prisma {
     readonly id: FieldRef<"Organization", 'String'>
     readonly name: FieldRef<"Organization", 'String'>
     readonly parentId: FieldRef<"Organization", 'String'>
-    readonly sort: FieldRef<"Organization", 'Int'>
     readonly description: FieldRef<"Organization", 'String'>
     readonly createTime: FieldRef<"Organization", 'DateTime'>
     readonly updateTime: FieldRef<"Organization", 'DateTime'>
@@ -8056,7 +8039,6 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     parentId: 'parentId',
-    sort: 'sort',
     description: 'description',
     createTime: 'createTime',
     updateTime: 'updateTime',
@@ -8186,16 +8168,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
+   * Reference to a field of type 'DateTime'
    */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
     
 
 
   /**
-   * Reference to a field of type 'DateTime'
+   * Reference to a field of type 'Int'
    */
-  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
@@ -8230,7 +8212,6 @@ export namespace Prisma {
     id?: StringFilter<"Organization"> | string
     name?: StringFilter<"Organization"> | string
     parentId?: StringNullableFilter<"Organization"> | string | null
-    sort?: IntFilter<"Organization"> | number
     description?: StringNullableFilter<"Organization"> | string | null
     createTime?: DateTimeFilter<"Organization"> | Date | string
     updateTime?: DateTimeFilter<"Organization"> | Date | string
@@ -8244,7 +8225,6 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     parentId?: SortOrderInput | SortOrder
-    sort?: SortOrder
     description?: SortOrderInput | SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -8261,7 +8241,6 @@ export namespace Prisma {
     NOT?: OrganizationWhereInput | OrganizationWhereInput[]
     name?: StringFilter<"Organization"> | string
     parentId?: StringNullableFilter<"Organization"> | string | null
-    sort?: IntFilter<"Organization"> | number
     description?: StringNullableFilter<"Organization"> | string | null
     createTime?: DateTimeFilter<"Organization"> | Date | string
     updateTime?: DateTimeFilter<"Organization"> | Date | string
@@ -8275,7 +8254,6 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     parentId?: SortOrderInput | SortOrder
-    sort?: SortOrder
     description?: SortOrderInput | SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -8294,7 +8272,6 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Organization"> | string
     name?: StringWithAggregatesFilter<"Organization"> | string
     parentId?: StringNullableWithAggregatesFilter<"Organization"> | string | null
-    sort?: IntWithAggregatesFilter<"Organization"> | number
     description?: StringNullableWithAggregatesFilter<"Organization"> | string | null
     createTime?: DateTimeWithAggregatesFilter<"Organization"> | Date | string
     updateTime?: DateTimeWithAggregatesFilter<"Organization"> | Date | string
@@ -8645,7 +8622,6 @@ export namespace Prisma {
   export type OrganizationCreateInput = {
     id?: string
     name: string
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -8659,7 +8635,6 @@ export namespace Prisma {
     id?: string
     name: string
     parentId?: string | null
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -8671,7 +8646,6 @@ export namespace Prisma {
   export type OrganizationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8685,7 +8659,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8698,7 +8671,6 @@ export namespace Prisma {
     id?: string
     name: string
     parentId?: string | null
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -8708,7 +8680,6 @@ export namespace Prisma {
   export type OrganizationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8719,7 +8690,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9120,17 +9090,6 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[]
@@ -9140,6 +9099,17 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type OrganizationNullableScalarRelationFilter = {
@@ -9176,7 +9146,6 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     parentId?: SortOrder
-    sort?: SortOrder
     description?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -9184,7 +9153,6 @@ export namespace Prisma {
   }
 
   export type OrganizationAvgOrderByAggregateInput = {
-    sort?: SortOrder
     delete?: SortOrder
   }
 
@@ -9192,7 +9160,6 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     parentId?: SortOrder
-    sort?: SortOrder
     description?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -9203,7 +9170,6 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     parentId?: SortOrder
-    sort?: SortOrder
     description?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -9211,7 +9177,6 @@ export namespace Prisma {
   }
 
   export type OrganizationSumOrderByAggregateInput = {
-    sort?: SortOrder
     delete?: SortOrder
   }
 
@@ -9249,6 +9214,20 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -9263,20 +9242,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -9561,20 +9526,20 @@ export namespace Prisma {
     set?: string
   }
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type OrganizationUpdateOneWithoutChildrenNestedInput = {
@@ -9743,17 +9708,6 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[]
@@ -9763,6 +9717,17 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -9810,6 +9775,20 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -9836,20 +9815,6 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
   }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -9872,7 +9837,6 @@ export namespace Prisma {
   export type OrganizationCreateWithoutChildrenInput = {
     id?: string
     name: string
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -9885,7 +9849,6 @@ export namespace Prisma {
     id?: string
     name: string
     parentId?: string | null
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -9901,7 +9864,6 @@ export namespace Prisma {
   export type OrganizationCreateWithoutParentInput = {
     id?: string
     name: string
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -9913,7 +9875,6 @@ export namespace Prisma {
   export type OrganizationUncheckedCreateWithoutParentInput = {
     id?: string
     name: string
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -9978,7 +9939,6 @@ export namespace Prisma {
   export type OrganizationUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9991,7 +9951,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10022,7 +9981,6 @@ export namespace Prisma {
     id?: StringFilter<"Organization"> | string
     name?: StringFilter<"Organization"> | string
     parentId?: StringNullableFilter<"Organization"> | string | null
-    sort?: IntFilter<"Organization"> | number
     description?: StringNullableFilter<"Organization"> | string | null
     createTime?: DateTimeFilter<"Organization"> | Date | string
     updateTime?: DateTimeFilter<"Organization"> | Date | string
@@ -10138,7 +10096,6 @@ export namespace Prisma {
   export type OrganizationCreateWithoutUsersInput = {
     id?: string
     name: string
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -10151,7 +10108,6 @@ export namespace Prisma {
     id?: string
     name: string
     parentId?: string | null
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -10209,7 +10165,6 @@ export namespace Prisma {
   export type OrganizationUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10222,7 +10177,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10233,7 +10187,6 @@ export namespace Prisma {
   export type OrganizationCreateManyParentInput = {
     id?: string
     name: string
-    sort?: number
     description?: string | null
     createTime?: Date | string
     updateTime?: Date | string
@@ -10255,7 +10208,6 @@ export namespace Prisma {
   export type OrganizationUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10267,7 +10219,6 @@ export namespace Prisma {
   export type OrganizationUncheckedUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10279,7 +10230,6 @@ export namespace Prisma {
   export type OrganizationUncheckedUpdateManyWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    sort?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string

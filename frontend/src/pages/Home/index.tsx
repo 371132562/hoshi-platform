@@ -1,14 +1,11 @@
-import { Button, Empty, Skeleton } from 'antd'
+import { Empty, Skeleton } from 'antd'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router'
 
+// import { useNavigate } from 'react-router' // 移除未使用的引用
 import ArticleDisplay from '@/components/ArticleDisplay'
 import useArticleStore from '@/stores/articleStore'
 
 const Component = () => {
-  // Router hooks
-  const navigate = useNavigate()
-
   // Store 取值
   const getArticlesByPage = useArticleStore(state => state.getArticlesByPage)
   const pageArticles = useArticleStore(state => state.pageArticles)
@@ -18,11 +15,6 @@ const Component = () => {
   useEffect(() => {
     getArticlesByPage('home')
   }, [])
-
-  // 方法定义
-  const goToConfig = () => {
-    navigate('/article/order')
-  }
 
   if (orderConfigLoading) {
     return (
@@ -42,14 +34,7 @@ const Component = () => {
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           description="首页暂无内容"
-        >
-          <Button
-            type="primary"
-            onClick={goToConfig}
-          >
-            前往配置
-          </Button>
-        </Empty>
+        />
       </div>
     )
   }

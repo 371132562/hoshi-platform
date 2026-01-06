@@ -47,7 +47,7 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule, // 认证模块
     RoleModule, // 角色管理模块
     UserModule, // 用户管理模块
-    OrganizationModule, // 组织管理模块
+    OrganizationModule, // 部门管理模块
 
     //业务模块
     ArticleModule, // 文章管理模块

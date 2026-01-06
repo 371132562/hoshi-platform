@@ -58,11 +58,6 @@ export type RouteItem = {
   hideInBreadcrumb?: boolean
   children?: RouteItem[]
   adminOnly?: boolean // 仅admin可见
-  /**
-   * 菜单位置：用于区分顶部或侧边栏菜单。
-   * 顶部/侧边的根节点需要设置；子路由可不设置（继承父级语义）。
-   */
-  menuPosition?: 'top' | 'side'
 }
 
 // ==================== 类型导出 ====================
@@ -120,6 +115,14 @@ export type { DeleteOrphans, OrphanImagesResponse, UploadResponse }
 
 // 组织管理相关类型
 export type { CreateOrganizationDto, Organization, UpdateOrganizationDto }
+
+/**
+ * 带有 key 属性的组织树节点类型（AntD Tree 组件专用）
+ */
+export type OrganizationTreeNode = Omit<Organization, 'children'> & {
+  key: string
+  children?: OrganizationTreeNode[]
+}
 
 // 系统常量
 export { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'

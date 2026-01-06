@@ -92,26 +92,25 @@ async function seedAuthData() {
 async function main() {
   // 认证相关数据初始化
   await seedAuthData();
-  // 组织相关数据初始化
+  // 部门相关数据初始化
   await seedOrganizationData();
 }
 
 /**
- * 组织相关数据初始化
+ * 部门相关数据初始化
  */
 async function seedOrganizationData() {
-  console.log('开始初始化组织数据...');
+  console.log('开始初始化部门数据...');
   const rootOrg = await prisma.organization.upsert({
     where: { id: '0' },
     update: {},
     create: {
       id: '0',
-      name: '根组织',
-      sort: 0,
+      name: '根部门',
       description: '系统默认根节点',
     },
   });
-  console.log('组织数据初始化完成！根组织ID:', rootOrg.id);
+  console.log('部门数据初始化完成！根部门ID:', rootOrg.id);
 }
 
 // 脚本的执行入口点。
