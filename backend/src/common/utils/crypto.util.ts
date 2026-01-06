@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 
 import { ErrorCode } from '../../types/response';
-import { BusinessException } from '../exceptions/businessException';
+import { BusinessException } from '../exceptions/allExceptionsFilter';
 
 /**
  * 加解密工具类

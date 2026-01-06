@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { BusinessException } from '../../common/exceptions/businessException';
+import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
 import { TokenPayloadDto } from './auth.dto';

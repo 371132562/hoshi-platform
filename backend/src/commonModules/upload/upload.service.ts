@@ -5,7 +5,7 @@ import { existsSync } from 'fs'; // 导入 existsSync
 import { readdir, readFile, unlink } from 'fs/promises'; // 导入 fs/promises 中的 unlink 用于异步删除文件
 import { join } from 'path';
 
-import { BusinessException } from '../../common/exceptions/businessException';
+import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { ImageProcessorUtils } from '../../common/upload/image-processor.utils';
 import {

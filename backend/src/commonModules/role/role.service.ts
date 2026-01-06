@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { Role } from '@prisma/generated/client';
 import { Prisma } from '@prisma/generated/client';
 
-import { BusinessException } from '../../common/exceptions/businessException';
+import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';

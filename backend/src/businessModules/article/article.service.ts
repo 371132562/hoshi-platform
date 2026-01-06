@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Article, ArticleOrder } from '@prisma/generated/client';
-import { BusinessException } from 'src/common/exceptions/businessException';
 
+import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { ImageProcessorUtils } from '../../common/upload';
 import { ConcurrencyService } from '../../commonModules/concurrency/concurrency.service';
