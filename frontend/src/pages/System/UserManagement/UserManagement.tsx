@@ -89,7 +89,6 @@ const UserManagement: React.FC = () => {
       },
       { title: '姓名', dataIndex: 'name', key: 'name' },
       { title: '部门', dataIndex: 'department', key: 'department' },
-      { title: '邮箱', dataIndex: 'email', key: 'email' },
       { title: '电话', dataIndex: 'phone', key: 'phone' },
       {
         title: '角色',
@@ -297,15 +296,6 @@ const UserManagement: React.FC = () => {
             <Input
               maxLength={20}
               placeholder="请输入部门"
-            />
-          </Form.Item>
-          <Form.Item
-            name="email"
-            label="邮箱"
-          >
-            <Input
-              maxLength={50}
-              placeholder="请输入邮箱"
             />
           </Form.Item>
           <Form.Item

@@ -105,8 +105,7 @@ export class AuthService {
           id: user.id,
           username: user.username,
           name: user.name,
-          department: user.department,
-          email: user.email || null,
+          department: user.department ?? null,
           phone: user.phone || null,
           role: {
             name: user.role!.name,
@@ -168,8 +167,7 @@ export class AuthService {
         id: user.id,
         username: user.username,
         name: user.name,
-        department: user.department,
-        email: user.email || null,
+        department: user.department ?? null,
         phone: user.phone || null,
         role: {
           name: user.role!.name,

@@ -30,10 +30,9 @@ model Role {
 // 用户表
 model User {
   id         String   @id @default(uuid()) // 主键ID（UUID）
-  username   String   @unique // 用户名（唯一）
+  username   String // 用户名（唯一）
   name       String // 用户姓名
-  department String // 所属部门
-  email      String? // 邮箱地址（可选）
+  department String? // 所属部门
   phone      String? // 电话号码（可选）
   password   String // 密码（加密存储）
   roleId     String // 角色ID（必填）
@@ -45,7 +44,6 @@ model User {
   @@unique([username, delete]) // 用户名在未删除状态下唯一
   @@index([id])
   @@index([username, delete])
-  @@index([email, delete])
   @@index([roleId])
 }
 

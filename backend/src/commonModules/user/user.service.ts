@@ -40,8 +40,7 @@ export class UserService {
         id: user.id,
         username: user.username,
         name: user.name,
-        department: user.department,
-        email: user.email ?? null,
+        department: user.department ?? null,
         phone: user.phone ?? null,
         role: { name: user.role!.name },
       }));
@@ -78,7 +77,6 @@ export class UserService {
           username: dto.username,
           name: dto.name,
           department: dto.department,
-          email: dto.email,
           phone: dto.phone,
           password: hashedPassword,
           roleId: dto.roleId,
@@ -125,7 +123,6 @@ export class UserService {
         data: {
           name: dto.name ?? user.name,
           department: dto.department ?? user.department,
-          email: dto.email ?? user.email,
           phone: dto.phone ?? user.phone,
           roleId: dto.roleId ?? user.roleId,
         },
