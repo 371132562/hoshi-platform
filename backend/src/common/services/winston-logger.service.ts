@@ -15,17 +15,17 @@ export class WinstonLoggerService implements LoggerService {
   // 统一构造日志前缀；按需求输出 [用户编号] [用户名称]
   private withPrefix(message: unknown): {
     prefix: string;
-    userCode: string;
+    username: string;
     message: string;
   } {
     const ctx = RequestContext.getStore();
-    const userCode = ctx?.user?.userCode ?? '访客';
-    const userName = ctx?.user?.userName ?? '访客';
+    const username = ctx?.user?.username ?? '访客';
+    const name = ctx?.user?.name ?? '访客';
     const text =
       typeof message === 'string' ? message : JSON.stringify(message);
     return {
-      prefix: `[编号:${userCode}] [用户名:${userName}] `,
-      userCode: String(userCode),
+      prefix: `[用户:${username}] [姓名:${name}] `,
+      username: username,
       message: text,
     };
   }
@@ -35,9 +35,9 @@ export class WinstonLoggerService implements LoggerService {
     text: string,
   ): void {
     const ctx = RequestContext.getStore();
-    const userCode = ctx?.user?.userCode;
-    if (userCode && userCode !== '访客') {
-      const userLogger = getUserLogger(String(userCode));
+    const username = ctx?.user?.username;
+    if (username && username !== '访客') {
+      const userLogger = getUserLogger(username);
       userLogger.log({ level, message: text });
     }
   }

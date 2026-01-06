@@ -48,20 +48,20 @@ export class SystemLogsService {
 
   /**
    * 构建用户日志文件路径
-   * @param userId 用户ID
+   * @param username 用户名
    * @param level 日志级别
    * @param date 日期字符串
    * @returns 完整的文件路径
    */
   private buildUserLogPath(
-    userId: string,
+    username: string,
     level: LogFileLevel,
     date: string,
   ): string {
     return join(
       this.baseLogDir,
       'users',
-      userId,
+      username,
       `application-${level}-${date}.log`,
     );
   }
@@ -152,25 +152,25 @@ export class SystemLogsService {
    * 列出用户日志文件
    * 扫描指定用户的日志目录，返回所有日志文件列表
    *
-   * @param dto 请求参数，包含用户ID
+   * @param dto 请求参数，包含用户名
    * @returns 日志文件列表响应
    */
   async listUserFiles(dto: UserLogFilesReqDto): Promise<SystemLogFilesResDto> {
-    const { userId } = dto;
+    const { username } = dto;
 
-    if (!userId) {
-      throw new Error('用户ID不能为空');
+    if (!username) {
+      throw new Error('用户名不能为空');
     }
 
-    this.logger.log(`[操作] 列出用户日志文件 - 用户编号: ${userId}`);
+    this.logger.log(`[操作] 列出用户日志文件 - 用户名: ${username}`);
 
     try {
-      const userLogDir = join(this.baseLogDir, 'users', userId);
+      const userLogDir = join(this.baseLogDir, 'users', username);
 
       // 检查用户日志目录是否存在
       if (!existsSync(userLogDir)) {
         this.logger.log(
-          `[操作] 列出用户日志文件 - 用户编号: ${userId}, 目录不存在，返回空列表`,
+          `[操作] 列出用户日志文件 - 用户名: ${username}, 目录不存在，返回空列表`,
         );
         return { files: [] };
       }
@@ -178,13 +178,13 @@ export class SystemLogsService {
       const files = await this.scanLogFiles(userLogDir);
 
       this.logger.log(
-        `[操作] 列出用户日志文件 - 用户编号: ${userId}, 共 ${files.length} 个文件`,
+        `[操作] 列出用户日志文件 - 用户名: ${username}, 共 ${files.length} 个文件`,
       );
 
       return { files };
     } catch (error) {
       this.logger.error(
-        `[失败] 列出用户日志文件 - 用户编号: ${userId}, ${error instanceof Error ? error.message : '未知错误'}`,
+        `[失败] 列出用户日志文件 - 用户名: ${username}, ${error instanceof Error ? error.message : '未知错误'}`,
         error instanceof Error ? error.stack : undefined,
       );
       throw error;
@@ -266,18 +266,18 @@ export class SystemLogsService {
    * 读取用户日志内容
    * 支持关键词过滤
    *
-   * @param dto 读取请求参数，包含用户ID
+   * @param dto 读取请求参数，包含用户名
    * @returns 日志内容响应
    */
   async readUserLog(dto: ReadUserLogReqDto): Promise<LogLineItem[]> {
-    const { userId, filename } = dto;
+    const { username, filename } = dto;
 
-    if (!userId) {
-      throw new Error('用户ID不能为空');
+    if (!username) {
+      throw new Error('用户名不能为空');
     }
 
     this.logger.log(
-      `[操作] 读取用户日志 - 用户编号: ${userId}, 文件名: ${filename}`,
+      `[操作] 读取用户日志 - 用户名: ${username}, 文件名: ${filename}`,
     );
 
     try {
@@ -290,7 +290,7 @@ export class SystemLogsService {
         return [];
       }
 
-      const filePath = join(this.baseLogDir, 'users', userId, filename);
+      const filePath = join(this.baseLogDir, 'users', username, filename);
       if (!existsSync(filePath)) {
         this.logger.warn(`[验证失败] 读取用户日志 - 文件 ${filename} 不存在`);
         return [];
@@ -299,13 +299,13 @@ export class SystemLogsService {
       const result = await this.readLogFile(filePath);
 
       this.logger.log(
-        `[操作] 读取用户日志 - 用户编号: ${userId}, 文件名: ${filename}, 共 ${result.length} 行日志`,
+        `[操作] 读取用户日志 - 用户名: ${username}, 文件名: ${filename}, 共 ${result.length} 行日志`,
       );
 
       return result;
     } catch (error) {
       this.logger.error(
-        `[失败] 读取用户日志 - 用户编号: ${userId}, 文件名: ${filename}, ${error instanceof Error ? error.message : '未知错误'}`,
+        `[失败] 读取用户日志 - 用户名: ${username}, 文件名: ${filename}, ${error instanceof Error ? error.message : '未知错误'}`,
         error instanceof Error ? error.stack : undefined,
       );
       return [];
@@ -343,8 +343,8 @@ export class SystemLogsService {
       const usernameToName = new Map(users.map((u) => [u.username, u.name]));
 
       const list = usernames.map((username) => ({
-        userCode: username,
-        userName: usernameToName.get(username) || '',
+        username: username,
+        name: usernameToName.get(username) || '',
       }));
 
       const result = { list };

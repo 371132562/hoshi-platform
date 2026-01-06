@@ -20,14 +20,14 @@ export class UserContextInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req = context.switchToHttp().getRequest<Request & { user?: any }>();
     if (req && req.user) {
-      // JwtStrategy.validate 返回字段：userId、userCode、userName
-      const { userCode, userName } = req.user as {
-        userCode?: string | number;
+      // 从 JwtStrategy.validate 返回的对象中解构
+      const { username, userName } = req.user as {
+        username: string;
         userName?: string;
       };
       RequestContext.setUser({
-        userCode: userCode ?? '访客',
-        userName: userName ?? '访客',
+        username: username ?? '访客',
+        name: userName ?? '访客',
       });
     }
     return next.handle();

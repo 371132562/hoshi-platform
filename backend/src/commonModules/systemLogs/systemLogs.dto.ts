@@ -52,7 +52,7 @@ export class ReadUserLogReqDto {
 
   @IsOptional()
   @IsString()
-  userId?: string;
+  username?: string;
 }
 export type ReadUserLogReq = InstanceType<typeof ReadUserLogReqDto>;
 
@@ -83,7 +83,7 @@ export class UserLogFilesReqDto {
 
   @IsOptional()
   @IsString()
-  userId?: string;
+  username?: string;
 }
 export type UserLogFilesReq = InstanceType<typeof UserLogFilesReqDto>;
 
@@ -94,11 +94,11 @@ export type LogUsersResDto = {
   users?: Array<{
     id: string;
     name: string;
-    code: string;
+    username: string;
   }>;
   list?: Array<{
-    userCode: string;
-    userName: string;
+    username: string;
+    name: string;
   }>;
 };
 
@@ -126,8 +126,8 @@ export type SystemLogFileItem = LogFileItem;
  */
 export type UserLogItem = {
   id: string;
-  userId: string;
-  userName: string;
+  username: string;
+  name: string;
   action: string;
   details: string;
   ip: string;
@@ -159,7 +159,7 @@ export class UserLogsListDto {
 
   @IsOptional()
   @IsString()
-  userId?: string;
+  username?: string;
 
   @IsOptional()
   @IsString()

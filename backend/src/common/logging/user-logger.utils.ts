@@ -8,23 +8,23 @@ import { createLogger, format, Logger, transports } from 'winston';
  * 用户级日志工具
  * 用途：为每个用户编号创建/复用独立的 winston 日志器，将该用户的日志写入独立目录并按日滚动
  * 上游：`WinstonLoggerService` 在检测到上下文中存在用户编号时调用
- * 下游：写入到磁盘目录 LOG_DIR/users/<userId>/application-*.log
+ * 下游：写入到磁盘目录 LOG_DIR/users/<username>/application-*.log
  */
 
 const userLoggers = new Map<string, Logger>();
 
 // 创建与缓存用户专属日志器
-export const getUserLogger = (userId: string): Logger => {
-  if (userLoggers.has(userId)) {
-    return userLoggers.get(userId)!;
+export const getUserLogger = (username: string): Logger => {
+  if (userLoggers.has(username)) {
+    return userLoggers.get(username)!;
   }
 
   const baseLogDir = process.env.LOG_DIR || './logs';
-  const userDir = join(baseLogDir, 'users', userId);
+  const userDir = join(baseLogDir, 'users', username);
   if (!existsSync(userDir)) {
     mkdirSync(userDir, { recursive: true });
   }
-  // 确保用户目录下的审计目录存在：LOG_DIR/users/<userId>/audit
+  // 确保用户目录下的审计目录存在：LOG_DIR/users/<username>/audit
   const userAuditDir = join(userDir, 'audit');
   if (!existsSync(userAuditDir)) {
     mkdirSync(userAuditDir, { recursive: true });
@@ -74,6 +74,6 @@ export const getUserLogger = (userId: string): Logger => {
     ],
   });
 
-  userLoggers.set(userId, userLogger);
+  userLoggers.set(username, userLogger);
   return userLogger;
 };
