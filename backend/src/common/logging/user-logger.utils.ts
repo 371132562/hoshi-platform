@@ -8,7 +8,7 @@ import { createLogger, format, Logger, transports } from 'winston';
  * 用户级日志工具
  * 用途：为每个用户编号创建/复用独立的 winston 日志器，将该用户的日志写入独立目录并按日滚动
  * 上游：`WinstonLoggerService` 在检测到上下文中存在用户编号时调用
- * 下游：写入到磁盘目录 LOG_DIR/users/<username>/application-*.log
+ * 下游：写入到磁盘目录 LOG_DIR/users/<username>/YYYY-MM-DD-*.log
  */
 
 const userLoggers = new Map<string, Logger>();
@@ -54,22 +54,22 @@ export const getUserLogger = (username: string): Logger => {
     ),
     transports: [
       new transports.DailyRotateFile({
-        filename: join(userDir, 'application-info-%DATE%.log'),
+        filename: join(userDir, '%DATE%-info.log'),
         datePattern: 'YYYY-MM-DD',
         level: 'info',
         zippedArchive: false,
         maxSize: '30m',
         maxFiles: '30d',
-        auditFile: join(userAuditDir, 'application-info-audit.json'),
+        auditFile: join(userAuditDir, 'info-audit.json'),
       }),
       new transports.DailyRotateFile({
-        filename: join(userDir, 'application-error-%DATE%.log'),
+        filename: join(userDir, '%DATE%-error.log'),
         datePattern: 'YYYY-MM-DD',
         level: 'error',
         zippedArchive: false,
         maxSize: '30m',
         maxFiles: '30d',
-        auditFile: join(userAuditDir, 'application-error-audit.json'),
+        auditFile: join(userAuditDir, 'error-audit.json'),
       }),
     ],
   });

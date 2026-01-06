@@ -37,36 +37,6 @@ export class SystemLogsService {
   ) {}
 
   /**
-   * 构建系统日志文件路径
-   * @param level 日志级别
-   * @param date 日期字符串
-   * @returns 完整的文件路径
-   */
-  private buildSystemLogPath(level: LogFileLevel, date: string): string {
-    return join(this.baseLogDir, `application-${level}-${date}.log`);
-  }
-
-  /**
-   * 构建用户日志文件路径
-   * @param username 用户名
-   * @param level 日志级别
-   * @param date 日期字符串
-   * @returns 完整的文件路径
-   */
-  private buildUserLogPath(
-    username: string,
-    level: LogFileLevel,
-    date: string,
-  ): string {
-    return join(
-      this.baseLogDir,
-      'users',
-      username,
-      `application-${level}-${date}.log`,
-    );
-  }
-
-  /**
    * 解析日志文件名，提取级别和日期信息
    * @param filename 日志文件名
    * @returns 解析结果，包含级别和日期，如果格式不匹配则返回null
@@ -74,12 +44,10 @@ export class SystemLogsService {
   private parseLogFilename(
     filename: string,
   ): { level: LogFileLevel; date: string } | null {
-    const match = filename.match(
-      /^application-(info|error)-(\d{4}-\d{2}-\d{2})\.log$/,
-    );
+    const match = filename.match(/^(\d{4}-\d{2}-\d{2})-(info|error)\.log$/);
     if (!match) return null;
 
-    const [, level, date] = match;
+    const [, date, level] = match;
     return { level: level as LogFileLevel, date };
   }
 
@@ -231,11 +199,10 @@ export class SystemLogsService {
     this.logger.log(`[操作] 读取系统日志 - 文件名: ${filename}`);
 
     try {
-      // 安全检查：只允许读取日志文件
-      const safe = ['application-info', 'application-error'];
-      if (!safe.some((p) => filename.startsWith(p))) {
+      // 安全检查：只允许读取符合格式的日志文件
+      if (!/^(\d{4}-\d{2}-\d{2})-(info|error)\.log$/.test(filename)) {
         this.logger.warn(
-          `[验证失败] 读取系统日志 - 文件名 ${filename} 不在安全列表中`,
+          `[验证失败] 读取系统日志 - 文件名 ${filename} 格式非法`,
         );
         return [];
       }
@@ -281,11 +248,10 @@ export class SystemLogsService {
     );
 
     try {
-      // 安全检查：只允许读取日志文件
-      const safe = ['application-info', 'application-error'];
-      if (!safe.some((p) => filename.startsWith(p))) {
+      // 安全检查：只允许读取符合格式的日志文件
+      if (!/^(\d{4}-\d{2}-\d{2})-(info|error)\.log$/.test(filename)) {
         this.logger.warn(
-          `[验证失败] 读取用户日志 - 文件名 ${filename} 不在安全列表中`,
+          `[验证失败] 读取用户日志 - 文件名 ${filename} 格式非法`,
         );
         return [];
       }

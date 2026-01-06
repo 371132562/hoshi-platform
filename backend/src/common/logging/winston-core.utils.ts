@@ -72,24 +72,24 @@ export const logger = createLogger({
     }),
     // 文件输出（按日滚动）- info 级别（排除 error，独立文件）
     new transports.DailyRotateFile({
-      filename: process.env.LOG_DIR + '/application-info-%DATE%.log',
+      filename: (process.env.LOG_DIR || './logs') + '/%DATE%-info.log',
       datePattern: 'YYYY-MM-DD',
       level: 'info',
       zippedArchive: false,
       maxSize: '30m',
       maxFiles: '30d',
       format: format.combine(excludeErrorFormat()),
-      auditFile: join(auditDir, 'application-info-audit.json'),
+      auditFile: join(auditDir, 'info-audit.json'),
     }),
     // 文件输出（按日滚动）- error 级别（独立文件）
     new transports.DailyRotateFile({
-      filename: process.env.LOG_DIR + '/application-error-%DATE%.log',
+      filename: (process.env.LOG_DIR || './logs') + '/%DATE%-error.log',
       datePattern: 'YYYY-MM-DD',
       level: 'error',
       zippedArchive: false,
       maxSize: '30m',
       maxFiles: '30d',
-      auditFile: join(auditDir, 'application-error-audit.json'),
+      auditFile: join(auditDir, 'error-audit.json'),
     }),
   ],
 });
