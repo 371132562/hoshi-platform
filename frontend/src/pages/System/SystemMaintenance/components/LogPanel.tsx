@@ -100,7 +100,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
   const rawData = type === 'system' ? readResult : readUserResult
 
   const processedData = useMemo(() => {
-    if (!rawData) return []
+    if (!rawData || !selectedFilename) return []
 
     let data = rawData.map((l, idx) => ({
       key: `${idx}`,
@@ -127,7 +127,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
     }
 
     return data
-  }, [rawData, keyword, timeRange])
+  }, [rawData, keyword, timeRange, selectedFilename])
 
   // Columns
   const columns = useMemo(
