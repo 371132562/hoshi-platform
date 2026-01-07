@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
@@ -34,24 +35,12 @@ export type CreateRole = InstanceType<typeof CreateRoleDto>;
 
 /**
  * 更新角色 DTO
+ * 使用 PartialType 继承 CreateRoleDto，所有字段自动变为可选
  */
-export class UpdateRoleDto {
+export class UpdateRoleDto extends PartialType(CreateRoleDto) {
   @IsString()
   @IsNotEmpty({ message: '角色ID不能为空' })
   id: string;
-
-  @IsOptional()
-  @IsString()
-  name?: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  allowedRoutes?: string[];
 }
 export type UpdateRole = InstanceType<typeof UpdateRoleDto>;
 
@@ -96,20 +85,6 @@ export class AssignRoleRoutesDto {
   allowedRoutes: string[];
 }
 export type AssignRoleRoutes = InstanceType<typeof AssignRoleRoutesDto>;
-
-/**
- * 分配路由 DTO
- */
-export class AssignRoutesDto {
-  @IsString()
-  @IsNotEmpty({ message: '角色ID不能为空' })
-  id: string;
-
-  @IsArray()
-  @IsString({ each: true })
-  allowedRoutes: string[];
-}
-export type AssignRoutes = InstanceType<typeof AssignRoutesDto>;
 
 /**
  * 删除角色 DTO

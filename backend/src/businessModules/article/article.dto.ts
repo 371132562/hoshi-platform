@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -57,29 +58,12 @@ export type CreateArticle = InstanceType<typeof CreateArticleDto>;
 
 /**
  * 更新文章 DTO
+ * 使用 PartialType 继承 CreateArticleDto，所有字段自动变为可选
  */
-export class UpdateArticleDto {
+export class UpdateArticleDto extends PartialType(CreateArticleDto) {
   @IsString()
   @IsNotEmpty({ message: '文章ID不能为空' })
   id: string;
-
-  @IsOptional()
-  @IsString()
-  title?: string;
-
-  @IsOptional()
-  @IsString()
-  content?: string;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  images?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  deletedImages?: string[];
 }
 export type UpdateArticle = InstanceType<typeof UpdateArticleDto>;
 

@@ -40,16 +40,9 @@ export type ReadLogReqDto = ReadLog;
 
 /**
  * 读取用户日志请求 DTO
+ * 继承 ReadLogDto，复用 filename 和 lines 字段
  */
-export class ReadUserLogReqDto {
-  @IsString()
-  @IsNotEmpty({ message: '文件名不能为空' })
-  filename: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  lines?: number;
-
+export class ReadUserLogReqDto extends ReadLogDto {
   @IsOptional()
   @IsString()
   username?: string;
