@@ -11,7 +11,6 @@ const RoleManagement = lazy(() => import('@/pages/System/RoleManagement'))
 const SystemMaintenance = lazy(() => import('@/pages/System/SystemMaintenance'))
 const UserManagement = lazy(() => import('@/pages/System/UserManagement'))
 const OrganizationManagement = lazy(() => import('@/pages/System/OrganizationManagement'))
-const SystemLogs = lazy(() => import('@/pages/System/SystemLogs'))
 
 /**
  * 后台管理路由配置
@@ -52,7 +51,6 @@ export const adminRoutes: RouteItem[] = [
       { path: '/admin/system/organization', title: '部门管理', component: OrganizationManagement },
       { path: '/admin/system/roleManagement', title: '角色管理', component: RoleManagement },
       { path: '/admin/system/userManagement', title: '用户管理', component: UserManagement },
-      { path: '/admin/system/logs', title: '系统日志', component: SystemLogs },
       { path: '/admin/system/maintenance', title: '系统维护', component: SystemMaintenance }
     ]
   }

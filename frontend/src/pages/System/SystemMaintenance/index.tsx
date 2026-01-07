@@ -1,28 +1,48 @@
+import { FileSearchOutlined, SafetyCertificateOutlined, UserOutlined } from '@ant-design/icons'
 import { Tabs } from 'antd'
 import { FC } from 'react'
 
-import OrphanImages from './OrphanImages'
+import CleanupPanel from './components/CleanupPanel'
+import LogPanel from './components/LogPanel'
 
-// 系统维护总览页：采用 Tabs 承载各运维功能模块，便于信息分组与切换
 const SystemMaintenance: FC = () => {
   return (
     <div className="w-full">
-      {/* Tabs 容器：遵循平台整体 UI 风格，突出分组标题 */}
       <Tabs
-        defaultActiveKey="orphanImages"
+        defaultActiveKey="cleanup"
         type="card"
+        className="custom-tabs"
         items={[
           {
-            key: 'orphanImages',
-            label: '孤立图片清理',
-            children: <OrphanImages />
+            key: 'cleanup',
+            label: (
+              <span className="flex items-center gap-2 px-2 py-1">
+                <SafetyCertificateOutlined />
+                资源清理
+              </span>
+            ),
+            children: <CleanupPanel />
+          },
+          {
+            key: 'logs',
+            label: (
+              <span className="flex items-center gap-2 px-2 py-1">
+                <FileSearchOutlined />
+                系统日志
+              </span>
+            ),
+            children: <LogPanel type="system" />
+          },
+          {
+            key: 'userLogs',
+            label: (
+              <span className="flex items-center gap-2 px-2 py-1">
+                <UserOutlined />
+                用户日志
+              </span>
+            ),
+            children: <LogPanel type="user" />
           }
-          // 将来可在此扩展更多系统维护工具页签
-          // {
-          //   key: 'consistencyCheck',
-          //   label: '数据一致性校验',
-          //   children: <div className="py-4">...</div>,
-          // },
         ]}
       />
     </div>
