@@ -8,7 +8,6 @@ import {
   Popconfirm,
   Select,
   Space,
-  Spin,
   Table,
   Tag,
   TreeSelect
@@ -145,6 +144,8 @@ const UserManagement: React.FC = () => {
               重置密码
             </Button>
             <Button
+              color="primary"
+              variant="outlined"
               onClick={() => openModal(record)}
               disabled={record.username === 'admin'}
             >
@@ -172,7 +173,8 @@ const UserManagement: React.FC = () => {
               cancelText="取消"
             >
               <Button
-                danger
+                color="danger"
+                variant="outlined"
                 disabled={record.username === 'admin'}
               >
                 删除
@@ -245,25 +247,24 @@ const UserManagement: React.FC = () => {
       </div>
 
       {/* 表格 */}
-      <Spin spinning={loading}>
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={userList}
-          pagination={{
-            current: userPageParams.page,
-            pageSize: userPageParams.pageSize,
-            total: userTotal,
-            onChange: handleUserPageChange,
-            showSizeChanger: true,
-            showTotal: total => `共 ${total} 条`
-          }}
-        />
-      </Spin>
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={userList}
+        pagination={{
+          current: userPageParams.page,
+          pageSize: userPageParams.pageSize,
+          total: userTotal,
+          onChange: handleUserPageChange,
+          showSizeChanger: true,
+          showTotal: total => `共 ${total} 条`
+        }}
+        loading={loading}
+      />
 
-      {/* 新建/编辑用户弹窗 */}
+      {/* 新增/编辑用户弹窗 */}
       <Modal
-        title={editUser ? '编辑用户' : '新建用户'}
+        title={editUser ? '编辑用户' : '新增用户'}
         open={modalOpen}
         onOk={handleOk}
         onCancel={() => setModalOpen(false)}

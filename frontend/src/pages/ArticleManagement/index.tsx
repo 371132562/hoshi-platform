@@ -86,7 +86,8 @@ const ArticleManagement: React.FC = () => {
               cancelText="取消"
             >
               <Button
-                danger
+                color="danger"
+                variant="outlined"
                 disabled={record.title === '关于我们'} // 示例：保护特定文章
               >
                 删除
@@ -103,7 +104,6 @@ const ArticleManagement: React.FC = () => {
     const success = await deleteArticle(id)
     if (success) {
       message.success('文章删除成功')
-      // 删除逻辑中 store 已经处理了刷新，但这里为了保险或特定逻辑可以再次调用，不过 store 里 deleteArticle 已经调用了 refresh
     }
   }
 

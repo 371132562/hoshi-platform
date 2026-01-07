@@ -138,7 +138,8 @@ const OrganizationManagement: React.FC = () => {
         const ops = (
           <span className="ml-4 flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
             <Button
-              type="text"
+              color="primary"
+              variant="text"
               size="small"
               className="px-1 text-gray-500 hover:bg-blue-50 hover:text-blue-500"
               icon={<PlusOutlined />}
@@ -150,7 +151,8 @@ const OrganizationManagement: React.FC = () => {
               新增子部门
             </Button>
             <Button
-              type="text"
+              color="primary"
+              variant="text"
               size="small"
               className="px-1 text-gray-500 hover:bg-blue-50 hover:text-blue-500"
               icon={<EditOutlined />}
@@ -174,9 +176,9 @@ const OrganizationManagement: React.FC = () => {
                 cancelText="取消"
               >
                 <Button
-                  type="text"
+                  color="danger"
+                  variant="text"
                   size="small"
-                  danger
                   className="px-1 text-gray-500 hover:bg-red-50 hover:text-red-500"
                   icon={<DeleteOutlined />}
                   onClick={e => e.stopPropagation()}
@@ -204,42 +206,38 @@ const OrganizationManagement: React.FC = () => {
   }, [organizationList, searchValue, deleteOrganization, openModal])
 
   return (
-    <div className="flex h-full w-full flex-col rounded-lg bg-white p-4">
+    <div className="w-full">
       {/* 顶部搜索栏 */}
-      <div className="mb-4 flex items-center justify-between">
-        <div className="w-[220px]">
-          <Input.Search
-            placeholder="请输入部门名称搜索"
-            allowClear
-            onChange={onChange}
-            className="w-full"
-          />
-        </div>
+      <div className="mb-4 flex items-center gap-3">
+        <Input.Search
+          placeholder="请输入部门名称搜索"
+          allowClear
+          onChange={onChange}
+          style={{ width: 260 }}
+        />
       </div>
 
       {/* 树区域 */}
-      <div className="flex-1 overflow-auto">
-        <Spin spinning={loading}>
-          {organizationList.length > 0 ? (
-            <Tree
-              showLine
-              switcherIcon={<DownOutlined />}
-              treeData={treeData}
-              expandedKeys={expandedKeys}
-              autoExpandParent={autoExpandParent}
-              onExpand={onExpand}
-              selectable={false}
-              className="w-full"
-            />
-          ) : (
-            <div className="py-12 text-center text-gray-400">暂无部门数据</div>
-          )}
-        </Spin>
-      </div>
+      <Spin spinning={loading}>
+        {organizationList.length > 0 ? (
+          <Tree
+            showLine
+            switcherIcon={<DownOutlined />}
+            treeData={treeData}
+            expandedKeys={expandedKeys}
+            autoExpandParent={autoExpandParent}
+            onExpand={onExpand}
+            selectable={false}
+            className="w-full"
+          />
+        ) : (
+          <div className="py-12 text-center text-gray-400">暂无部门数据</div>
+        )}
+      </Spin>
 
       {/* 弹窗 */}
       <Modal
-        title={modalType === 'create' ? '新建部门' : '编辑部门'}
+        title={modalType === 'create' ? '新增部门' : '编辑部门'}
         open={modalOpen}
         onOk={handleOk}
         onCancel={() => setModalOpen(false)}

@@ -9,7 +9,6 @@ import {
   Popconfirm,
   Select,
   Space,
-  Spin,
   Table,
   Tag
 } from 'antd'
@@ -121,6 +120,8 @@ const RoleManagement: React.FC = () => {
               分配权限
             </Button>
             <Button
+              color="primary"
+              variant="outlined"
               onClick={() => openModal(record)}
               disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
             >
@@ -148,7 +149,8 @@ const RoleManagement: React.FC = () => {
               cancelText="取消"
             >
               <Button
-                danger
+                color="danger"
+                variant="outlined"
                 disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
               >
                 删除
@@ -163,27 +165,26 @@ const RoleManagement: React.FC = () => {
 
   return (
     <div className="w-full">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold"></h2>
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex-1" />
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => openModal()}
         >
-          新建角色
+          新增角色
         </Button>
       </div>
-      <Spin spinning={loading}>
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={roleList}
-          pagination={false}
-        />
-      </Spin>
-      {/* 新建/编辑角色弹窗 */}
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={roleList}
+        pagination={false}
+        loading={loading}
+      />
+      {/* 新增/编辑角色弹窗 */}
       <Modal
-        title={editRole ? '编辑角色' : '新建角色'}
+        title={editRole ? '编辑角色' : '新增角色'}
         open={modalOpen}
         onOk={handleOk}
         onCancel={() => setModalOpen(false)}
@@ -196,7 +197,7 @@ const RoleManagement: React.FC = () => {
         >
           <Form.Item
             name="name"
-            label="角色名称（admin为系统保留角色名，不可新建/编辑）"
+            label="角色名称（admin为系统保留角色名，不可新增/编辑）"
             rules={[{ required: true, message: '请输入角色名称' }]}
           >
             <Input
