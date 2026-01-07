@@ -8,21 +8,21 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 /**
  * 日志文件项类型
  */
-export type LogFileItem = {
+export type LogFileItemRes = {
   filename: string;
 };
 
 /**
  * 日志文件响应类型
  */
-export type LogFilesResponse = {
-  files: LogFileItem[];
+export type LogFilesResDto = {
+  files: LogFileItemRes[];
 };
 
 /**
  * 读取日志 DTO
  */
-export class ReadLogDto {
+export class ReadLogReqDto {
   @IsString()
   @IsNotEmpty({ message: '文件名不能为空' })
   filename: string;
@@ -31,18 +31,18 @@ export class ReadLogDto {
   @Type(() => Number)
   lines?: number;
 }
-export type ReadLog = InstanceType<typeof ReadLogDto>;
+export type ReadLogReq = InstanceType<typeof ReadLogReqDto>;
 
 /**
  * 读取日志请求 DTO
  */
-export type ReadLogReqDto = ReadLog;
+// export type ReadLogReqDto = ReadLog; // Removed duplicate
 
 /**
  * 读取用户日志请求 DTO
  * 继承 ReadLogDto，复用 filename 和 lines 字段
  */
-export class ReadUserLogReqDto extends ReadLogDto {
+export class ReadUserLogReqDto extends ReadLogReqDto {
   @IsOptional()
   @IsString()
   username?: string;
@@ -52,7 +52,7 @@ export type ReadUserLogReq = InstanceType<typeof ReadUserLogReqDto>;
 /**
  * 日志内容响应类型
  */
-export type LogContentResponse = {
+export type LogContentResDto = {
   content: string;
   hasMore: boolean;
 };
@@ -60,7 +60,7 @@ export type LogContentResponse = {
 /**
  * 系统日志文件响应 DTO
  */
-export type SystemLogFilesResDto = LogFilesResponse;
+export type SystemLogFilesResDto = LogFilesResDto;
 
 /**
  * 用户日志文件请求 DTO
@@ -98,7 +98,7 @@ export type LogUsersResDto = {
 /**
  * 日志行项类型
  */
-export type LogLineItem = {
+export type LogLineItemRes = {
   ts: string;
   message: string;
   level?: string;
@@ -112,12 +112,12 @@ export type LogFileLevel = 'info' | 'warn' | 'error' | 'debug';
 /**
  * 系统日志文件项类型
  */
-export type SystemLogFileItem = LogFileItem;
+export type SystemLogFileItemRes = LogFileItemRes;
 
 /**
  * 用户日志项类型
  */
-export type UserLogItem = {
+export type UserLogItemRes = {
   id: string;
   username: string;
   name: string;
@@ -131,8 +131,8 @@ export type UserLogItem = {
 /**
  * 用户日志响应类型
  */
-export type UserLogsResponse = {
-  logs: UserLogItem[];
+export type UserLogsResDto = {
+  logs: UserLogItemRes[];
   total: number;
   page: number;
   pageSize: number;
@@ -141,7 +141,7 @@ export type UserLogsResponse = {
 /**
  * 用户日志列表 DTO
  */
-export class UserLogsListDto {
+export class UserLogsListReqDto {
   @IsOptional()
   @Type(() => Number)
   page?: number;
@@ -166,4 +166,4 @@ export class UserLogsListDto {
   @IsString()
   endDate?: string;
 }
-export type UserLogsList = InstanceType<typeof UserLogsListDto>;
+export type UserLogsListReq = InstanceType<typeof UserLogsListReqDto>;

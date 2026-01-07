@@ -2,17 +2,17 @@ import { Body, Controller, Post } from '@nestjs/common';
 import type { Article } from '@prisma/generated/client';
 
 import {
-  ArticleItem,
-  ArticleListDto,
-  ArticleListResponse,
-  ArticleMetaItem,
-  ArticleOrderDto,
-  CreateArticleDto,
-  DeleteArticleDto,
-  GetArticlesByPageDto,
-  GetDetailsByIdsDto,
-  UpdateArticleDto,
-  UpsertArticleOrderDto,
+  ArticleItemRes,
+  ArticleListReqDto,
+  ArticleListResDto,
+  ArticleMetaItemRes,
+  ArticleOrderResDto,
+  CreateArticleReqDto,
+  DeleteArticleReqDto,
+  GetArticlesByPageReqDto,
+  GetDetailsByIdsReqDto,
+  UpdateArticleReqDto,
+  UpsertArticleOrderReqDto,
 } from './article.dto';
 import { ArticleByIdPipe } from './article.pipes';
 import { ArticleService } from './article.service';
@@ -23,28 +23,28 @@ export class ArticleController {
 
   @Post('list')
   async getArticleList(
-    @Body() body: ArticleListDto,
-  ): Promise<ArticleListResponse> {
+    @Body() body: ArticleListReqDto,
+  ): Promise<ArticleListResDto> {
     const { page = 1, pageSize = 10, title = '' } = body;
     return this.articleService.list(page, pageSize, title);
   }
 
   @Post('detail')
   getArticleDetail(
-    @Body() _dto: DeleteArticleDto,
+    @Body() _dto: DeleteArticleReqDto,
     @Body('id', ArticleByIdPipe) article: Article,
   ) {
     return this.articleService.detail(article);
   }
 
   @Post('create')
-  async createArticle(@Body() createArticleDto: CreateArticleDto) {
+  async createArticle(@Body() createArticleDto: CreateArticleReqDto) {
     return this.articleService.create(createArticleDto);
   }
 
   @Post('update')
   async updateArticle(
-    @Body() updateArticleDto: UpdateArticleDto,
+    @Body() updateArticleDto: UpdateArticleReqDto,
     @Body('id', ArticleByIdPipe) article: Article,
   ) {
     return await this.articleService.update(article, updateArticleDto);
@@ -52,35 +52,35 @@ export class ArticleController {
 
   @Post('delete')
   async deleteArticle(
-    @Body() _dto: DeleteArticleDto,
+    @Body() _dto: DeleteArticleReqDto,
     @Body('id', ArticleByIdPipe) article: Article,
   ) {
     return await this.articleService.delete(article);
   }
 
   @Post('listAll')
-  async listAll(): Promise<ArticleMetaItem[]> {
+  async listAll(): Promise<ArticleMetaItemRes[]> {
     return this.articleService.listAll();
   }
 
   @Post('order')
   async upsertArticleOrder(
-    @Body() upsertArticleOrderDto: UpsertArticleOrderDto,
-  ): Promise<ArticleOrderDto> {
+    @Body() upsertArticleOrderDto: UpsertArticleOrderReqDto,
+  ): Promise<ArticleOrderResDto> {
     return this.articleService.upsertArticleOrder(upsertArticleOrderDto);
   }
 
   @Post('getByPage')
   async getArticlesByPage(
-    @Body() { page }: GetArticlesByPageDto,
-  ): Promise<ArticleItem[]> {
+    @Body() { page }: GetArticlesByPageReqDto,
+  ): Promise<ArticleItemRes[]> {
     return this.articleService.getArticlesByPage(page);
   }
 
   @Post('getDetailsByIds')
   async getDetailsByIds(
-    @Body() { ids }: GetDetailsByIdsDto,
-  ): Promise<ArticleItem[]> {
+    @Body() { ids }: GetDetailsByIdsReqDto,
+  ): Promise<ArticleItemRes[]> {
     return this.articleService.getDetailsByIds(ids);
   }
 }

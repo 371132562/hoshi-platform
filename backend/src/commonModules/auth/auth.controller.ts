@@ -4,9 +4,9 @@ import { Public } from '../../common/auth/public.decorator';
 import { CurrentUser, UserInfo } from '../../common/auth/user.decorator';
 import {
   ChallengeResponse,
-  LoginResponseDto,
-  LoginWithHashDto,
-  UserProfileDto,
+  LoginResDto,
+  LoginWithHashReqDto,
+  UserProfileResDto,
 } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -35,8 +35,8 @@ export class AuthController {
   @Public()
   @Post('login')
   async login(
-    @Body() loginWithHashDto: LoginWithHashDto,
-  ): Promise<LoginResponseDto> {
+    @Body() loginWithHashDto: LoginWithHashReqDto,
+  ): Promise<LoginResDto> {
     return this.authService.loginWithHash(loginWithHashDto);
   }
 
@@ -46,7 +46,7 @@ export class AuthController {
    * @returns 用户信息
    */
   @Post('profile')
-  async getProfile(@CurrentUser() user: UserInfo): Promise<UserProfileDto> {
+  async getProfile(@CurrentUser() user: UserInfo): Promise<UserProfileResDto> {
     const userProfile = await this.authService.getUserProfile(user.userId);
     return userProfile;
   }

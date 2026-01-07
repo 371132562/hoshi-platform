@@ -6,11 +6,11 @@ import { WinstonLoggerService } from '../../common/services/winston-logger.servi
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   LogFileLevel,
-  LogLineItem,
+  LogLineItemRes,
   LogUsersResDto,
   ReadLogReqDto,
   ReadUserLogReqDto,
-  SystemLogFileItem,
+  SystemLogFileItemRes,
   SystemLogFilesResDto,
   UserLogFilesReqDto,
 } from './systemLogs.dto';
@@ -56,9 +56,9 @@ export class SystemLogsService {
    * @param dirPath 要扫描的目录路径
    * @returns 日志文件列表
    */
-  private async scanLogFiles(dirPath: string): Promise<SystemLogFileItem[]> {
+  private async scanLogFiles(dirPath: string): Promise<SystemLogFileItemRes[]> {
     // 返回前端最小字段集：仅 filename；但依然按文件名中的日期倒序排列
-    const files: SystemLogFileItem[] = [];
+    const files: SystemLogFileItemRes[] = [];
 
     try {
       const { readdirSync } = await import('fs');
@@ -166,7 +166,7 @@ export class SystemLogsService {
    * @param filePath 日志文件路径
    * @returns 读取结果，包含过滤后的日志行
    */
-  private async readLogFile(filePath: string): Promise<LogLineItem[]> {
+  private async readLogFile(filePath: string): Promise<LogLineItemRes[]> {
     const { readFileSync } = await import('fs');
     const content = readFileSync(filePath, 'utf8');
     const allLines = content.split(/\r?\n/).filter(Boolean);
@@ -181,7 +181,7 @@ export class SystemLogsService {
         const [, ts, level, message] = m;
         return { ts, level, message };
       })
-      .filter((v) => !!v) as LogLineItem[];
+      .filter((v) => !!v) as LogLineItemRes[];
 
     return filtered;
   }
@@ -193,7 +193,7 @@ export class SystemLogsService {
    * @param dto 读取请求参数
    * @returns 日志内容响应
    */
-  async readSystemLog(dto: ReadLogReqDto): Promise<LogLineItem[]> {
+  async readSystemLog(dto: ReadLogReqDto): Promise<LogLineItemRes[]> {
     const { filename } = dto;
 
     this.logger.log(`[操作] 读取系统日志 - 文件名: ${filename}`);
@@ -236,7 +236,7 @@ export class SystemLogsService {
    * @param dto 读取请求参数，包含用户名
    * @returns 日志内容响应
    */
-  async readUserLog(dto: ReadUserLogReqDto): Promise<LogLineItem[]> {
+  async readUserLog(dto: ReadUserLogReqDto): Promise<LogLineItemRes[]> {
     const { username, filename } = dto;
 
     if (!username) {

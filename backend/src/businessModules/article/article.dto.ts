@@ -16,7 +16,7 @@ import {
 /**
  * 文章信息类型
  */
-export type ArticleItem = {
+export type ArticleItemRes = {
   id: string;
   title: string;
   content: string;
@@ -26,7 +26,7 @@ export type ArticleItem = {
 /**
  * 文章元信息类型
  */
-export type ArticleMetaItem = {
+export type ArticleMetaItemRes = {
   id: string;
   title: string;
   updateTime?: Date;
@@ -35,7 +35,7 @@ export type ArticleMetaItem = {
 /**
  * 创建文章 DTO
  */
-export class CreateArticleDto {
+export class CreateArticleReqDto {
   @IsString()
   @IsNotEmpty({ message: '文章标题不能为空' })
   title: string;
@@ -54,23 +54,23 @@ export class CreateArticleDto {
   @IsString({ each: true })
   deletedImages?: string[];
 }
-export type CreateArticle = InstanceType<typeof CreateArticleDto>;
+export type CreateArticleReq = InstanceType<typeof CreateArticleReqDto>;
 
 /**
  * 更新文章 DTO
  * 使用 PartialType 继承 CreateArticleDto，所有字段自动变为可选
  */
-export class UpdateArticleDto extends PartialType(CreateArticleDto) {
+export class UpdateArticleReqDto extends PartialType(CreateArticleReqDto) {
   @IsString()
   @IsNotEmpty({ message: '文章ID不能为空' })
   id: string;
 }
-export type UpdateArticle = InstanceType<typeof UpdateArticleDto>;
+export type UpdateArticleReq = InstanceType<typeof UpdateArticleReqDto>;
 
 /**
  * 文章列表查询 DTO
  */
-export class ArticleListDto {
+export class ArticleListReqDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt({ message: 'page 必须为整数' })
@@ -87,13 +87,13 @@ export class ArticleListDto {
   @IsString()
   title?: string;
 }
-export type ArticleList = InstanceType<typeof ArticleListDto>;
+export type ArticleListReq = InstanceType<typeof ArticleListReqDto>;
 
 /**
  * 文章列表响应类型
  */
-export type ArticleListResponse = {
-  list: ArticleMetaItem[];
+export type ArticleListResDto = {
+  list: ArticleMetaItemRes[];
   total: number;
   page: number;
   pageSize: number;
@@ -102,17 +102,17 @@ export type ArticleListResponse = {
 /**
  * 删除文章 DTO
  */
-export class DeleteArticleDto {
+export class DeleteArticleReqDto {
   @IsString()
   @IsNotEmpty({ message: '文章ID不能为空' })
   id: string;
 }
-export type DeleteArticle = InstanceType<typeof DeleteArticleDto>;
+export type DeleteArticleReq = InstanceType<typeof DeleteArticleReqDto>;
 
 /**
  * 更新文章排序 DTO
  */
-export class UpsertArticleOrderDto {
+export class UpsertArticleOrderReqDto {
   @IsString()
   @IsNotEmpty({ message: '页面不能为空' })
   page: string;
@@ -121,12 +121,14 @@ export class UpsertArticleOrderDto {
   @IsString({ each: true })
   articles: string[];
 }
-export type UpsertArticleOrder = InstanceType<typeof UpsertArticleOrderDto>;
+export type UpsertArticleOrderReq = InstanceType<
+  typeof UpsertArticleOrderReqDto
+>;
 
 /**
  * 文章排序 DTO
  */
-export type ArticleOrderDto = {
+export type ArticleOrderResDto = {
   id: string;
   page: string;
   articles: string[];
@@ -137,19 +139,19 @@ export type ArticleOrderDto = {
 /**
  * 根据页面获取文章 DTO
  */
-export class GetArticlesByPageDto {
+export class GetArticlesByPageReqDto {
   @IsString()
   @IsNotEmpty({ message: '页面不能为空' })
   page: string;
 }
-export type GetArticlesByPage = InstanceType<typeof GetArticlesByPageDto>;
+export type GetArticlesByPageReq = InstanceType<typeof GetArticlesByPageReqDto>;
 
 /**
  * 根据ID数组获取文章详情 DTO
  */
-export class GetDetailsByIdsDto {
+export class GetDetailsByIdsReqDto {
   @IsArray()
   @IsString({ each: true })
   ids: string[];
 }
-export type GetDetailsByIds = InstanceType<typeof GetDetailsByIdsDto>;
+export type GetDetailsByIdsReq = InstanceType<typeof GetDetailsByIdsReqDto>;

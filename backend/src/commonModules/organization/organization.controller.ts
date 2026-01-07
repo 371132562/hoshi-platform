@@ -1,13 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
 
 import {
-  CreateOrganizationDto,
-  UpdateOrganizationDto,
+  CreateOrganizationReqDto,
+  OrganizationRes,
+  UpdateOrganizationReqDto,
 } from './organization.dto';
-import {
-  OrganizationService,
-  OrganizationTreeNode,
-} from './organization.service';
+import { OrganizationService } from './organization.service';
 
 @Controller('organization')
 export class OrganizationController {
@@ -17,7 +15,7 @@ export class OrganizationController {
    * 获取部门树列表
    */
   @Post('list')
-  async getOrganizationTree(): Promise<OrganizationTreeNode[]> {
+  async getOrganizationTree(): Promise<OrganizationRes[]> {
     return this.organizationService.getOrganizationTree();
   }
 
@@ -25,7 +23,7 @@ export class OrganizationController {
    * 创建部门
    */
   @Post('create')
-  async createOrganization(@Body() dto: CreateOrganizationDto) {
+  async createOrganization(@Body() dto: CreateOrganizationReqDto) {
     return this.organizationService.createOrganization(dto);
   }
 
@@ -33,7 +31,7 @@ export class OrganizationController {
    * 更新部门
    */
   @Post('update')
-  async updateOrganization(@Body() dto: UpdateOrganizationDto) {
+  async updateOrganization(@Body() dto: UpdateOrganizationReqDto) {
     return this.organizationService.updateOrganization(dto);
   }
 

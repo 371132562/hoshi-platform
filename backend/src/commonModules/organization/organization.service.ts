@@ -5,9 +5,9 @@ import { WinstonLoggerService } from '../../common/services/winston-logger.servi
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
 import {
-  CreateOrganizationDto,
-  Organization,
-  UpdateOrganizationDto,
+  CreateOrganizationReqDto,
+  OrganizationRes,
+  UpdateOrganizationReqDto,
 } from './organization.dto';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class OrganizationService {
   /**
    * 获取部门树
    */
-  async getOrganizationTree(): Promise<Organization[]> {
+  async getOrganizationTree(): Promise<OrganizationRes[]> {
     this.logger.log('[操作] 获取部门列表');
 
     try {
@@ -44,9 +44,9 @@ export class OrganizationService {
   /**
    * 构建树形结构辅助方法
    */
-  private buildTree(items: Organization[]): Organization[] {
-    const map = new Map<string, Organization>();
-    const roots: Organization[] = [];
+  private buildTree(items: OrganizationRes[]): OrganizationRes[] {
+    const map = new Map<string, OrganizationRes>();
+    const roots: OrganizationRes[] = [];
 
     // 初始化 Map，并添加 children 数组
     items.forEach((item) => {
@@ -83,7 +83,7 @@ export class OrganizationService {
   /**
    * 创建部门
    */
-  async createOrganization(dto: CreateOrganizationDto) {
+  async createOrganization(dto: CreateOrganizationReqDto) {
     this.logger.log(`[操作] 创建部门 - 名称: ${dto.name}`);
     try {
       // 校验父节点是否存在
@@ -119,7 +119,7 @@ export class OrganizationService {
   /**
    * 更新部门
    */
-  async updateOrganization(dto: UpdateOrganizationDto) {
+  async updateOrganization(dto: UpdateOrganizationReqDto) {
     this.logger.log(`[操作] 更新部门 - ID: ${dto.id}`);
     try {
       const org = await this.prisma.organization.findFirst({

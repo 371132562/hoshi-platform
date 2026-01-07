@@ -9,9 +9,9 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
 import {
   ChallengeResponse,
-  LoginResponseDto,
-  LoginWithHashDto,
-  TokenPayloadDto,
+  LoginResDto,
+  LoginWithHashReqDto,
+  TokenPayloadResDto,
 } from './auth.dto';
 
 @Injectable()
@@ -50,7 +50,7 @@ export class AuthService {
   /**
    * 两步登录 - 第二步：接收前端crypto加密数据并校验
    */
-  async loginWithHash(dto: LoginWithHashDto): Promise<LoginResponseDto> {
+  async loginWithHash(dto: LoginWithHashReqDto): Promise<LoginResDto> {
     const { username } = dto;
     this.logger.log(`[操作] 用户登录 - 用户名: ${username}`);
     try {
@@ -92,7 +92,7 @@ export class AuthService {
         throw new BusinessException(ErrorCode.PASSWORD_INCORRECT, '密码错误');
       }
 
-      const payload: TokenPayloadDto = {
+      const payload: TokenPayloadResDto = {
         sub: user.id,
         userId: user.id,
         username: user.username,

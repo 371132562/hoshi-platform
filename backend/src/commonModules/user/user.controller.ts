@@ -2,11 +2,11 @@ import { Body, Controller, Post } from '@nestjs/common';
 import type { User } from '@prisma/generated/client';
 
 import {
-  CreateUserEncryptedDto,
-  DeleteUserDto,
-  ResetUserPasswordEncryptedDto,
-  UpdateUserDto,
-  UserListDto,
+  CreateUserEncryptedReqDto,
+  DeleteUserReqDto,
+  ResetUserPasswordEncryptedReqDto,
+  UpdateUserReqDto,
+  UserListReqDto,
   UserListResDto,
 } from './user.dto';
 import { UserByIdPipe, UserCodeExistsValidationPipe } from './user.pipes';
@@ -20,7 +20,7 @@ export class UserController {
    * 获取用户列表
    */
   @Post('list')
-  async getUserList(@Body() query: UserListDto): Promise<UserListResDto> {
+  async getUserList(@Body() query: UserListReqDto): Promise<UserListResDto> {
     return this.userService.getUserList(query);
   }
 
@@ -29,7 +29,7 @@ export class UserController {
    */
   @Post('create')
   async createUser(
-    @Body() createUserEncryptedDto: CreateUserEncryptedDto,
+    @Body() createUserEncryptedDto: CreateUserEncryptedReqDto,
     @Body('code', UserCodeExistsValidationPipe) _code: string,
   ) {
     return this.userService.createUserEncrypted(createUserEncryptedDto);
@@ -40,7 +40,7 @@ export class UserController {
    */
   @Post('update')
   async updateUser(
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserReqDto,
     @Body('id', UserByIdPipe) user: User,
   ) {
     return this.userService.updateUser(user, updateUserDto);
@@ -51,7 +51,7 @@ export class UserController {
    */
   @Post('delete')
   async deleteUser(
-    @Body() _deleteUserDto: DeleteUserDto,
+    @Body() _deleteUserDto: DeleteUserReqDto,
     @Body('id', UserByIdPipe) user: User,
   ) {
     return this.userService.deleteUser(user);
@@ -61,7 +61,7 @@ export class UserController {
    * 重置用户密码（加密）
    */
   @Post('resetPassword')
-  async resetUserPassword(@Body() dto: ResetUserPasswordEncryptedDto) {
+  async resetUserPassword(@Body() dto: ResetUserPasswordEncryptedReqDto) {
     return this.userService.resetUserPasswordEncrypted(dto);
   }
 }

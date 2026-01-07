@@ -4,16 +4,16 @@ import { persist } from 'zustand/middleware'
 
 import { challengeApiUrl, loginApiUrl, profileApiUrl } from '../services/apis'
 import http from '../services/base'
-import type { Login, LoginResponse, UserProfileDto } from '../types'
+import type { LoginReq, LoginResDto, UserProfileResDto } from '../types'
 import { decryptSalt, encryptData } from '../utils/crypto'
 
 // 认证store的类型定义
 export type AuthStore = {
   token: string | null // JWT token
-  user: UserProfileDto | null // 当前用户信息
+  user: UserProfileResDto | null // 当前用户信息
   loading: boolean // 加载状态
   error: string | null // 错误信息
-  login: (data: Login) => Promise<boolean>
+  login: (data: LoginReq) => Promise<boolean>
   logout: () => boolean
   fetchProfile: () => Promise<void>
 }
@@ -36,7 +36,8 @@ export const useAuthStore = create<AuthStore>()(
           // 解密后端返回的加密盐值
           const salt = decryptSalt(encryptedSalt)
           const encryptedData = encryptData(salt, data.password)
-          const res = await http.post<LoginResponse>(loginApiUrl, {
+          // 注意：后端返回结构 { token, user: { ... } }
+          const res = await http.post<LoginResDto>(loginApiUrl, {
             username: data.username,
             encryptedData
           })
@@ -58,8 +59,8 @@ export const useAuthStore = create<AuthStore>()(
       async fetchProfile() {
         set({ loading: true })
         try {
-          const user = await http.post<UserProfileDto>(profileApiUrl)
-          set({ user: user.data, loading: false, error: null })
+          const res = await http.post<UserProfileResDto>(profileApiUrl)
+          set({ user: res.data, loading: false, error: null })
         } catch (err: unknown) {
           // 根据后端错误码处理
           const errorCode = (err as { response?: { data?: { code?: string } } })?.response?.data
@@ -111,13 +112,18 @@ export const useAuthStore = create<AuthStore>()(
 // 3) 当本地无 token 且内存仍有 token 时，重置为未登录；当本地 token 与内存不一致时，以本地为准并触发后续逻辑
 // =========================
 
+// 辅助函数
+const transformUserProfile = (user: UserProfileResDto): UserProfileResDto => {
+  return user
+}
+
 // 安全解析本地持久化的 auth-storage
-const readPersistedAuth = (): { token: string | null; user: UserProfileDto | null } => {
+const readPersistedAuth = (): { token: string | null; user: UserProfileResDto | null } => {
   try {
     const raw = localStorage.getItem('auth-storage') || '{}'
-    const parsed = JSON.parse(raw) as { state?: { token?: string; user?: UserProfileDto } }
+    const parsed = JSON.parse(raw) as { state?: { token?: string; user?: UserProfileResDto } }
     const token = (parsed.state?.token as string | undefined) || null
-    const user = (parsed.state?.user as UserProfileDto | undefined) || null
+    const user = (parsed.state?.user as UserProfileResDto | undefined) || null
     return { token, user }
   } catch {
     return { token: null, user: null }

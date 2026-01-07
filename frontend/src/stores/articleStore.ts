@@ -14,36 +14,37 @@ import {
 import http from '@/services/base'
 
 import type {
-  ArticleItem,
-  ArticleListResponse,
-  ArticleMetaItem,
-  CreateArticle,
-  UpdateArticle
+  ArticleItemRes,
+  ArticleListResDto,
+  ArticleMetaItemRes,
+  CreateArticleReq,
+  DeleteArticleReq,
+  UpdateArticleReq
 } from '../types'
 
 type ArticleStore = {
   // 状态
-  articles: ArticleMetaItem[]
+  articles: ArticleMetaItemRes[]
   total: number
   currentPage: number
   pageSize: number
   loading: boolean
   searchTitle: string
-  articleDetail: ArticleItem | null
+  articleDetail: ArticleItemRes | null
   detailLoading: boolean
   submitLoading: boolean
-  allArticles: ArticleMetaItem[]
-  pageArticles: ArticleItem[]
+  allArticles: ArticleMetaItemRes[]
+  pageArticles: ArticleItemRes[]
   orderConfigLoading: boolean
-  previewArticles: ArticleItem[]
+  previewArticles: ArticleItemRes[]
   previewLoading: boolean
 
   // 操作
   getArticleList: (page?: number, pageSize?: number, title?: string) => Promise<void>
   setSearchTitle: (title: string) => void
-  createArticle: (data: CreateArticle) => Promise<boolean>
-  updateArticle: (data: UpdateArticle) => Promise<boolean>
-  deleteArticle: (id: string) => Promise<boolean>
+  createArticle: (data: CreateArticleReq) => Promise<boolean>
+  updateArticle: (data: UpdateArticleReq) => Promise<boolean>
+  deleteArticle: (data: DeleteArticleReq) => Promise<boolean>
   getArticleDetail: (id: string) => Promise<void>
   clearArticleDetail: () => void
   getAllArticles: () => Promise<void>
@@ -76,7 +77,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ loading: true })
     try {
       // 明确响应数据类型：分页列表
-      const response = await http.post<ArticleListResponse>(articleList, {
+      const response = await http.post<ArticleListResDto>(articleList, {
         page,
         pageSize,
         title: searchTitle
@@ -104,7 +105,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   },
 
   // 创建文章
-  createArticle: async (data: CreateArticle) => {
+  createArticle: async (data: CreateArticleReq) => {
     set({ submitLoading: true })
     try {
       await http.post(articleCreate, data)
@@ -120,7 +121,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   },
 
   // 更新文章
-  updateArticle: async (data: UpdateArticle) => {
+  updateArticle: async (data: UpdateArticleReq) => {
     set({ submitLoading: true })
     try {
       await http.post(articleUpdate, data)
@@ -158,7 +159,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ detailLoading: true, articleDetail: null })
     try {
       // 明确响应数据类型：文章详情
-      const response = await http.post<ArticleItem>(articleDetail, { id })
+      const response = await http.post<ArticleItemRes>(articleDetail, { id })
       if (response && response.data) {
         set({ articleDetail: response.data })
       }
@@ -180,7 +181,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ orderConfigLoading: true })
     try {
       // 明确响应数据类型：文章元数据列表
-      const response = await http.post<ArticleMetaItem[]>(articleListAll)
+      const response = await http.post<ArticleMetaItemRes[]>(articleListAll)
       if (response && response.data) {
         set({ allArticles: response.data })
       }
@@ -196,7 +197,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ orderConfigLoading: true })
     try {
       // 明确响应数据类型：页面文章列表
-      const response = await http.post<ArticleItem[]>(articleGetByPage, { page })
+      const response = await http.post<ArticleItemRes[]>(articleGetByPage, { page })
       if (response && response.data) {
         set({ pageArticles: response.data })
       }
@@ -226,7 +227,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   getArticleDetailsByIds: async (ids: string[]) => {
     set({ previewLoading: true, previewArticles: [] })
     try {
-      const response = await http.post<ArticleItem[]>(articleGetDetailsByIds, {
+      const response = await http.post<ArticleItemRes[]>(articleGetDetailsByIds, {
         ids
       })
       if (response && response.data) {

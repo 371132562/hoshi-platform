@@ -2,11 +2,11 @@ import React from 'react'
 
 import { toFullPathContent } from '@/utils'
 
-import type { ArticleItem } from '../../types'
+import type { ArticleItemRes } from '../../types'
 import RichEditor from '../RichEditor'
 
 interface ArticleDisplayProps {
-  articles: ArticleItem[]
+  articles: ArticleItemRes[]
 }
 
 const ArticleDisplay: React.FC<ArticleDisplayProps> = ({ articles }) => {

@@ -23,13 +23,13 @@ import { v4 as uuidv4 } from 'uuid'
 import ArticleDisplay from '@/components/ArticleDisplay'
 import useArticleStore from '@/stores/articleStore'
 
-import type { ArticleItem, ArticleMetaItem } from '../../../types'
+import type { ArticleItemRes, ArticleMetaItemRes } from '../../../types'
 
 // SortableItem 组件
 interface SortableItemProps {
   id: string
-  article: ArticleItem & { uniqueId: string }
-  allArticles: ArticleMetaItem[]
+  article: ArticleItemRes & { uniqueId: string }
+  allArticles: ArticleMetaItemRes[]
   selectedArticleIds: Set<string>
   onSelect: (uniqueId: string, articleId: string) => void
   onRemove: (uniqueId: string) => void
@@ -136,9 +136,9 @@ const OrderConfig = () => {
   const getArticleDetailsByIds = useArticleStore(state => state.getArticleDetailsByIds)
 
   const [activePage, setActivePage] = useState(PAGES[0].key)
-  const [selectedArticles, setSelectedArticles] = useState<(ArticleItem & { uniqueId: string })[]>(
-    []
-  )
+  const [selectedArticles, setSelectedArticles] = useState<
+    (ArticleItemRes & { uniqueId: string })[]
+  >([])
   const [previewVisible, setPreviewVisible] = useState(false)
   // 使用渲染期间状态调整模式 (Adjust state during rendering) 代替 useEffect
   // 这种模式是 React 官方推荐的用于"Props/Store 变化时重置 State"的方案
@@ -186,7 +186,7 @@ const OrderConfig = () => {
         content: '',
         images: [],
         uniqueId: uuidv4()
-      } as ArticleItem & { uniqueId: string }
+      } as ArticleItemRes & { uniqueId: string }
     ])
   }
 

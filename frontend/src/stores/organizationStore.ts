@@ -8,13 +8,13 @@ import {
 } from '../services/apis'
 import request from '../services/base'
 import type {
-  CreateOrganizationDto,
-  Organization,
+  CreateOrganizationReqDto,
+  OrganizationRes,
   OrganizationTreeNode,
-  UpdateOrganizationDto
+  UpdateOrganizationReqDto
 } from '../types'
 
-const transformToTreeNode = (data: Organization[]): OrganizationTreeNode[] => {
+const transformToTreeNode = (data: OrganizationRes[]): OrganizationTreeNode[] => {
   return data.map(item => ({
     ...item,
     key: item.id,
@@ -26,8 +26,8 @@ export const useOrganizationStore = create<{
   organizationList: OrganizationTreeNode[]
   loading: boolean
   fetchOrganizationList: () => Promise<void>
-  createOrganization: (data: CreateOrganizationDto) => Promise<boolean>
-  updateOrganization: (data: UpdateOrganizationDto) => Promise<boolean>
+  createOrganization: (data: CreateOrganizationReqDto) => Promise<boolean>
+  updateOrganization: (data: UpdateOrganizationReqDto) => Promise<boolean>
   deleteOrganization: (id: string) => Promise<boolean>
 }>((set, get) => ({
   organizationList: [],
@@ -37,7 +37,7 @@ export const useOrganizationStore = create<{
   fetchOrganizationList: async () => {
     set({ loading: true })
     try {
-      const res = await request.post<Organization[]>(organizationListApi)
+      const res = await request.post<OrganizationRes[]>(organizationListApi)
       const data = Array.isArray(res.data) ? res.data : []
       set({
         organizationList: transformToTreeNode(data),
@@ -49,7 +49,7 @@ export const useOrganizationStore = create<{
   },
 
   // 创建部门
-  createOrganization: async (data: CreateOrganizationDto) => {
+  createOrganization: async (data: CreateOrganizationReqDto) => {
     set({ loading: true })
     try {
       await request.post(organizationCreateApi, data)
@@ -64,7 +64,7 @@ export const useOrganizationStore = create<{
   },
 
   // 更新部门
-  updateOrganization: async (data: UpdateOrganizationDto) => {
+  updateOrganization: async (data: UpdateOrganizationReqDto) => {
     set({ loading: true })
     try {
       await request.post(organizationUpdateApi, data)

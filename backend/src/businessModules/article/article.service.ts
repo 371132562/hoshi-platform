@@ -9,13 +9,13 @@ import { UploadService } from '../../commonModules/upload/upload.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
 import {
-  ArticleItem,
-  ArticleListResponse,
-  ArticleMetaItem,
-  ArticleOrderDto,
-  CreateArticleDto,
-  UpdateArticleDto,
-  UpsertArticleOrderDto,
+  ArticleItemRes,
+  ArticleListResDto,
+  ArticleMetaItemRes,
+  ArticleOrderResDto,
+  CreateArticleReqDto,
+  UpdateArticleReqDto,
+  UpsertArticleOrderReqDto,
 } from './article.dto';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class ArticleService {
     private readonly logger: WinstonLoggerService,
   ) {}
 
-  private mapToDto(article: Article): ArticleItem {
+  private mapToDto(article: Article): ArticleItemRes {
     return {
       id: article.id,
       title: article.title,
@@ -38,7 +38,7 @@ export class ArticleService {
 
   private mapToMetaDto(
     article: Pick<Article, 'id' | 'title' | 'createTime' | 'updateTime'>,
-  ): ArticleMetaItem {
+  ): ArticleMetaItemRes {
     return {
       id: article.id,
       title: article.title,
@@ -46,7 +46,7 @@ export class ArticleService {
     };
   }
 
-  private mapToArticleOrderDto(articleOrder: ArticleOrder): ArticleOrderDto {
+  private mapToArticleOrderDto(articleOrder: ArticleOrder): ArticleOrderResDto {
     return {
       id: articleOrder.id,
       page: articleOrder.page,
@@ -56,7 +56,7 @@ export class ArticleService {
     };
   }
 
-  detail(article: Article): ArticleItem {
+  detail(article: Article): ArticleItemRes {
     try {
       this.logger.log(
         `[操作] 获取文章详情 - 文章ID: ${article.id}, 标题: ${article.title}`,
@@ -78,7 +78,7 @@ export class ArticleService {
     page: number,
     pageSize: number,
     title: string = '',
-  ): Promise<ArticleListResponse> {
+  ): Promise<ArticleListResDto> {
     this.logger.log(
       `[操作] 获取文章列表 - 页码: ${page}, 每页大小: ${pageSize}, 标题筛选: ${title || '无'}`,
     );
@@ -129,7 +129,7 @@ export class ArticleService {
     }
   }
 
-  async listAll(): Promise<ArticleMetaItem[]> {
+  async listAll(): Promise<ArticleMetaItemRes[]> {
     this.logger.log('[操作] 获取所有文章列表');
 
     try {
@@ -159,7 +159,7 @@ export class ArticleService {
     }
   }
 
-  async create(createArticleDto: CreateArticleDto): Promise<ArticleItem> {
+  async create(createArticleDto: CreateArticleReqDto): Promise<ArticleItemRes> {
     this.logger.log(`[操作] 创建文章 - 标题: ${createArticleDto.title}`);
 
     try {
@@ -211,8 +211,8 @@ export class ArticleService {
 
   async update(
     article: Article,
-    updateArticleDto: UpdateArticleDto,
-  ): Promise<ArticleItem> {
+    updateArticleDto: UpdateArticleReqDto,
+  ): Promise<ArticleItemRes> {
     try {
       const { id } = article;
       const { deletedImages: incomingDeletedImages, ...data } =
@@ -262,7 +262,7 @@ export class ArticleService {
     }
   }
 
-  async delete(article: Article): Promise<ArticleItem> {
+  async delete(article: Article): Promise<ArticleItemRes> {
     try {
       const id = article.id;
       this.logger.log(
@@ -308,8 +308,8 @@ export class ArticleService {
   }
 
   async upsertArticleOrder(
-    upsertArticleOrderDto: UpsertArticleOrderDto,
-  ): Promise<ArticleOrderDto> {
+    upsertArticleOrderDto: UpsertArticleOrderReqDto,
+  ): Promise<ArticleOrderResDto> {
     const { page, articles } = upsertArticleOrderDto;
 
     this.logger.log(
@@ -381,7 +381,7 @@ export class ArticleService {
     }
   }
 
-  async getArticlesByPage(page: string): Promise<ArticleItem[]> {
+  async getArticlesByPage(page: string): Promise<ArticleItemRes[]> {
     this.logger.log(`[操作] 获取页面文章 - 页面: ${page}`);
 
     try {
@@ -429,7 +429,7 @@ export class ArticleService {
     }
   }
 
-  async getDetailsByIds(ids: string[]): Promise<ArticleItem[]> {
+  async getDetailsByIds(ids: string[]): Promise<ArticleItemRes[]> {
     if (!ids || ids.length === 0) {
       this.logger.log('[操作] 获取文章详情 - 文章ID列表为空');
       return [];

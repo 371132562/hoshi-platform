@@ -1,51 +1,51 @@
 import { LazyExoticComponent, ReactNode } from 'react'
 import type {
   // 文章管理相关类型
-  ArticleItem,
-  ArticleListResponse,
-  ArticleMetaItem,
+  ArticleItemRes,
+  ArticleListResDto,
+  ArticleMetaItemRes,
   // 角色管理相关类型
-  AssignRoleRoutes,
+  AssignRoleRoutesReq,
   // 通用分页参数
   CommonPageParams,
   // 认证相关类型
-  CreateArticle,
-  CreateOrganizationDto,
-  CreateRole,
+  CreateArticleReq,
+  CreateOrganizationReqDto,
+  CreateRoleReq,
   // 用户管理相关类型
-  CreateUserEncrypted,
-  DeleteArticle,
+  CreateUserEncryptedReq,
+  DeleteArticleReq,
   // 上传相关类型
-  DeleteOrphans,
-  DeleteRole,
-  DeleteUser,
+  DeleteOrphansReq,
+  DeleteRoleReq,
+  DeleteUserReq,
   ExportFormat,
   // 系统日志相关类型
   LogFileLevel,
-  Login,
-  LoginResponse,
-  LogLineItem,
+  LoginReq,
+  LoginResDto,
+  LogLineItemRes,
   LogUsersResDto,
   // 组织管理相关类型
-  Organization,
-  OrphanImagesResponse,
+  OrganizationRes,
+  OrphanImagesResDto,
   PaginatedResponse,
-  ReadLog,
+  ReadLogReq,
   ReadUserLogReq,
-  ResetUserPasswordEncrypted,
-  RoleListItemDto,
+  ResetUserPasswordEncryptedReq,
+  RoleListItemResDto,
   RoleListResDto,
   SystemLogFilesResDto,
-  TokenPayloadDto,
-  UpdateArticle,
-  UpdateOrganizationDto,
-  UpdateRole,
-  UpdateUser,
-  UploadResponse,
-  UserItem,
+  TokenPayloadResDto,
+  UpdateArticleReq,
+  UpdateOrganizationReqDto,
+  UpdateRoleReq,
+  UpdateUserReq,
+  UploadResDto,
+  UserItemRes,
   UserListResDto,
   UserLogFilesReq,
-  UserProfileDto
+  UserProfileResDto
 } from 'template-backend/src/types/dto'
 
 /**
@@ -69,59 +69,59 @@ export type RouteItem = {
 export type { CommonPageParams, ExportFormat, PaginatedResponse }
 
 // 认证相关类型
-export type { Login, LoginResponse, TokenPayloadDto, UserProfileDto }
+export type { LoginReq, LoginResDto, TokenPayloadResDto, UserProfileResDto }
 
 // 文章管理相关类型
 export type {
-  ArticleItem,
-  ArticleListResponse,
-  ArticleMetaItem,
-  CreateArticle,
-  DeleteArticle,
-  UpdateArticle
+  ArticleItemRes,
+  ArticleListResDto,
+  ArticleMetaItemRes,
+  CreateArticleReq,
+  DeleteArticleReq,
+  UpdateArticleReq
 }
 
 // 角色管理相关类型
 export type {
-  AssignRoleRoutes,
-  CreateRole,
-  DeleteRole,
-  RoleListItemDto,
+  AssignRoleRoutesReq,
+  CreateRoleReq,
+  DeleteRoleReq,
+  RoleListItemResDto,
   RoleListResDto,
-  UpdateRole
+  UpdateRoleReq
 }
 
 // 用户管理相关类型
 export type {
-  CreateUserEncrypted,
-  DeleteUser,
-  ResetUserPasswordEncrypted,
-  UpdateUser,
-  UserItem,
+  CreateUserEncryptedReq,
+  DeleteUserReq,
+  ResetUserPasswordEncryptedReq,
+  UpdateUserReq,
+  UserItemRes,
   UserListResDto
 }
 
 // 系统日志相关类型
 export type {
   LogFileLevel,
-  LogLineItem,
+  LogLineItemRes,
   LogUsersResDto,
-  ReadLog,
+  ReadLogReq,
   ReadUserLogReq,
   SystemLogFilesResDto,
   UserLogFilesReq
 }
 
 // 上传相关类型
-export type { DeleteOrphans, OrphanImagesResponse, UploadResponse }
+export type { DeleteOrphansReq, OrphanImagesResDto, UploadResDto }
 
 // 组织管理相关类型
-export type { CreateOrganizationDto, Organization, UpdateOrganizationDto }
+export type { CreateOrganizationReqDto, OrganizationRes, UpdateOrganizationReqDto }
 
 /**
  * 带有 key 属性的组织树节点类型（AntD Tree 组件专用）
  */
-export type OrganizationTreeNode = Omit<Organization, 'children'> & {
+export type OrganizationTreeNode = Omit<OrganizationRes, 'children'> & {
   key: string
   children?: OrganizationTreeNode[]
 }

@@ -2,7 +2,7 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 import {
-  LogLineItem,
+  LogLineItemRes,
   LogUsersResDto,
   ReadLogReqDto,
   ReadUserLogReqDto,
@@ -38,7 +38,7 @@ export class SystemLogsController {
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async readSystemLog(
     @Body() readLogReqDto: ReadLogReqDto,
-  ): Promise<LogLineItem[]> {
+  ): Promise<LogLineItemRes[]> {
     return this.service.readSystemLog(readLogReqDto);
   }
 
@@ -47,7 +47,7 @@ export class SystemLogsController {
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async readUserLog(
     @Body() readUserLogReqDto: ReadUserLogReqDto,
-  ): Promise<LogLineItem[]> {
+  ): Promise<LogLineItemRes[]> {
     return this.service.readUserLog(readUserLogReqDto);
   }
 

@@ -8,10 +8,10 @@ import { CryptoUtil } from '../../common/utils/crypto.util';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
 import {
-  CreateUserEncryptedDto,
-  ResetUserPasswordEncryptedDto,
-  UpdateUserDto,
-  UserListDto,
+  CreateUserEncryptedReqDto,
+  ResetUserPasswordEncryptedReqDto,
+  UpdateUserReqDto,
+  UserListReqDto,
   UserListResDto,
 } from './user.dto';
 
@@ -25,7 +25,7 @@ export class UserService {
   /**
    * 获取用户列表，支持分页和筛选
    */
-  async getUserList(query: UserListDto): Promise<UserListResDto> {
+  async getUserList(query: UserListReqDto): Promise<UserListResDto> {
     const { page = 1, pageSize = 10, name, roleId } = query;
     this.logger.log(
       `[操作] 获取用户列表 - 页码: ${page}, 每页: ${pageSize}, 姓名: ${name || '无'}, 角色ID: ${roleId || '无'}`,
@@ -83,7 +83,7 @@ export class UserService {
   /**
    * 创建用户（加密）
    */
-  async createUserEncrypted(dto: CreateUserEncryptedDto) {
+  async createUserEncrypted(dto: CreateUserEncryptedReqDto) {
     this.logger.log(
       `[操作] 创建用户 - 用户名: ${dto.username}, 姓名: ${dto.name}`,
     );
@@ -126,7 +126,7 @@ export class UserService {
   /**
    * 编辑用户
    */
-  async updateUser(user: User, dto: UpdateUserDto) {
+  async updateUser(user: User, dto: UpdateUserReqDto) {
     try {
       this.logger.log(
         `[操作] 编辑用户 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.name}`,
@@ -210,7 +210,7 @@ export class UserService {
   /**
    * 重置用户密码（加密）
    */
-  async resetUserPasswordEncrypted(dto: ResetUserPasswordEncryptedDto) {
+  async resetUserPasswordEncrypted(dto: ResetUserPasswordEncryptedReqDto) {
     try {
       // 先获取用户信息，便于输出更友好的日志
       const user = await this.prisma.user.findUnique({ where: { id: dto.id } });

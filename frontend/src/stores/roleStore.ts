@@ -9,23 +9,23 @@ import {
 } from '../services/apis'
 import request from '../services/base'
 import type {
-  AssignRoleRoutes,
-  CreateRole,
-  DeleteRole,
-  RoleListItemDto,
+  AssignRoleRoutesReq,
+  CreateRoleReq,
+  DeleteRoleReq,
+  RoleListItemResDto,
   RoleListResDto,
-  UpdateRole
+  UpdateRoleReq
 } from '../types'
 
 // 角色管理store
 export const useRoleStore = create<{
-  roleList: RoleListItemDto[]
+  roleList: RoleListItemResDto[]
   loading: boolean
   fetchRoleList: () => Promise<void>
-  createRole: (data: CreateRole) => Promise<boolean>
-  updateRole: (data: UpdateRole) => Promise<boolean>
-  deleteRole: (data: DeleteRole) => Promise<boolean>
-  assignRoleRoutes: (data: AssignRoleRoutes) => Promise<boolean>
+  createRole: (data: CreateRoleReq) => Promise<boolean>
+  updateRole: (data: UpdateRoleReq) => Promise<boolean>
+  deleteRole: (data: DeleteRoleReq) => Promise<boolean>
+  assignRoleRoutes: (data: AssignRoleRoutesReq) => Promise<boolean>
 }>((set, get) => ({
   roleList: [],
   loading: false,

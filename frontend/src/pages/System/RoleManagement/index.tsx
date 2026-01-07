@@ -17,7 +17,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { getMenuOptionsForRoleEdit } from '../../../router/routesConfig'
 import { useRoleStore } from '../../../stores/roleStore'
-import { RoleListItemDto, SYSTEM_ADMIN_ROLE_NAME } from '../../../types'
+import { RoleListItemResDto, SYSTEM_ADMIN_ROLE_NAME } from '../../../types'
 
 // 角色管理页面
 const RoleManagement: React.FC = () => {
@@ -32,10 +32,10 @@ const RoleManagement: React.FC = () => {
 
   // React Hooks: useState
   const [modalOpen, setModalOpen] = useState(false)
-  const [editRole, setEditRole] = useState<RoleListItemDto | null>(null)
+  const [editRole, setEditRole] = useState<RoleListItemResDto | null>(null)
   const [form] = Form.useForm()
   const [assignModalOpen, setAssignModalOpen] = useState(false)
-  const [assignRole, setAssignRole] = useState<RoleListItemDto | null>(null)
+  const [assignRole, setAssignRole] = useState<RoleListItemResDto | null>(null)
   const [assignForm] = Form.useForm()
 
   // React Hooks: useEffect
@@ -44,7 +44,7 @@ const RoleManagement: React.FC = () => {
   }, [])
 
   // 方法定义
-  const openModal = (role?: RoleListItemDto) => {
+  const openModal = (role?: RoleListItemResDto) => {
     setEditRole(role || null)
     setModalOpen(true)
     if (role) {
@@ -73,7 +73,7 @@ const RoleManagement: React.FC = () => {
     }
   }
 
-  const openAssignModal = (role: RoleListItemDto) => {
+  const openAssignModal = (role: RoleListItemResDto) => {
     setAssignRole(role)
     setAssignModalOpen(true)
     assignForm.setFieldsValue({ allowedRoutes: role.allowedRoutes })
@@ -110,7 +110,7 @@ const RoleManagement: React.FC = () => {
       {
         title: '操作',
         key: 'action',
-        render: (_: unknown, record: RoleListItemDto) => (
+        render: (_: unknown, record: RoleListItemResDto) => (
           <Space>
             <Button
               color="primary"

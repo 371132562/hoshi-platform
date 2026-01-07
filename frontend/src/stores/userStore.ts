@@ -10,12 +10,11 @@ import {
 } from '../services/apis'
 import request from '../services/base'
 import type {
-  CommonPageParams,
-  CreateUserEncrypted,
-  DeleteUser,
-  ResetUserPasswordEncrypted,
-  UpdateUser,
-  UserItem,
+  CreateUserEncryptedReq,
+  DeleteUserReq,
+  ResetUserPasswordEncryptedReq,
+  UpdateUserReq,
+  UserItemRes,
   UserListResDto
 } from '../types'
 import { decryptSalt, encryptData } from '../utils/crypto'
@@ -36,14 +35,17 @@ type ResetPasswordFormData = {
 }
 
 // 用户列表查询参数类型
-type UserPageParams = CommonPageParams & {
+type UserPageParams = {
+  page?: number
+  pageSize?: number
+} & {
   name?: string
   roleId?: string
 }
 
 // Store 状态类型
 type UserStoreState = {
-  userList: UserItem[]
+  userList: UserItemRes[]
   userTotal: number
   userPageParams: UserPageParams
   loading: boolean
@@ -53,8 +55,8 @@ type UserStoreState = {
   handleUserSearch: () => void
   resetUserSearch: () => void
   createUser: (data: CreateUserFormData) => Promise<boolean>
-  updateUser: (data: UpdateUser) => Promise<boolean>
-  deleteUser: (data: DeleteUser) => Promise<boolean>
+  updateUser: (data: UpdateUserReq) => Promise<boolean>
+  deleteUser: (data: DeleteUserReq) => Promise<boolean>
   resetUserPassword: (data: ResetPasswordFormData) => Promise<boolean>
 }
 
@@ -113,7 +115,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
       const salt = decryptSalt(encryptedSalt)
       const encryptedPassword = await encryptData(salt, data.password)
 
-      const encryptedData: CreateUserEncrypted = {
+      const encryptedData: CreateUserEncryptedReq = {
         ...data,
         encryptedPassword
       }
@@ -176,7 +178,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
       const salt = decryptSalt(encryptedSalt)
       const encryptedNewPassword = await encryptData(salt, data.newPassword)
 
-      const encryptedData: ResetUserPasswordEncrypted = {
+      const encryptedData: ResetUserPasswordEncryptedReq = {
         id: data.id,
         encryptedNewPassword
       }

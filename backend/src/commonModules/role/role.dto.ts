@@ -7,7 +7,7 @@ import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
  */
 
 // 角色最小字段集（列表/业务使用）
-export type RoleItem = {
+export type RoleItemRes = {
   id: string;
   name: string;
   description?: string | null;
@@ -17,7 +17,7 @@ export type RoleItem = {
 /**
  * 创建角色 DTO
  */
-export class CreateRoleDto {
+export class CreateRoleReqDto {
   @IsString()
   @IsNotEmpty({ message: '角色名称不能为空' })
   name: string;
@@ -31,23 +31,23 @@ export class CreateRoleDto {
   @IsString({ each: true })
   allowedRoutes?: string[];
 }
-export type CreateRole = InstanceType<typeof CreateRoleDto>;
+export type CreateRoleReq = InstanceType<typeof CreateRoleReqDto>;
 
 /**
  * 更新角色 DTO
  * 使用 PartialType 继承 CreateRoleDto，所有字段自动变为可选
  */
-export class UpdateRoleDto extends PartialType(CreateRoleDto) {
+export class UpdateRoleReqDto extends PartialType(CreateRoleReqDto) {
   @IsString()
   @IsNotEmpty({ message: '角色ID不能为空' })
   id: string;
 }
-export type UpdateRole = InstanceType<typeof UpdateRoleDto>;
+export type UpdateRoleReq = InstanceType<typeof UpdateRoleReqDto>;
 
 /**
  * 角色列表查询 DTO
  */
-export class RoleListDto {
+export class RoleListReqDto {
   @IsOptional()
   @Type(() => Number)
   page?: number;
@@ -60,22 +60,22 @@ export class RoleListDto {
   @IsString()
   name?: string;
 }
-export type RoleList = InstanceType<typeof RoleListDto>;
+export type RoleListReq = InstanceType<typeof RoleListReqDto>;
 
 /**
  * 角色列表项类型
  */
-export type RoleListItemDto = RoleItem & { userCount: number };
+export type RoleListItemResDto = RoleItemRes & { userCount: number };
 
 /**
  * 角色列表响应类型
  */
-export type RoleListResDto = RoleListItemDto[];
+export type RoleListResDto = RoleListItemResDto[];
 
 /**
  * 分配角色路由 DTO
  */
-export class AssignRoleRoutesDto {
+export class AssignRoleRoutesReqDto {
   @IsString()
   @IsNotEmpty({ message: '角色ID不能为空' })
   id: string;
@@ -84,14 +84,14 @@ export class AssignRoleRoutesDto {
   @IsString({ each: true })
   allowedRoutes: string[];
 }
-export type AssignRoleRoutes = InstanceType<typeof AssignRoleRoutesDto>;
+export type AssignRoleRoutesReq = InstanceType<typeof AssignRoleRoutesReqDto>;
 
 /**
  * 删除角色 DTO
  */
-export class DeleteRoleDto {
+export class DeleteRoleReqDto {
   @IsString()
   @IsNotEmpty({ message: '角色ID不能为空' })
   id: string;
 }
-export type DeleteRole = InstanceType<typeof DeleteRoleDto>;
+export type DeleteRoleReq = InstanceType<typeof DeleteRoleReqDto>;

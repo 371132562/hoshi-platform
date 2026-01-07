@@ -7,7 +7,7 @@ import { IsArray, IsString } from 'class-validator';
 /**
  * 图片项类型
  */
-export type ImageItem = {
+export type ImageItemRes = {
   id: string;
   filename: string;
   originalName: string;
@@ -19,7 +19,7 @@ export type ImageItem = {
 /**
  * 上传响应类型
  */
-export type UploadResponse = {
+export type UploadResDto = {
   filename: string;
   originalName: string;
   url: string;
@@ -28,7 +28,7 @@ export type UploadResponse = {
 /**
  * 孤儿图片项类型
  */
-export type OrphanImageItem = {
+export type OrphanImageItemRes = {
   id: string;
   filename: string;
   originalName: string;
@@ -38,38 +38,38 @@ export type OrphanImageItem = {
 /**
  * 孤儿图片响应类型
  */
-export type OrphanImagesResponse = {
-  images: OrphanImageItem[];
+export type OrphanImagesResDto = {
+  images: OrphanImageItemRes[];
   total: number;
 };
 
 /**
  * 删除孤儿图片 DTO
  */
-export class DeleteOrphansDto {
+export class DeleteOrphansReqDto {
   @IsArray()
   @IsString({ each: true })
   imageIds: string[];
 }
-export type DeleteOrphans = InstanceType<typeof DeleteOrphansDto>;
+export type DeleteOrphansReq = InstanceType<typeof DeleteOrphansReqDto>;
 
 /**
  * 删除单张图片 DTO
  */
-export class DeleteImageDto {
+export class DeleteImageReqDto {
   @IsString()
   filename: string;
 }
-export type DeleteImage = InstanceType<typeof DeleteImageDto>;
+export type DeleteImageReq = InstanceType<typeof DeleteImageReqDto>;
 
 /**
  * 根据文件名批量删除孤儿图片 DTO
  */
-export class DeleteOrphansByFilenamesDto {
+export class DeleteOrphansByFilenamesReqDto {
   @IsArray()
   @IsString({ each: true })
   filenames: string[];
 }
-export type DeleteOrphansByFilenames = InstanceType<
-  typeof DeleteOrphansByFilenamesDto
+export type DeleteOrphansByFilenamesReq = InstanceType<
+  typeof DeleteOrphansByFilenamesReqDto
 >;

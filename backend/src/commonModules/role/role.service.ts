@@ -8,10 +8,10 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { SYSTEM_ADMIN_ROLE_NAME } from '../../types/constants';
 import { ErrorCode } from '../../types/response';
 import {
-  AssignRoleRoutesDto,
-  CreateRoleDto,
+  AssignRoleRoutesReqDto,
+  CreateRoleReqDto,
   RoleListResDto,
-  UpdateRoleDto,
+  UpdateRoleReqDto,
 } from './role.dto';
 
 @Injectable()
@@ -61,7 +61,7 @@ export class RoleService {
   /**
    * 创建角色
    */
-  async createRole(dto: CreateRoleDto) {
+  async createRole(dto: CreateRoleReqDto) {
     this.logger.log(`[操作] 创建角色 - 名称: ${dto.name}`);
 
     try {
@@ -90,7 +90,7 @@ export class RoleService {
   /**
    * 编辑角色
    */
-  async updateRole(role: Role, dto: UpdateRoleDto) {
+  async updateRole(role: Role, dto: UpdateRoleReqDto) {
     try {
       this.logger.log(`[操作] 编辑角色 - ID: ${role.id}, 名称: ${role.name}`);
 
@@ -201,7 +201,7 @@ export class RoleService {
   /**
    * 分配角色菜单权限
    */
-  async assignRoleRoutes(dto: AssignRoleRoutesDto) {
+  async assignRoleRoutes(dto: AssignRoleRoutesReqDto) {
     try {
       const role = await this.prisma.role.findUnique({ where: { id: dto.id } });
       this.logger.log(

@@ -20,7 +20,7 @@ import ResetPasswordModal from '@/components/ResetPasswordModal'
 import { useOrganizationStore } from '../../../stores/organizationStore'
 import { useRoleStore } from '../../../stores/roleStore'
 import { useUserStore } from '../../../stores/userStore'
-import { SYSTEM_ADMIN_ROLE_NAME, UserItem } from '../../../types'
+import { SYSTEM_ADMIN_ROLE_NAME, UserItemRes } from '../../../types'
 
 const UserManagement: React.FC = () => {
   // Store 取值
@@ -46,10 +46,10 @@ const UserManagement: React.FC = () => {
 
   // 弹窗状态
   const [modalOpen, setModalOpen] = useState(false)
-  const [editUser, setEditUser] = useState<UserItem | null>(null)
+  const [editUser, setEditUser] = useState<UserItemRes | null>(null)
   const [form] = Form.useForm()
   const [resetModalOpen, setResetModalOpen] = useState(false)
-  const [resetUser, setResetUser] = useState<UserItem | null>(null)
+  const [resetUser, setResetUser] = useState<UserItemRes | null>(null)
 
   // 初始化加载
   useEffect(() => {
@@ -71,7 +71,7 @@ const UserManagement: React.FC = () => {
   }
 
   // 打开编辑/新建弹窗
-  const openModal = (user?: UserItem) => {
+  const openModal = (user?: UserItemRes) => {
     setEditUser(user || null)
     setModalOpen(true)
     if (user) {
@@ -100,7 +100,7 @@ const UserManagement: React.FC = () => {
     }
   }
 
-  const openResetModal = (user: UserItem) => {
+  const openResetModal = (user: UserItemRes) => {
     setResetUser(user)
     setResetModalOpen(true)
   }
@@ -117,7 +117,7 @@ const UserManagement: React.FC = () => {
       {
         title: '角色',
         key: 'role',
-        render: (_: unknown, record: UserItem) => {
+        render: (_: unknown, record: UserItemRes) => {
           const roleName = record.role?.name || '未分配角色'
           return roleName === SYSTEM_ADMIN_ROLE_NAME ? (
             <Tag color="red">超级管理员</Tag>
@@ -129,13 +129,13 @@ const UserManagement: React.FC = () => {
       {
         title: '所属部门',
         key: 'organization',
-        render: (_: unknown, record: UserItem) => record.organization?.name || '-'
+        render: (_: unknown, record: UserItemRes) => record.organization?.name || '-'
       },
       { title: '电话', dataIndex: 'phone', key: 'phone' },
       {
         title: '操作',
         key: 'action',
-        render: (_: unknown, record: UserItem) => (
+        render: (_: unknown, record: UserItemRes) => (
           <Space>
             <Button
               color="primary"

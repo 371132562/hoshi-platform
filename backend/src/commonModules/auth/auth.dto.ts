@@ -4,12 +4,12 @@ import { IsNotEmpty, IsString } from 'class-validator';
  * 认证相关 DTO 类定义
  */
 // 用户和角色类型从 user.dto 导入
-import type { UserItem } from '../user/user.dto';
+import type { UserItemRes } from '../user/user.dto';
 
 /**
  * 登录 DTO
  */
-export class LoginDto {
+export class LoginReqDto {
   @IsString()
   @IsNotEmpty({ message: '用户名不能为空' })
   username: string;
@@ -18,7 +18,7 @@ export class LoginDto {
   @IsNotEmpty({ message: '密码不能为空' })
   password: string;
 }
-export type Login = InstanceType<typeof LoginDto>;
+export type LoginReq = InstanceType<typeof LoginReqDto>;
 
 /**
  * 挑战响应类型 - 直接返回加密的随机盐字符串
@@ -28,25 +28,20 @@ export type ChallengeResponse = string;
 /**
  * 登录响应类型
  */
-export type LoginResponse = {
+export type LoginResDto = {
   token: string;
-  user: UserItem;
+  user: UserItemRes;
 };
-
-/**
- * 登录响应 DTO
- */
-export type LoginResponseDto = LoginResponse;
 
 /**
  * 用户资料 DTO
  */
-export type UserProfileDto = UserItem;
+export type UserProfileResDto = UserItemRes;
 
 /**
  * 登录（哈希）DTO
  */
-export class LoginWithHashDto {
+export class LoginWithHashReqDto {
   @IsString()
   @IsNotEmpty({ message: '用户名不能为空' })
   username: string;
@@ -55,12 +50,12 @@ export class LoginWithHashDto {
   @IsNotEmpty({ message: '加密数据不能为空' })
   encryptedData: string;
 }
-export type LoginWithHash = InstanceType<typeof LoginWithHashDto>;
+export type LoginWithHashReq = InstanceType<typeof LoginWithHashReqDto>;
 
 /**
  * Token 载荷 DTO
  */
-export type TokenPayloadDto = {
+export type TokenPayloadResDto = {
   sub: string;
   username: string;
   name: string;
