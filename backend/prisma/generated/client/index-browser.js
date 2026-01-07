@@ -157,6 +157,7 @@ exports.Prisma.ArticleScalarFieldEnum = {
   images: 'images',
   createTime: 'createTime',
   updateTime: 'updateTime',
+  type: 'type',
   delete: 'delete'
 };
 
@@ -203,7 +204,9 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
-
+exports.ArticleType = exports.$Enums.ArticleType = {
+  NORMAL: 'NORMAL'
+};
 
 exports.Prisma.ModelName = {
   Organization: 'Organization',

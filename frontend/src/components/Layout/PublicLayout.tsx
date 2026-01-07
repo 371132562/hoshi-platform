@@ -1,7 +1,7 @@
 import { Breadcrumb, FloatButton, Layout, Menu, MenuProps } from 'antd'
 import { FC, useMemo, useRef } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
-import { Link, useLocation, useNavigate, useOutlet } from 'react-router'
+import { Link, useLocation, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
 import { getPublicLayoutData } from '@/router/routesConfig'
@@ -18,7 +18,7 @@ const { Header, Content } = Layout
 export const PublicLayout: FC = () => {
   // Router hooks
   const outlet = useOutlet()
-  const navigate = useNavigate()
+
   const { pathname } = useLocation()
 
   // React Hooks: useRef
@@ -31,7 +31,7 @@ export const PublicLayout: FC = () => {
     // 转换菜单格式为 Ant Design 要求的 items
     const topMenuItems: MenuProps['items'] = data.topMenuRoutes.map((route: RouteItem) => ({
       key: route.path,
-      label: route.title,
+      label: <Link to={route.path}>{route.title}</Link>,
       icon: route.icon
     }))
 
@@ -61,7 +61,6 @@ export const PublicLayout: FC = () => {
           mode="horizontal"
           items={topMenuItems}
           selectedKeys={topNavSelectedKey}
-          onClick={e => navigate(e.key)}
           className="flex-grow-0"
           style={{ minWidth: 0 }}
         />

@@ -13,6 +13,7 @@ import {
   ArticleListResDto,
   ArticleMetaItemRes,
   ArticleOrderResDto,
+  ArticleType,
   CreateArticleReqDto,
   UpdateArticleReqDto,
   UpsertArticleOrderReqDto,
@@ -33,6 +34,7 @@ export class ArticleService {
       title: article.title,
       content: article.content,
       images: article.images as string[], // images 字段从 JSON 转换为 string[]
+      type: article.type as ArticleType,
     };
   }
 
@@ -78,6 +80,7 @@ export class ArticleService {
     page: number,
     pageSize: number,
     title: string = '',
+    type?: ArticleType,
   ): Promise<ArticleListResDto> {
     this.logger.log(
       `[操作] 获取文章列表 - 页码: ${page}, 每页大小: ${pageSize}, 标题筛选: ${title || '无'}`,
@@ -90,6 +93,7 @@ export class ArticleService {
       const whereCondition = {
         delete: 0,
         ...(title ? { title: { contains: title } } : {}),
+        ...(type ? { type } : {}),
       };
 
       const [articles, total] = await Promise.all([
@@ -179,6 +183,7 @@ export class ArticleService {
             title: processedData.title,
             content: processedData.content,
             images: processedData.images,
+            type: articleData.type,
           },
         }),
       );

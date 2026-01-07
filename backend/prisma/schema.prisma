@@ -77,9 +77,15 @@ model Article {
   images     Json     @default("[]") // 文章内包含的图片 为图片id组成的数组
   createTime DateTime @default(now())
   updateTime DateTime @updatedAt
+  type       ArticleType @default(NORMAL) // 文章类型
   delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@index([id, delete])
+  @@index([type, delete])
+}
+
+enum ArticleType {
+  NORMAL
 }
 
 // 文章展示顺序排布表

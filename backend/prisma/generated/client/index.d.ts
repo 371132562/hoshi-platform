@@ -45,6 +45,22 @@ export type ArticleOrder = $Result.DefaultSelection<Prisma.$ArticleOrderPayload>
 export type Image = $Result.DefaultSelection<Prisma.$ImagePayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const ArticleType: {
+  NORMAL: 'NORMAL'
+};
+
+export type ArticleType = (typeof ArticleType)[keyof typeof ArticleType]
+
+}
+
+export type ArticleType = $Enums.ArticleType
+
+export const ArticleType: typeof $Enums.ArticleType
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -4912,6 +4928,7 @@ export namespace Prisma {
     content: string | null
     createTime: Date | null
     updateTime: Date | null
+    type: $Enums.ArticleType | null
     delete: number | null
   }
 
@@ -4921,6 +4938,7 @@ export namespace Prisma {
     content: string | null
     createTime: Date | null
     updateTime: Date | null
+    type: $Enums.ArticleType | null
     delete: number | null
   }
 
@@ -4931,6 +4949,7 @@ export namespace Prisma {
     images: number
     createTime: number
     updateTime: number
+    type: number
     delete: number
     _all: number
   }
@@ -4950,6 +4969,7 @@ export namespace Prisma {
     content?: true
     createTime?: true
     updateTime?: true
+    type?: true
     delete?: true
   }
 
@@ -4959,6 +4979,7 @@ export namespace Prisma {
     content?: true
     createTime?: true
     updateTime?: true
+    type?: true
     delete?: true
   }
 
@@ -4969,6 +4990,7 @@ export namespace Prisma {
     images?: true
     createTime?: true
     updateTime?: true
+    type?: true
     delete?: true
     _all?: true
   }
@@ -5066,6 +5088,7 @@ export namespace Prisma {
     images: JsonValue
     createTime: Date
     updateTime: Date
+    type: $Enums.ArticleType
     delete: number
     _count: ArticleCountAggregateOutputType | null
     _avg: ArticleAvgAggregateOutputType | null
@@ -5095,6 +5118,7 @@ export namespace Prisma {
     images?: boolean
     createTime?: boolean
     updateTime?: boolean
+    type?: boolean
     delete?: boolean
   }, ExtArgs["result"]["article"]>
 
@@ -5105,6 +5129,7 @@ export namespace Prisma {
     images?: boolean
     createTime?: boolean
     updateTime?: boolean
+    type?: boolean
     delete?: boolean
   }, ExtArgs["result"]["article"]>
 
@@ -5115,6 +5140,7 @@ export namespace Prisma {
     images?: boolean
     createTime?: boolean
     updateTime?: boolean
+    type?: boolean
     delete?: boolean
   }, ExtArgs["result"]["article"]>
 
@@ -5125,10 +5151,11 @@ export namespace Prisma {
     images?: boolean
     createTime?: boolean
     updateTime?: boolean
+    type?: boolean
     delete?: boolean
   }
 
-  export type ArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "images" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["article"]>
+  export type ArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "images" | "createTime" | "updateTime" | "type" | "delete", ExtArgs["result"]["article"]>
 
   export type $ArticlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Article"
@@ -5140,6 +5167,7 @@ export namespace Prisma {
       images: Prisma.JsonValue
       createTime: Date
       updateTime: Date
+      type: $Enums.ArticleType
       delete: number
     }, ExtArgs["result"]["article"]>
     composites: {}
@@ -5570,6 +5598,7 @@ export namespace Prisma {
     readonly images: FieldRef<"Article", 'Json'>
     readonly createTime: FieldRef<"Article", 'DateTime'>
     readonly updateTime: FieldRef<"Article", 'DateTime'>
+    readonly type: FieldRef<"Article", 'ArticleType'>
     readonly delete: FieldRef<"Article", 'Int'>
   }
     
@@ -8084,6 +8113,7 @@ export namespace Prisma {
     images: 'images',
     createTime: 'createTime',
     updateTime: 'updateTime',
+    type: 'type',
     delete: 'delete'
   };
 
@@ -8192,6 +8222,13 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'ArticleType'
+   */
+  export type EnumArticleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ArticleType'>
     
 
 
@@ -8441,6 +8478,7 @@ export namespace Prisma {
     images?: JsonFilter<"Article">
     createTime?: DateTimeFilter<"Article"> | Date | string
     updateTime?: DateTimeFilter<"Article"> | Date | string
+    type?: EnumArticleTypeFilter<"Article"> | $Enums.ArticleType
     delete?: IntFilter<"Article"> | number
   }
 
@@ -8451,6 +8489,7 @@ export namespace Prisma {
     images?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
+    type?: SortOrder
     delete?: SortOrder
   }
 
@@ -8464,6 +8503,7 @@ export namespace Prisma {
     images?: JsonFilter<"Article">
     createTime?: DateTimeFilter<"Article"> | Date | string
     updateTime?: DateTimeFilter<"Article"> | Date | string
+    type?: EnumArticleTypeFilter<"Article"> | $Enums.ArticleType
     delete?: IntFilter<"Article"> | number
   }, "id">
 
@@ -8474,6 +8514,7 @@ export namespace Prisma {
     images?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
+    type?: SortOrder
     delete?: SortOrder
     _count?: ArticleCountOrderByAggregateInput
     _avg?: ArticleAvgOrderByAggregateInput
@@ -8492,6 +8533,7 @@ export namespace Prisma {
     images?: JsonWithAggregatesFilter<"Article">
     createTime?: DateTimeWithAggregatesFilter<"Article"> | Date | string
     updateTime?: DateTimeWithAggregatesFilter<"Article"> | Date | string
+    type?: EnumArticleTypeWithAggregatesFilter<"Article"> | $Enums.ArticleType
     delete?: IntWithAggregatesFilter<"Article"> | number
   }
 
@@ -8866,6 +8908,7 @@ export namespace Prisma {
     images?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
+    type?: $Enums.ArticleType
     delete?: number
   }
 
@@ -8876,6 +8919,7 @@ export namespace Prisma {
     images?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
+    type?: $Enums.ArticleType
     delete?: number
   }
 
@@ -8886,6 +8930,7 @@ export namespace Prisma {
     images?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: EnumArticleTypeFieldUpdateOperationsInput | $Enums.ArticleType
     delete?: IntFieldUpdateOperationsInput | number
   }
 
@@ -8896,6 +8941,7 @@ export namespace Prisma {
     images?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: EnumArticleTypeFieldUpdateOperationsInput | $Enums.ArticleType
     delete?: IntFieldUpdateOperationsInput | number
   }
 
@@ -8906,6 +8952,7 @@ export namespace Prisma {
     images?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
+    type?: $Enums.ArticleType
     delete?: number
   }
 
@@ -8916,6 +8963,7 @@ export namespace Prisma {
     images?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: EnumArticleTypeFieldUpdateOperationsInput | $Enums.ArticleType
     delete?: IntFieldUpdateOperationsInput | number
   }
 
@@ -8926,6 +8974,7 @@ export namespace Prisma {
     images?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: EnumArticleTypeFieldUpdateOperationsInput | $Enums.ArticleType
     delete?: IntFieldUpdateOperationsInput | number
   }
 
@@ -9376,6 +9425,13 @@ export namespace Prisma {
     delete?: SortOrder
   }
 
+  export type EnumArticleTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArticleType | EnumArticleTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ArticleType[]
+    notIn?: $Enums.ArticleType[]
+    not?: NestedEnumArticleTypeFilter<$PrismaModel> | $Enums.ArticleType
+  }
+
   export type ArticleCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -9383,6 +9439,7 @@ export namespace Prisma {
     images?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
+    type?: SortOrder
     delete?: SortOrder
   }
 
@@ -9396,6 +9453,7 @@ export namespace Prisma {
     content?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
+    type?: SortOrder
     delete?: SortOrder
   }
 
@@ -9405,11 +9463,22 @@ export namespace Prisma {
     content?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
+    type?: SortOrder
     delete?: SortOrder
   }
 
   export type ArticleSumOrderByAggregateInput = {
     delete?: SortOrder
+  }
+
+  export type EnumArticleTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArticleType | EnumArticleTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ArticleType[]
+    notIn?: $Enums.ArticleType[]
+    not?: NestedEnumArticleTypeWithAggregatesFilter<$PrismaModel> | $Enums.ArticleType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumArticleTypeFilter<$PrismaModel>
+    _max?: NestedEnumArticleTypeFilter<$PrismaModel>
   }
 
   export type ArticleOrderCountOrderByAggregateInput = {
@@ -9680,6 +9749,10 @@ export namespace Prisma {
     update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutUsersInput, OrganizationUpdateWithoutUsersInput>, OrganizationUncheckedUpdateWithoutUsersInput>
   }
 
+  export type EnumArticleTypeFieldUpdateOperationsInput = {
+    set?: $Enums.ArticleType
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -9832,6 +9905,23 @@ export namespace Prisma {
     array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
     array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumArticleTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArticleType | EnumArticleTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ArticleType[]
+    notIn?: $Enums.ArticleType[]
+    not?: NestedEnumArticleTypeFilter<$PrismaModel> | $Enums.ArticleType
+  }
+
+  export type NestedEnumArticleTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArticleType | EnumArticleTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ArticleType[]
+    notIn?: $Enums.ArticleType[]
+    not?: NestedEnumArticleTypeWithAggregatesFilter<$PrismaModel> | $Enums.ArticleType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumArticleTypeFilter<$PrismaModel>
+    _max?: NestedEnumArticleTypeFilter<$PrismaModel>
   }
 
   export type OrganizationCreateWithoutChildrenInput = {

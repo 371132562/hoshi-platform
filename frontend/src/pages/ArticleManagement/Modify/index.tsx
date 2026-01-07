@@ -1,6 +1,7 @@
 import { Button, Form, Input, message, Modal, Skeleton, Space } from 'antd'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
+import { ArticleType } from 'template-backend/src/types/dto'
 
 // 引入自定义的富文本编辑器组件和文章状态管理 store
 import RichEditor, { type RichEditorRef } from '@/components/RichEditor'
@@ -8,7 +9,7 @@ import useArticleStore from '@/stores/articleStore'
 import { extractFilename, toFilenameContent, toFullPathContent } from '@/utils'
 
 // 引入请求DTO类型
-import type { CreateArticle, UpdateArticle } from '../../../types'
+import type { CreateArticleReq, UpdateArticleReq } from '../../../types'
 
 /**
  * 文章创建/编辑组件
@@ -94,7 +95,7 @@ const ArticleModify: FC = () => {
     // 根据是否为编辑模式，调用不同的 store 方法
     if (isEditMode) {
       // 编辑模式：需要传入文章 ID
-      const data: UpdateArticle = {
+      const data: UpdateArticleReq = {
         id: id as string,
         title: values.title,
         content: contentWithFilenames,
@@ -104,11 +105,12 @@ const ArticleModify: FC = () => {
       success = await updateArticle(data)
     } else {
       // 新增模式：直接使用表单数据
-      const data: CreateArticle = {
+      const data: CreateArticleReq = {
         title: values.title,
         content: contentWithFilenames,
         images: processedImages,
-        deletedImages: processedDeletedImages
+        deletedImages: processedDeletedImages,
+        type: ArticleType.NORMAL
       }
       success = await createArticle(data)
     }
@@ -116,7 +118,7 @@ const ArticleModify: FC = () => {
     // 根据操作结果给出反馈，并跳转页面
     if (success) {
       message.success(isEditMode ? '文章更新成功' : '文章创建成功')
-      navigate('/article/list') // 成功后返回文章列表页
+      navigate('/admin/article/list') // 成功后返回文章列表页
     } else {
       message.error(isEditMode ? '文章更新失败' : '文章创建失败')
     }
@@ -159,7 +161,7 @@ const ArticleModify: FC = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold"></h1>
         <Space>
-          <Button onClick={() => navigate('/article/list')}>返回</Button>
+          <Button onClick={() => navigate('/admin/article/list')}>返回</Button>
           <Button onClick={handlePreview}>预览</Button>
           <Button
             type="primary"

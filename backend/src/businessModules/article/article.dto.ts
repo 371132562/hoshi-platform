@@ -2,12 +2,20 @@ import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
+
+/**
+ * 文章类型枚举
+ */
+export enum ArticleType {
+  NORMAL = 'NORMAL',
+}
 
 /**
  * 文章相关 DTO 类定义
@@ -21,6 +29,7 @@ export type ArticleItemRes = {
   title: string;
   content: string;
   images: string[];
+  type: ArticleType;
 };
 
 /**
@@ -53,6 +62,10 @@ export class CreateArticleReqDto {
   @IsArray()
   @IsString({ each: true })
   deletedImages?: string[];
+
+  @IsEnum(ArticleType)
+  @IsNotEmpty({ message: '文章类型不能为空' })
+  type: ArticleType;
 }
 export type CreateArticleReq = InstanceType<typeof CreateArticleReqDto>;
 
@@ -86,6 +99,10 @@ export class ArticleListReqDto {
   @IsOptional()
   @IsString()
   title?: string;
+
+  @IsOptional()
+  @IsEnum(ArticleType)
+  type?: ArticleType;
 }
 export type ArticleListReq = InstanceType<typeof ArticleListReqDto>;
 

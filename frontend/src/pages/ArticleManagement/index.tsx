@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router'
 import useArticleStore from '@/stores/articleStore'
 import { dayjs } from '@/utils/dayjs'
 
-import type { ArticleMetaItem } from '../../types'
+import type { ArticleMetaItemRes } from '../../types'
 
 const ArticleManagement: React.FC = () => {
   // Router hooks
@@ -61,12 +61,12 @@ const ArticleManagement: React.FC = () => {
       {
         title: '操作',
         key: 'action',
-        render: (_: unknown, record: ArticleMetaItem) => (
+        render: (_: unknown, record: ArticleMetaItemRes) => (
           <Space>
             <Button
               color="primary"
               variant="outlined"
-              onClick={() => navigate(`/article/modify/${record.id}`)}
+              onClick={() => navigate(`/admin/article/modify/${record.id}`)}
             >
               编辑
             </Button>
@@ -140,7 +140,7 @@ const ArticleManagement: React.FC = () => {
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => navigate('/article/create')}
+          onClick={() => navigate('/admin/article/create')}
         >
           新增文章
         </Button>

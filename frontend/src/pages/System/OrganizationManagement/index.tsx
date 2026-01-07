@@ -38,11 +38,12 @@ const OrganizationManagement: React.FC = () => {
   }, [fetchOrganizationList])
 
   // 初始化展开根节点
-  useEffect(() => {
-    if (organizationList.length > 0 && expandedKeys.length === 0) {
-      setExpandedKeys(organizationList.map(item => item.id))
-    }
-  }, [organizationList])
+  const [hasInitialized, setHasInitialized] = useState(false)
+
+  if (organizationList.length > 0 && !hasInitialized) {
+    setExpandedKeys(organizationList.map(item => item.id))
+    setHasInitialized(true)
+  }
 
   /**
    * 打开新增/编辑弹窗

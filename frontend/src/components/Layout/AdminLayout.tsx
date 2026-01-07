@@ -47,6 +47,10 @@ export const AdminLayout: FC = () => {
       const data = getAdminLayoutData(pathname, user)
 
       const menuItems: MenuProps['items'] = data.sideMenuRoutes.map((route: RouteItem) => {
+        const hasChildren =
+          route.children &&
+          route.children.filter((child: RouteItem) => !child.menuParent).length > 0
+
         const item: {
           key: string
           icon?: ReactNode
@@ -55,18 +59,15 @@ export const AdminLayout: FC = () => {
         } = {
           key: route.path,
           icon: route.icon,
-          label: route.title
+          label: hasChildren ? route.title : <Link to={route.path}>{route.title}</Link>
         }
 
-        if (
-          route.children &&
-          route.children.filter((child: RouteItem) => !child.menuParent).length > 0
-        ) {
-          item.children = route.children
-            .filter((child: RouteItem) => !child.menuParent)
+        if (hasChildren) {
+          item.children = route
+            .children!.filter((child: RouteItem) => !child.menuParent)
             .map((child: RouteItem) => ({
               key: child.path,
-              label: child.title
+              label: <Link to={child.path}>{child.title}</Link>
             }))
         }
 
@@ -115,7 +116,6 @@ export const AdminLayout: FC = () => {
             theme="light"
             mode="inline"
             items={menuItems}
-            onClick={e => navigate(e.key)}
             onOpenChange={setOpenKeys}
             selectedKeys={sideMenuSelectedKey}
             openKeys={openKeys}

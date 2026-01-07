@@ -112,11 +112,6 @@ export const useAuthStore = create<AuthStore>()(
 // 3) 当本地无 token 且内存仍有 token 时，重置为未登录；当本地 token 与内存不一致时，以本地为准并触发后续逻辑
 // =========================
 
-// 辅助函数
-const transformUserProfile = (user: UserProfileResDto): UserProfileResDto => {
-  return user
-}
-
 // 安全解析本地持久化的 auth-storage
 const readPersistedAuth = (): { token: string | null; user: UserProfileResDto | null } => {
   try {
