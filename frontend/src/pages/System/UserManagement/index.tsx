@@ -93,7 +93,6 @@ const UserManagement: React.FC = () => {
         key: 'username'
       },
       { title: '姓名', dataIndex: 'name', key: 'name' },
-      { title: '电话', dataIndex: 'phone', key: 'phone' },
       {
         title: '角色',
         key: 'role',
@@ -106,6 +105,12 @@ const UserManagement: React.FC = () => {
           )
         }
       },
+      {
+        title: '所属部门',
+        key: 'organization',
+        render: (_: unknown, record: UserItem) => record.organization?.name || '-'
+      },
+      { title: '电话', dataIndex: 'phone', key: 'phone' },
       {
         title: '操作',
         key: 'action',

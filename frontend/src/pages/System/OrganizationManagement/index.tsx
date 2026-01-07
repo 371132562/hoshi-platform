@@ -1,6 +1,7 @@
 import { DeleteOutlined, DownOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Form, Input, message, Modal, Popconfirm, Spin, Tooltip, Tree } from 'antd'
-import React, { useEffect, useState } from 'react'
+import type { DataNode } from 'antd/es/tree'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { useOrganizationStore } from '@/stores/organizationStore'
 import { OrganizationTreeNode } from '@/types'
@@ -12,7 +13,7 @@ const isRootOrg = (id: string) => id === '0'
 
 /**
  * 部门管理页面
- * 以树状结构展示部门层级，操作按钮在节点 hover 时显示
+ * 参考 operation-webapp 组织管理页面样式与功能
  */
 const OrganizationManagement: React.FC = () => {
   const organizationList = useOrganizationStore(s => s.organizationList)
@@ -25,18 +26,26 @@ const OrganizationManagement: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalType, setModalType] = useState<'create' | 'update'>('create')
   const [targetNode, setTargetNode] = useState<OrganizationTreeNode | null>(null)
-
-  const [hoveredKey, setHoveredKey] = useState<string | null>(null)
   const [form] = Form.useForm()
+
+  // 搜索相关状态
+  const [searchValue, setSearchValue] = useState('')
+  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([])
+  const [autoExpandParent, setAutoExpandParent] = useState(true)
 
   useEffect(() => {
     fetchOrganizationList()
   }, [fetchOrganizationList])
 
+  // 初始化展开根节点
+  useEffect(() => {
+    if (organizationList.length > 0 && expandedKeys.length === 0) {
+      setExpandedKeys(organizationList.map(item => item.id))
+    }
+  }, [organizationList])
+
   /**
    * 打开新增/编辑弹窗
-   * @param type 操作类型：create=新增子部门，update=编辑当前部门
-   * @param node 操作的目标节点（新增时为父节点，编辑时为当前节点）
    */
   const openModal = React.useCallback(
     (type: 'create' | 'update', node: OrganizationTreeNode) => {
@@ -45,13 +54,11 @@ const OrganizationManagement: React.FC = () => {
       setModalOpen(true)
 
       if (type === 'create') {
-        // 新增模式：传入的 node 是父节点
         form.resetFields()
         form.setFieldsValue({
           parentId: node.id
         })
       } else {
-        // 编辑模式：传入的 node 是当前节点
         form.setFieldsValue({
           name: node.name,
           description: node.description
@@ -68,134 +75,186 @@ const OrganizationManagement: React.FC = () => {
 
       if (modalType === 'update' && targetNode) {
         success = await updateOrganization({ ...values, id: targetNode.id })
-        if (success) {
-          message.success('更新成功')
-        }
+        if (success) message.success('更新成功')
       } else {
         success = await createOrganization(values)
-        if (success) {
-          message.success('创建成功')
-        }
+        if (success) message.success('创建成功')
       }
 
-      if (success) {
-        setModalOpen(false)
-      }
+      if (success) setModalOpen(false)
     } catch {
       // 校验失败
     }
   }
 
-  /**
-   * 渲染树节点标题（包含操作按钮）
-   */
-  const renderTitle = React.useCallback(
-    (node: OrganizationTreeNode) => {
-      return (
-        <div
-          className="group flex min-h-8 items-center rounded px-2 py-1 transition-colors hover:bg-gray-50"
-          onMouseEnter={() => setHoveredKey(node.id)}
-          onMouseLeave={() => setHoveredKey(null)}
-        >
-          <span className="font-medium text-gray-800">{node.name}</span>
-          {node.description && (
-            <span className="ml-2 text-xs text-gray-400">（{node.description}）</span>
-          )}
-          {/* hover 时显示操作按钮 */}
-          <span
-            className={`ml-6 flex items-center gap-1 transition-opacity ${
-              hoveredKey === node.id ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <Tooltip title="添加子部门">
-              <Button
-                type="text"
-                className="text-gray-400 hover:bg-blue-50 hover:text-blue-500"
-                icon={<PlusOutlined />}
-                onClick={e => {
-                  e.stopPropagation()
-                  openModal('create', node)
-                }}
-              />
-            </Tooltip>
-            <Tooltip title="编辑">
-              <Button
-                type="text"
-                className="text-gray-400 hover:bg-blue-50 hover:text-blue-500"
-                icon={<EditOutlined />}
-                onClick={e => {
-                  e.stopPropagation()
-                  openModal('update', node)
-                }}
-              />
-            </Tooltip>
-            {/* 根部门不可删除 */}
-            {!isRootOrg(node.id) && (
+  const onExpand = (newExpandedKeys: React.Key[]) => {
+    setExpandedKeys(newExpandedKeys)
+    setAutoExpandParent(false)
+  }
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target
+    setSearchValue(value)
+
+    // 如果有搜索值，展开所有包含匹配项的路径
+    if (value) {
+      const getAllKeys = (nodes: OrganizationTreeNode[], keys: React.Key[]) => {
+        nodes.forEach(node => {
+          keys.push(node.id)
+          if (node.children) getAllKeys(node.children, keys)
+        })
+      }
+      const allKeys: React.Key[] = []
+      getAllKeys(organizationList, allKeys)
+      setExpandedKeys(allKeys)
+    } else {
+      // 清空搜索时恢复默认展开（根节点）
+      setExpandedKeys(organizationList.map(item => item.id))
+    }
+
+    setAutoExpandParent(true)
+  }
+
+  // 构造 Tree 数据，处理 search 高亮
+  const treeData = useMemo(() => {
+    const loop = (data: OrganizationTreeNode[]): DataNode[] =>
+      data.map(item => {
+        const index = item.name.indexOf(searchValue)
+        const beforeStr = item.name.substring(0, index)
+        const afterStr = item.name.slice(index + searchValue.length)
+        const title =
+          index > -1 ? (
+            <span>
+              {beforeStr}
+              <span className="font-bold text-red-500">{searchValue}</span>
+              {afterStr}
+            </span>
+          ) : (
+            <span>{item.name}</span>
+          )
+
+        // 节点操作区
+        const ops = (
+          <span className="ml-4 flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+            <Button
+              type="text"
+              size="small"
+              className="px-1 text-gray-500 hover:bg-blue-50 hover:text-blue-500"
+              icon={<PlusOutlined />}
+              onClick={e => {
+                e.stopPropagation()
+                openModal('create', item)
+              }}
+            >
+              新增子部门
+            </Button>
+            <Button
+              type="text"
+              size="small"
+              className="px-1 text-gray-500 hover:bg-blue-50 hover:text-blue-500"
+              icon={<EditOutlined />}
+              onClick={e => {
+                e.stopPropagation()
+                openModal('update', item)
+              }}
+            >
+              编辑
+            </Button>
+            {!isRootOrg(item.id) && (
               <Popconfirm
                 title="确定删除该部门？"
-                description="删除后不可恢复，且如果有子部门或关联用户将删除失败。"
-                onConfirm={async e => {
+                description="删除后不可恢复"
+                onConfirm={e => {
                   e?.stopPropagation()
-                  const success = await deleteOrganization(node.id)
-                  if (success) {
-                    message.success('删除成功')
-                  }
+                  deleteOrganization(item.id)
                 }}
                 onCancel={e => e?.stopPropagation()}
                 okText="确定"
                 cancelText="取消"
               >
-                <Tooltip title="删除">
-                  <Button
-                    type="text"
-                    danger
-                    className="text-gray-400 hover:bg-red-50 hover:text-red-500"
-                    icon={<DeleteOutlined />}
-                    onClick={e => e.stopPropagation()}
-                  />
-                </Tooltip>
+                <Button
+                  type="text"
+                  size="small"
+                  danger
+                  className="px-1 text-gray-500 hover:bg-red-50 hover:text-red-500"
+                  icon={<DeleteOutlined />}
+                  onClick={e => e.stopPropagation()}
+                >
+                  删除
+                </Button>
               </Popconfirm>
             )}
           </span>
-        </div>
-      )
-    },
-    [hoveredKey, openModal, deleteOrganization]
-  )
+        )
+
+        return {
+          key: item.id,
+          title: (
+            <div className="group flex items-center py-1 pr-2">
+              <div className="truncate">{title}</div>
+              {ops}
+            </div>
+          ),
+          children: item.children ? loop(item.children) : []
+        }
+      })
+
+    return loop(organizationList)
+  }, [organizationList, searchValue, deleteOrganization, openModal])
 
   return (
-    <div className="w-full rounded-lg bg-white p-4">
-      <Spin spinning={loading}>
-        {organizationList.length > 0 ? (
-          <Tree<OrganizationTreeNode>
-            className="bg-transparent"
-            treeData={organizationList}
-            fieldNames={{ title: 'name', key: 'id', children: 'children' }}
-            titleRender={renderTitle}
-            defaultExpandAll
-            selectable={false}
-            switcherIcon={<DownOutlined />}
-            showLine
+    <div className="flex h-full w-full flex-col rounded-lg bg-white p-4">
+      {/* 顶部搜索栏 */}
+      <div className="mb-4 flex items-center justify-between">
+        <div className="max-w-md flex-1">
+          <Input.Search
+            placeholder="请输入部门名称搜索"
+            allowClear
+            onChange={onChange}
+            className="w-full"
           />
-        ) : (
-          <div className="py-12 text-center text-gray-400">暂无部门数据</div>
-        )}
-      </Spin>
+        </div>
+      </div>
 
+      {/* 树区域 */}
+      <div className="flex-1 overflow-auto">
+        <Spin spinning={loading}>
+          {organizationList.length > 0 ? (
+            <Tree
+              showLine
+              switcherIcon={<DownOutlined />}
+              treeData={treeData}
+              expandedKeys={expandedKeys}
+              autoExpandParent={autoExpandParent}
+              onExpand={onExpand}
+              selectable={false}
+              className="w-full"
+            />
+          ) : (
+            <div className="py-12 text-center text-gray-400">暂无部门数据</div>
+          )}
+        </Spin>
+      </div>
+
+      {/* 弹窗 */}
       <Modal
         title={modalType === 'create' ? '新建部门' : '编辑部门'}
         open={modalOpen}
         onOk={handleOk}
         onCancel={() => setModalOpen(false)}
         destroyOnHidden
+        width={500}
       >
         <Form
           form={form}
           layout="vertical"
+          className="mt-4"
         >
-          {/* 上级部门展示 */}
-          <Form.Item label="上级部门">
-            <span className="text-gray-700">
+          <Form.Item
+            label="上级部门"
+            className="mb-4"
+          >
+            <span className="rounded bg-gray-50 px-3 py-1 font-medium text-gray-700">
               {modalType === 'create' ? targetNode?.name : targetNode?.parentName || '无'}
             </span>
           </Form.Item>
@@ -204,11 +263,12 @@ const OrganizationManagement: React.FC = () => {
             <Form.Item
               name="parentId"
               hidden
-              rules={[{ required: true, message: '父部门ID丢失' }]}
+              rules={[{ required: true }]}
             >
               <Input />
             </Form.Item>
           )}
+
           <Form.Item
             name="name"
             label="部门名称"
@@ -217,6 +277,7 @@ const OrganizationManagement: React.FC = () => {
             <Input
               maxLength={50}
               placeholder="请输入部门名称"
+              showCount
             />
           </Form.Item>
 
@@ -227,6 +288,8 @@ const OrganizationManagement: React.FC = () => {
             <Input.TextArea
               maxLength={200}
               placeholder="请输入描述"
+              showCount
+              rows={3}
             />
           </Form.Item>
         </Form>
