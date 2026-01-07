@@ -6,6 +6,8 @@ import type {
   ArticleMetaItem,
   // 角色管理相关类型
   AssignRoleRoutes,
+  // 通用分页参数
+  CommonPageParams,
   // 认证相关类型
   CreateArticle,
   CreateOrganizationDto,
@@ -64,7 +66,7 @@ export type RouteItem = {
 // 按功能模块分组导出，便于查找和维护
 
 // 通用类型
-export type { ExportFormat, PaginatedResponse }
+export type { CommonPageParams, ExportFormat, PaginatedResponse }
 
 // 认证相关类型
 export type { Login, LoginResponse, TokenPayloadDto, UserProfileDto }

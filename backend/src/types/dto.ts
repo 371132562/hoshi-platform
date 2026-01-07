@@ -26,13 +26,11 @@ export * from '../commonModules/organization/organization.dto';
  */
 
 /**
- * 分页信息类型
+ * 通用分页请求参数
  */
-export type PaginationInfo = {
-  page: number; // 当前页码，从1开始
-  pageSize: number; // 每页数量
-  total: number; // 总数量
-  totalPages: number; // 总页数
+export type CommonPageParams = {
+  page?: number;
+  pageSize?: number;
 };
 
 /**

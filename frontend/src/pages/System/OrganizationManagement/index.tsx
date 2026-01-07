@@ -1,5 +1,5 @@
 import { DeleteOutlined, DownOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Form, Input, message, Modal, Popconfirm, Spin, Tooltip, Tree } from 'antd'
+import { Button, Form, Input, message, Modal, Popconfirm, Spin, Tree } from 'antd'
 import type { DataNode } from 'antd/es/tree'
 import React, { useEffect, useMemo, useState } from 'react'
 
@@ -206,7 +206,7 @@ const OrganizationManagement: React.FC = () => {
     <div className="flex h-full w-full flex-col rounded-lg bg-white p-4">
       {/* 顶部搜索栏 */}
       <div className="mb-4 flex items-center justify-between">
-        <div className="max-w-md flex-1">
+        <div className="w-[220px]">
           <Input.Search
             placeholder="请输入部门名称搜索"
             allowClear

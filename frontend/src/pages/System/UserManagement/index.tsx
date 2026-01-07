@@ -1,4 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined, UndoOutlined } from '@ant-design/icons'
 import {
   Button,
   Form,
@@ -25,8 +25,13 @@ import { SYSTEM_ADMIN_ROLE_NAME, UserItem } from '../../../types'
 const UserManagement: React.FC = () => {
   // Store 取值
   const userList = useUserStore(s => s.userList)
+  const userTotal = useUserStore(s => s.userTotal)
+  const userPageParams = useUserStore(s => s.userPageParams)
   const loading = useUserStore(s => s.loading)
   const fetchUserList = useUserStore(s => s.fetchUserList)
+  const updateUserPageParams = useUserStore(s => s.updateUserPageParams)
+  const handleUserPageChange = useUserStore(s => s.handleUserPageChange)
+  const resetUserSearch = useUserStore(s => s.resetUserSearch)
   const createUser = useUserStore(s => s.createUser)
   const updateUser = useUserStore(s => s.updateUser)
   const deleteUser = useUserStore(s => s.deleteUser)
@@ -35,21 +40,37 @@ const UserManagement: React.FC = () => {
   const organizationList = useOrganizationStore(s => s.organizationList)
   const fetchOrganizationList = useOrganizationStore(s => s.fetchOrganizationList)
 
-  // React Hooks: useState
+  // 搜索表单状态
+  const [searchName, setSearchName] = useState('')
+  const [searchRoleId, setSearchRoleId] = useState<string | undefined>(undefined)
+
+  // 弹窗状态
   const [modalOpen, setModalOpen] = useState(false)
   const [editUser, setEditUser] = useState<UserItem | null>(null)
   const [form] = Form.useForm()
   const [resetModalOpen, setResetModalOpen] = useState(false)
   const [resetUser, setResetUser] = useState<UserItem | null>(null)
 
-  // React Hooks: useEffect
+  // 初始化加载
   useEffect(() => {
     fetchUserList()
     fetchRoleList()
     fetchOrganizationList()
   }, [])
 
-  // 方法定义
+  // 搜索处理
+  const onSearch = () => {
+    updateUserPageParams({ page: 1, name: searchName || undefined, roleId: searchRoleId })
+  }
+
+  // 重置搜索
+  const onReset = () => {
+    setSearchName('')
+    setSearchRoleId(undefined)
+    resetUserSearch()
+  }
+
+  // 打开编辑/新建弹窗
   const openModal = (user?: UserItem) => {
     setEditUser(user || null)
     setModalOpen(true)
@@ -84,7 +105,7 @@ const UserManagement: React.FC = () => {
     setResetModalOpen(true)
   }
 
-  // Const 变量 - 派生变量
+  // 表格列定义
   const columns = useMemo(
     () => [
       {
@@ -166,8 +187,54 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="w-full">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold"></h2>
+      {/* 搜索区域 */}
+      <div className="mb-4 flex items-center gap-3">
+        <Input
+          placeholder="请输入姓名搜索"
+          value={searchName}
+          onChange={e => setSearchName(e.target.value)}
+          style={{ width: 180 }}
+          allowClear
+          onPressEnter={onSearch}
+          onClear={() => updateUserPageParams({ page: 1, name: undefined, roleId: searchRoleId })}
+        />
+        <Select
+          placeholder="请选择角色搜索"
+          value={searchRoleId}
+          onChange={value => {
+            setSearchRoleId(value)
+            updateUserPageParams({ page: 1, name: searchName || undefined, roleId: value })
+          }}
+          onClear={() => {
+            setSearchRoleId(undefined)
+            updateUserPageParams({ page: 1, name: searchName || undefined, roleId: undefined })
+          }}
+          allowClear
+          style={{ width: 180 }}
+        >
+          {roleList.map(r => (
+            <Select.Option
+              key={r.id}
+              value={r.id}
+            >
+              {r.name === SYSTEM_ADMIN_ROLE_NAME ? '超级管理员' : r.name}
+            </Select.Option>
+          ))}
+        </Select>
+        <Button
+          type="primary"
+          icon={<SearchOutlined />}
+          onClick={onSearch}
+        >
+          搜索
+        </Button>
+        <Button
+          icon={<UndoOutlined />}
+          onClick={onReset}
+        >
+          重置
+        </Button>
+        <div className="flex-1" />
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -176,14 +243,24 @@ const UserManagement: React.FC = () => {
           新建用户
         </Button>
       </div>
+
+      {/* 表格 */}
       <Spin spinning={loading}>
         <Table
           rowKey="id"
           columns={columns}
           dataSource={userList}
-          pagination={false}
+          pagination={{
+            current: userPageParams.page,
+            pageSize: userPageParams.pageSize,
+            total: userTotal,
+            onChange: handleUserPageChange,
+            showSizeChanger: true,
+            showTotal: total => `共 ${total} 条`
+          }}
         />
       </Spin>
+
       {/* 新建/编辑用户弹窗 */}
       <Modal
         title={editUser ? '编辑用户' : '新建用户'}
@@ -253,7 +330,6 @@ const UserManagement: React.FC = () => {
               placeholder="请选择角色"
               optionLabelProp="label"
             >
-              {/* 下拉项：若为超级管理员，显示与表格一致的红色标签样式，并展示角色描述 */}
               {roleList.map(r => (
                 <Select.Option
                   value={r.id}
@@ -321,6 +397,7 @@ const UserManagement: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
+
       {/* 重置密码弹窗 */}
       <ResetPasswordModal
         open={resetModalOpen}

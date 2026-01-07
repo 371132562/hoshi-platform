@@ -10,6 +10,7 @@ import {
 } from '../services/apis'
 import request from '../services/base'
 import type {
+  CommonPageParams,
   CreateUserEncrypted,
   DeleteUser,
   ResetUserPasswordEncrypted,
@@ -34,35 +35,81 @@ type ResetPasswordFormData = {
   newPassword: string
 }
 
-export const useUserStore = create<{
+// 用户列表查询参数类型
+type UserPageParams = CommonPageParams & {
+  name?: string
+  roleId?: string
+}
+
+// Store 状态类型
+type UserStoreState = {
   userList: UserItem[]
+  userTotal: number
+  userPageParams: UserPageParams
   loading: boolean
-  fetchUserList: () => Promise<void>
+  fetchUserList: (params?: Partial<UserPageParams>) => Promise<void>
+  updateUserPageParams: (params: Partial<UserPageParams>) => void
+  handleUserPageChange: (page: number, pageSize?: number) => void
+  handleUserSearch: () => void
+  resetUserSearch: () => void
   createUser: (data: CreateUserFormData) => Promise<boolean>
   updateUser: (data: UpdateUser) => Promise<boolean>
   deleteUser: (data: DeleteUser) => Promise<boolean>
   resetUserPassword: (data: ResetPasswordFormData) => Promise<boolean>
-}>((set, get) => ({
+}
+
+export const useUserStore = create<UserStoreState>((set, get) => ({
   userList: [],
+  userTotal: 0,
+  userPageParams: { page: 1, pageSize: 10 },
   loading: false,
-  // 获取用户列表
-  fetchUserList: async () => {
-    set({ loading: true })
+
+  // 获取用户列表（支持分页和筛选）
+  fetchUserList: async (params?: Partial<UserPageParams>) => {
+    const merged = { ...get().userPageParams, ...params }
+    set({ loading: true, userPageParams: merged })
     try {
-      const res = await request.post<UserListResDto>(userListApi)
-      set({ userList: res.data, loading: false })
-    } finally {
+      const res = await request.post<UserListResDto>(userListApi, merged)
+      set({
+        userList: res.data.list,
+        userTotal: res.data.total,
+        userPageParams: { ...merged, page: res.data.page, pageSize: res.data.pageSize },
+        loading: false
+      })
+    } catch {
       set({ loading: false })
     }
   },
+
+  // 更新分页/筛选参数并刷新列表
+  updateUserPageParams: (params: Partial<UserPageParams>) => {
+    const merged = { ...get().userPageParams, ...params }
+    get().fetchUserList(merged)
+  },
+
+  // 处理分页变化
+  handleUserPageChange: (page: number, pageSize?: number) => {
+    const update: Partial<UserPageParams> = { page }
+    if (pageSize !== undefined) update.pageSize = pageSize
+    get().updateUserPageParams(update)
+  },
+
+  // 处理搜索（重置到第一页）
+  handleUserSearch: () => {
+    get().updateUserPageParams({ page: 1 })
+  },
+
+  // 重置搜索条件
+  resetUserSearch: () => {
+    get().updateUserPageParams({ page: 1, name: undefined, roleId: undefined })
+  },
+
   // 创建用户
   createUser: async data => {
     set({ loading: true })
     try {
-      // 两步加密：先获取加密的随机盐，解密后使用crypto-js加密(盐+密码)，然后提交加密数据
       const challenge = await request.post<string>(challengeApiUrl)
       const encryptedSalt = challenge.data
-      // 解密后端返回的加密盐值
       const salt = decryptSalt(encryptedSalt)
       const encryptedPassword = await encryptData(salt, data.password)
 
@@ -81,6 +128,7 @@ export const useUserStore = create<{
       set({ loading: false })
     }
   },
+
   // 编辑用户
   updateUser: async data => {
     set({ loading: true })
@@ -95,12 +143,21 @@ export const useUserStore = create<{
       set({ loading: false })
     }
   },
+
   // 删除用户
   deleteUser: async data => {
     set({ loading: true })
     try {
       await request.post(userDeleteApi, data)
-      await get().fetchUserList()
+      // 智能处理分页：删除后检查当前页是否为空
+      const { userTotal, userPageParams } = get()
+      const newTotal = userTotal - 1
+      const totalPages = Math.ceil(newTotal / (userPageParams.pageSize || 10))
+      if ((userPageParams.page || 1) > totalPages && totalPages > 0) {
+        await get().fetchUserList({ page: totalPages })
+      } else {
+        await get().fetchUserList()
+      }
       return true
     } catch (error) {
       console.error('用户删除失败:', error)
@@ -109,14 +166,13 @@ export const useUserStore = create<{
       set({ loading: false })
     }
   },
+
   // 重置用户密码
   resetUserPassword: async data => {
     set({ loading: true })
     try {
-      // 两步加密：先获取加密的随机盐，解密后使用crypto-js加密(盐+新密码)，然后提交加密数据
       const challenge = await request.post<string>(challengeApiUrl)
       const encryptedSalt = challenge.data
-      // 解密后端返回的加密盐值
       const salt = decryptSalt(encryptedSalt)
       const encryptedNewPassword = await encryptData(salt, data.newPassword)
 

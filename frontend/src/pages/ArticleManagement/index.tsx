@@ -1,4 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined, UndoOutlined } from '@ant-design/icons'
 import { Button, Input, message, Popconfirm, Space, Table } from 'antd'
 import type { TablePaginationConfig } from 'antd/es/table/interface'
 import React, { useEffect, useMemo } from 'react'
@@ -8,8 +8,6 @@ import useArticleStore from '@/stores/articleStore'
 import { dayjs } from '@/utils/dayjs'
 
 import type { ArticleMetaItem } from '../../types'
-
-const { Search } = Input
 
 const ArticleManagement: React.FC = () => {
   // Router hooks
@@ -21,6 +19,7 @@ const ArticleManagement: React.FC = () => {
   const currentPage = useArticleStore(state => state.currentPage)
   const pageSize = useArticleStore(state => state.pageSize)
   const loading = useArticleStore(state => state.loading)
+  const searchTitle = useArticleStore(state => state.searchTitle)
   const getArticleList = useArticleStore(state => state.getArticleList)
   const setSearchTitle = useArticleStore(state => state.setSearchTitle)
   const deleteArticle = useArticleStore(state => state.deleteArticle)
@@ -30,9 +29,13 @@ const ArticleManagement: React.FC = () => {
     getArticleList(1, 10, '')
   }, [])
 
-  const handleSearch = (value: string) => {
-    setSearchTitle(value)
-    getArticleList(1, pageSize, value)
+  const onSearch = () => {
+    getArticleList(1, pageSize, searchTitle)
+  }
+
+  const onReset = () => {
+    setSearchTitle('')
+    getArticleList(1, pageSize, '')
   }
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -83,8 +86,8 @@ const ArticleManagement: React.FC = () => {
               cancelText="取消"
             >
               <Button
-                color="danger"
-                variant="outlined"
+                danger
+                disabled={record.title === '关于我们'} // 示例：保护特定文章
               >
                 删除
               </Button>
@@ -100,18 +103,40 @@ const ArticleManagement: React.FC = () => {
     const success = await deleteArticle(id)
     if (success) {
       message.success('文章删除成功')
-      getArticleList(currentPage, pageSize)
+      // 删除逻辑中 store 已经处理了刷新，但这里为了保险或特定逻辑可以再次调用，不过 store 里 deleteArticle 已经调用了 refresh
     }
   }
 
   return (
     <div className="w-full">
-      <div className="mb-4 flex justify-between">
-        <Search
+      {/* 搜索区域 */}
+      <div className="mb-4 flex items-center gap-3">
+        <Input
           placeholder="请输入标题搜索"
-          onSearch={handleSearch}
-          style={{ width: 200 }}
+          value={searchTitle}
+          onChange={e => setSearchTitle(e.target.value)}
+          style={{ width: 180 }}
+          allowClear
+          onPressEnter={onSearch}
+          onClear={() => {
+            setSearchTitle('')
+            getArticleList(1, pageSize, '')
+          }}
         />
+        <Button
+          type="primary"
+          icon={<SearchOutlined />}
+          onClick={onSearch}
+        >
+          搜索
+        </Button>
+        <Button
+          icon={<UndoOutlined />}
+          onClick={onReset}
+        >
+          重置
+        </Button>
+        <div className="flex-1" />
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -128,7 +153,8 @@ const ArticleManagement: React.FC = () => {
           total,
           current: currentPage,
           pageSize,
-          showSizeChanger: true
+          showSizeChanger: true,
+          showTotal: total => `共 ${total} 条`
         }}
         loading={loading}
         onChange={handleTableChange}

@@ -6,6 +6,7 @@ import {
   DeleteUserDto,
   ResetUserPasswordEncryptedDto,
   UpdateUserDto,
+  UserListDto,
   UserListResDto,
 } from './user.dto';
 import { UserByIdPipe, UserCodeExistsValidationPipe } from './user.pipes';
@@ -19,8 +20,8 @@ export class UserController {
    * 获取用户列表
    */
   @Post('list')
-  async getUserList(): Promise<UserListResDto> {
-    return this.userService.getUserList();
+  async getUserList(@Body() query: UserListDto): Promise<UserListResDto> {
+    return this.userService.getUserList(query);
   }
 
   /**

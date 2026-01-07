@@ -11,6 +11,7 @@ import {
   CreateUserEncryptedDto,
   ResetUserPasswordEncryptedDto,
   UpdateUserDto,
+  UserListDto,
   UserListResDto,
 } from './user.dto';
 
@@ -22,21 +23,45 @@ export class UserService {
   ) {}
 
   /**
-   * 获取用户列表，包含角色名
+   * 获取用户列表，支持分页和筛选
    */
-  async getUserList(): Promise<UserListResDto> {
-    this.logger.log('[操作] 获取用户列表');
+  async getUserList(query: UserListDto): Promise<UserListResDto> {
+    const { page = 1, pageSize = 10, name, roleId } = query;
+    this.logger.log(
+      `[操作] 获取用户列表 - 页码: ${page}, 每页: ${pageSize}, 姓名: ${name || '无'}, 角色ID: ${roleId || '无'}`,
+    );
 
     try {
-      const users = await this.prisma.user.findMany({
-        where: { delete: 0 },
-        include: { role: true },
-        orderBy: { createTime: 'asc' },
-      });
+      // 构建筛选条件
+      const where: Record<string, unknown> = { delete: 0 };
+      if (name) {
+        where.name = { contains: name };
+      }
+      if (roleId) {
+        where.roleId = roleId;
+      }
 
-      this.logger.log(`[操作] 获取用户列表 - 共 ${users.length} 个用户`);
+      // 分页计算
+      const skip = (page - 1) * pageSize;
+      const take = pageSize;
 
-      const userList = users.map((user) => ({
+      // 并行查询列表和总数
+      const [users, total] = await Promise.all([
+        this.prisma.user.findMany({
+          where,
+          include: { role: true },
+          orderBy: { createTime: 'asc' },
+          skip,
+          take,
+        }),
+        this.prisma.user.count({ where }),
+      ]);
+
+      this.logger.log(
+        `[操作] 获取用户列表成功 - 本页 ${users.length} 条，共 ${total} 条`,
+      );
+
+      const list = users.map((user) => ({
         id: user.id,
         username: user.username,
         name: user.name,
@@ -45,7 +70,7 @@ export class UserService {
         role: { name: user.role!.name },
       }));
 
-      return userList;
+      return { list, total, page, pageSize };
     } catch (error) {
       this.logger.error(
         `[失败] 获取用户列表 - ${error instanceof Error ? error.message : '未知错误'}`,

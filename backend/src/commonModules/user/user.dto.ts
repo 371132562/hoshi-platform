@@ -63,13 +63,22 @@ export class UserListDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsString()
+  roleId?: string;
 }
 export type UserList = InstanceType<typeof UserListDto>;
 
 /**
- * 用户列表响应类型
+ * 用户列表响应类型（分页）
  */
-export type UserListResDto = UserItem[];
+export type UserListResDto = {
+  list: UserItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
 
 /**
  * 删除用户 DTO
