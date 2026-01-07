@@ -137,15 +137,6 @@ export class OrganizationService {
             '父节点不能是自己',
           );
         }
-        // 更深入的循环检测：新的 parent 不能是当前节点的子孙
-        // 这里简单处理，暂不递归检测，实际生产中应加上递归检测
-        const allChildren = await this.getAllChildrenIds(org.id);
-        if (allChildren.includes(dto.parentId)) {
-          throw new BusinessException(
-            ErrorCode.INVALID_INPUT,
-            '父节点不能是自己的子节点',
-          );
-        }
       }
 
       await this.prisma.organization.update({
@@ -185,7 +176,7 @@ export class OrganizationService {
       });
       if (childrenCount > 0) {
         throw new BusinessException(
-          ErrorCode.INVALID_INPUT,
+          ErrorCode.DATA_STILL_REFERENCED,
           '存在子部门，无法删除',
         );
       }
@@ -196,7 +187,7 @@ export class OrganizationService {
       });
       if (userCount > 0) {
         throw new BusinessException(
-          ErrorCode.INVALID_INPUT,
+          ErrorCode.DATA_STILL_REFERENCED,
           '该部门下存在用户，无法删除',
         );
       }
@@ -216,25 +207,5 @@ export class OrganizationService {
       );
       throw error;
     }
-  }
-
-  // 辅助：获取所有子孙ID
-  private async getAllChildrenIds(id: string): Promise<string[]> {
-    // 简单递归查找，性能一般但够用
-    // 或者取所有数据在内存判断
-    const allOrgs = await this.prisma.organization.findMany({
-      where: { delete: 0 },
-    });
-    const childrenIds: string[] = [];
-    const findChildren = (parentId: string) => {
-      allOrgs.forEach((org) => {
-        if (org.parentId === parentId) {
-          childrenIds.push(org.id);
-          findChildren(org.id);
-        }
-      });
-    };
-    findChildren(id);
-    return childrenIds;
   }
 }
