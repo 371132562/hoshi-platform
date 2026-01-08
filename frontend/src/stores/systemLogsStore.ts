@@ -1,9 +1,9 @@
 import type {
   LogLineItemRes,
   LogUsersResDto,
-  ReadLogReq,
+  ReadLogReqDto,
   SystemLogFilesResDto,
-  UserLogFilesReq
+  UserLogFilesReqDto
 } from 'template-backend/src/types/dto'
 import { create } from 'zustand'
 
@@ -62,15 +62,15 @@ type SystemLogsState = {
   /** 获取系统日志文件列表 */
   listFiles: () => Promise<boolean>
   /** 读取系统日志内容 */
-  readLog: (payload: ReadLogReq) => Promise<boolean>
+  readLog: (payload: ReadLogReqDto) => Promise<boolean>
   /** 带防抖的文件列表刷新 */
   refreshFilesWithDebounce: (force?: boolean) => Promise<boolean>
 
   // ==================== 用户日志方法 ====================
   /** 获取用户日志文件列表 */
-  listUserFiles: (payload: UserLogFilesReq) => Promise<boolean>
+  listUserFiles: (payload: UserLogFilesReqDto) => Promise<boolean>
   /** 读取用户日志内容 */
-  readUserLog: (payload: ReadLogReq & { username: string }) => Promise<boolean>
+  readUserLog: (payload: ReadLogReqDto & { username: string }) => Promise<boolean>
   /** 列出日志用户 */
   listUsers: () => Promise<LogUsersResDto>
   /** 带防抖的用户文件列表刷新 */

@@ -18,7 +18,6 @@ export class LoginReqDto {
   @IsNotEmpty({ message: '密码不能为空' })
   password: string;
 }
-export type LoginReq = InstanceType<typeof LoginReqDto>;
 
 /**
  * 挑战响应类型 - 直接返回加密的随机盐字符串
@@ -50,7 +49,6 @@ export class LoginWithHashReqDto {
   @IsNotEmpty({ message: '加密数据不能为空' })
   encryptedData: string;
 }
-export type LoginWithHashReq = InstanceType<typeof LoginWithHashReqDto>;
 
 /**
  * Token 载荷 DTO

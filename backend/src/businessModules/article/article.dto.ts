@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -67,18 +66,38 @@ export class CreateArticleReqDto {
   @IsNotEmpty({ message: '文章类型不能为空' })
   type: ArticleType;
 }
-export type CreateArticleReq = InstanceType<typeof CreateArticleReqDto>;
 
 /**
  * 更新文章 DTO
- * 使用 PartialType 继承 CreateArticleDto，所有字段自动变为可选
+ * 手动定义所有字段为可选，替代 PartialType
  */
-export class UpdateArticleReqDto extends PartialType(CreateArticleReqDto) {
+export class UpdateArticleReqDto {
   @IsString()
   @IsNotEmpty({ message: '文章ID不能为空' })
   id: string;
+
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  content?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  images?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  deletedImages?: string[];
+
+  @IsOptional()
+  @IsEnum(ArticleType)
+  type?: ArticleType;
 }
-export type UpdateArticleReq = InstanceType<typeof UpdateArticleReqDto>;
 
 /**
  * 文章列表查询 DTO
@@ -104,7 +123,6 @@ export class ArticleListReqDto {
   @IsEnum(ArticleType)
   type?: ArticleType;
 }
-export type ArticleListReq = InstanceType<typeof ArticleListReqDto>;
 
 /**
  * 文章列表响应类型
@@ -124,7 +142,6 @@ export class DeleteArticleReqDto {
   @IsNotEmpty({ message: '文章ID不能为空' })
   id: string;
 }
-export type DeleteArticleReq = InstanceType<typeof DeleteArticleReqDto>;
 
 /**
  * 更新文章排序 DTO
@@ -138,9 +155,6 @@ export class UpsertArticleOrderReqDto {
   @IsString({ each: true })
   articles: string[];
 }
-export type UpsertArticleOrderReq = InstanceType<
-  typeof UpsertArticleOrderReqDto
->;
 
 /**
  * 文章排序 DTO
@@ -161,7 +175,6 @@ export class GetArticlesByPageReqDto {
   @IsNotEmpty({ message: '页面不能为空' })
   page: string;
 }
-export type GetArticlesByPageReq = InstanceType<typeof GetArticlesByPageReqDto>;
 
 /**
  * 根据ID数组获取文章详情 DTO
@@ -171,4 +184,3 @@ export class GetDetailsByIdsReqDto {
   @IsString({ each: true })
   ids: string[];
 }
-export type GetDetailsByIdsReq = InstanceType<typeof GetDetailsByIdsReqDto>;

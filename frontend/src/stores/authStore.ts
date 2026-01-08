@@ -1,4 +1,4 @@
-import type { LoginReq, LoginResDto, UserProfileResDto } from 'template-backend/src/types/dto'
+import type { LoginReqDto, LoginResDto, UserProfileResDto } from 'template-backend/src/types/dto'
 import { ErrorCode } from 'template-backend/src/types/response'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -13,7 +13,7 @@ export type AuthStore = {
   user: UserProfileResDto | null // 当前用户信息
   loading: boolean // 加载状态
   error: string | null // 错误信息
-  login: (data: LoginReq) => Promise<boolean>
+  login: (data: LoginReqDto) => Promise<boolean>
   logout: () => boolean
   fetchProfile: () => Promise<void>
 }

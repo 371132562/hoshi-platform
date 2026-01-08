@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateOrganizationReqDto {
@@ -15,12 +14,22 @@ export class CreateOrganizationReqDto {
   description?: string;
 }
 
-export class UpdateOrganizationReqDto extends PartialType(
-  CreateOrganizationReqDto,
-) {
+export class UpdateOrganizationReqDto {
   @IsString()
   @IsNotEmpty({ message: 'ID不能为空' })
   id: string;
+
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  parentId?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
 
 export interface OrganizationRes {

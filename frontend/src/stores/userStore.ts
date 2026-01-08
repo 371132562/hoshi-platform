@@ -1,8 +1,8 @@
 import type {
-  CreateUserEncryptedReq,
-  DeleteUserReq,
-  ResetUserPasswordEncryptedReq,
-  UpdateUserReq,
+  CreateUserEncryptedReqDto,
+  DeleteUserReqDto,
+  ResetUserPasswordEncryptedReqDto,
+  UpdateUserReqDto,
   UserItemRes,
   UserListResDto
 } from 'template-backend/src/types/dto'
@@ -52,8 +52,8 @@ type UserStoreState = {
   updateUserPageParams: (params: Partial<UserPageParams>) => void
   resetUserSearch: () => void
   createUser: (data: CreateUserFormData) => Promise<boolean>
-  updateUser: (data: UpdateUserReq) => Promise<boolean>
-  deleteUser: (data: DeleteUserReq) => Promise<boolean>
+  updateUser: (data: UpdateUserReqDto) => Promise<boolean>
+  deleteUser: (data: DeleteUserReqDto) => Promise<boolean>
   resetUserPassword: (data: ResetPasswordFormData) => Promise<boolean>
 }
 
@@ -100,7 +100,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
       const salt = decryptSalt(encryptedSalt)
       const encryptedPassword = await encryptData(salt, data.password)
 
-      const encryptedData: CreateUserEncryptedReq = {
+      const encryptedData: CreateUserEncryptedReqDto = {
         ...data,
         encryptedPassword
       }
@@ -163,7 +163,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
       const salt = decryptSalt(encryptedSalt)
       const encryptedNewPassword = await encryptData(salt, data.newPassword)
 
-      const encryptedData: ResetUserPasswordEncryptedReq = {
+      const encryptedData: ResetUserPasswordEncryptedReqDto = {
         id: data.id,
         encryptedNewPassword
       }

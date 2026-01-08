@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import './index.css'
 
 import { ConfigProvider } from 'antd'

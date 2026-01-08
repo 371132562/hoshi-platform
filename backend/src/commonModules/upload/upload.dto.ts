@@ -51,7 +51,6 @@ export class DeleteOrphansReqDto {
   @IsString({ each: true })
   imageIds: string[];
 }
-export type DeleteOrphansReq = InstanceType<typeof DeleteOrphansReqDto>;
 
 /**
  * 删除单张图片 DTO
@@ -60,7 +59,6 @@ export class DeleteImageReqDto {
   @IsString()
   filename: string;
 }
-export type DeleteImageReq = InstanceType<typeof DeleteImageReqDto>;
 
 /**
  * 根据文件名批量删除孤儿图片 DTO
@@ -70,6 +68,3 @@ export class DeleteOrphansByFilenamesReqDto {
   @IsString({ each: true })
   filenames: string[];
 }
-export type DeleteOrphansByFilenamesReq = InstanceType<
-  typeof DeleteOrphansByFilenamesReqDto
->;

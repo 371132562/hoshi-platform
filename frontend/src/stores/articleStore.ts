@@ -2,9 +2,9 @@ import type {
   ArticleItemRes,
   ArticleListResDto,
   ArticleMetaItemRes,
-  CreateArticleReq,
-  DeleteArticleReq,
-  UpdateArticleReq
+  CreateArticleReqDto,
+  DeleteArticleReqDto,
+  UpdateArticleReqDto
 } from 'template-backend/src/types/dto'
 import { create } from 'zustand'
 
@@ -47,9 +47,9 @@ type ArticleStore = {
   fetchArticleList: (params?: Partial<ArticlePageParams>) => Promise<void>
   updateArticlePageParams: (params: Partial<ArticlePageParams>) => void
   resetArticleSearch: () => void
-  createArticle: (data: CreateArticleReq) => Promise<boolean>
-  updateArticle: (data: UpdateArticleReq) => Promise<boolean>
-  deleteArticle: (data: DeleteArticleReq) => Promise<boolean>
+  createArticle: (data: CreateArticleReqDto) => Promise<boolean>
+  updateArticle: (data: UpdateArticleReqDto) => Promise<boolean>
+  deleteArticle: (data: DeleteArticleReqDto) => Promise<boolean>
   getArticleDetail: (id: string) => Promise<void>
   clearArticleDetail: () => void
   getAllArticles: () => Promise<void>
@@ -110,7 +110,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   },
 
   // 创建文章
-  createArticle: async (data: CreateArticleReq) => {
+  createArticle: async (data: CreateArticleReqDto) => {
     set({ submitLoading: true })
     try {
       await http.post(articleCreate, data)
@@ -126,7 +126,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   },
 
   // 更新文章
-  updateArticle: async (data: UpdateArticleReq) => {
+  updateArticle: async (data: UpdateArticleReqDto) => {
     set({ submitLoading: true })
     try {
       await http.post(articleUpdate, data)
@@ -142,7 +142,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   },
 
   // 删除文章
-  deleteArticle: async (data: DeleteArticleReq) => {
+  deleteArticle: async (data: DeleteArticleReqDto) => {
     try {
       await http.post(articleDelete, data)
       const { articles, articlePageParams } = get()

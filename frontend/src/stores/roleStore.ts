@@ -1,10 +1,10 @@
 import type {
-  AssignRoleRoutesReq,
-  CreateRoleReq,
-  DeleteRoleReq,
+  AssignRoleRoutesReqDto,
+  CreateRoleReqDto,
+  DeleteRoleReqDto,
   RoleListItemResDto,
   RoleListResDto,
-  UpdateRoleReq
+  UpdateRoleReqDto
 } from 'template-backend/src/types/dto'
 import { create } from 'zustand'
 
@@ -22,10 +22,10 @@ export const useRoleStore = create<{
   roleList: RoleListItemResDto[]
   loading: boolean
   fetchRoleList: () => Promise<void>
-  createRole: (data: CreateRoleReq) => Promise<boolean>
-  updateRole: (data: UpdateRoleReq) => Promise<boolean>
-  deleteRole: (data: DeleteRoleReq) => Promise<boolean>
-  assignRoleRoutes: (data: AssignRoleRoutesReq) => Promise<boolean>
+  createRole: (data: CreateRoleReqDto) => Promise<boolean>
+  updateRole: (data: UpdateRoleReqDto) => Promise<boolean>
+  deleteRole: (data: DeleteRoleReqDto) => Promise<boolean>
+  assignRoleRoutes: (data: AssignRoleRoutesReqDto) => Promise<boolean>
 }>((set, get) => ({
   roleList: [],
   loading: false,

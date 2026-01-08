@@ -31,7 +31,6 @@ export class ReadLogReqDto {
   @Type(() => Number)
   lines?: number;
 }
-export type ReadLogReq = InstanceType<typeof ReadLogReqDto>;
 
 /**
  * 读取日志请求 DTO
@@ -47,7 +46,6 @@ export class ReadUserLogReqDto extends ReadLogReqDto {
   @IsString()
   username?: string;
 }
-export type ReadUserLogReq = InstanceType<typeof ReadUserLogReqDto>;
 
 /**
  * 日志内容响应类型
@@ -78,7 +76,6 @@ export class UserLogFilesReqDto {
   @IsString()
   username?: string;
 }
-export type UserLogFilesReq = InstanceType<typeof UserLogFilesReqDto>;
 
 /**
  * 日志用户响应 DTO
@@ -166,4 +163,3 @@ export class UserLogsListReqDto {
   @IsString()
   endDate?: string;
 }
-export type UserLogsListReq = InstanceType<typeof UserLogsListReqDto>;

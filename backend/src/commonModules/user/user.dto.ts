@@ -46,7 +46,6 @@ export class UpdateUserReqDto {
   @IsString()
   roleId?: string;
 }
-export type UpdateUserReq = InstanceType<typeof UpdateUserReqDto>;
 
 /**
  * 用户列表查询 DTO
@@ -68,7 +67,6 @@ export class UserListReqDto {
   @IsString()
   roleId?: string;
 }
-export type UserListReq = InstanceType<typeof UserListReqDto>;
 
 /**
  * 用户列表响应类型（分页）
@@ -88,7 +86,6 @@ export class DeleteUserReqDto {
   @IsNotEmpty({ message: '用户ID不能为空' })
   id: string;
 }
-export type DeleteUserReq = InstanceType<typeof DeleteUserReqDto>;
 
 /**
  * 创建用户（加密）DTO
@@ -118,9 +115,6 @@ export class CreateUserEncryptedReqDto {
   @IsNotEmpty({ message: '角色不能为空' })
   roleId: string;
 }
-export type CreateUserEncryptedReq = InstanceType<
-  typeof CreateUserEncryptedReqDto
->;
 
 /**
  * 重置用户密码（加密）DTO
@@ -134,6 +128,3 @@ export class ResetUserPasswordEncryptedReqDto {
   @IsNotEmpty({ message: '加密新密码不能为空' })
   encryptedNewPassword: string;
 }
-export type ResetUserPasswordEncryptedReq = InstanceType<
-  typeof ResetUserPasswordEncryptedReqDto
->;
