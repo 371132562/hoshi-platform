@@ -2,36 +2,36 @@
   "compilerOptions": {
     /**
      * 路径别名配置
-     * 作用：让 TypeScript 编译器和 IDE 理解 @/* 和 @prisma/* 等别名
+     * 作用：让 TypeScript 编译器和 IDE 理解 @/* 等路径别名
      * 注意：此配置仅影响编译时类型检查，运行时解析需要配合以下工具：
      *   - 开发模式 (nest start): NestJS CLI + SWC 会自动处理
      *   - 生产模式 (node dist/main): 需要 -r tsconfig-paths/register
      */
     "paths": {
-      "@/*": ["src/*"],           // @/xxx -> src/xxx（业务代码）
-      "@prisma/generated/client": ["prisma/generated/client"]   // 精确匹配，避免误伤 node_modules 中的 @prisma 包
+      "@/*": ["src/*"],
+      "@prisma/generated/client": ["prisma/generated/client"]
     },
 
-    // ========== 模块与输出配置 ==========
-    "module": "commonjs",         // 输出 CommonJS 模块格式（Node.js 标准）
-    "target": "ES2023",           // 编译目标 ES 版本
-    "outDir": "./dist",           // 编译产物输出目录
-    "baseUrl": "./",              // paths 别名的基准目录（相对于 tsconfig.json）
-    "declaration": true,          // 生成 .d.ts 类型声明文件
-    "sourceMap": true,            // 生成 source map 便于调试
-    "removeComments": true,       // 编译时移除注释
+    // ========== 编译目标与模块配置 ==========
+    "target": "ES2022",       // 编译目标，与 .swcrc 保持一致
+    "module": "CommonJS",     // 输出 CommonJS 模块格式（Node.js 标准）
+    "baseUrl": "./",          // paths 别名的基准目录
+    "outDir": "./dist",       // 编译产物输出目录
+    "declaration": true,      // 生成 .d.ts 类型声明文件
+    "sourceMap": true,        // 生成 source map，便于调试
+    "removeComments": true,   // 编译时移除注释
 
     // ========== 装饰器支持（NestJS 必需）==========
     "emitDecoratorMetadata": true,      // 生成装饰器元数据
     "experimentalDecorators": true,     // 启用实验性装饰器语法
 
     // ========== 模块导入兼容性 ==========
-    "esModuleInterop": true,            // 允许 import x from 'y'（无需 * as）
+    "esModuleInterop": true,            // 允许 import x from 'y' 导入 CommonJS 模块
     "allowSyntheticDefaultImports": true, // 允许从无默认导出的模块默认导入
 
     // ========== 性能优化 ==========
-    "incremental": true,          // 增量编译，加快后续编译速度
-    "skipLibCheck": true,         // 跳过 node_modules 类型检查
+    "incremental": true,      // 增量编译，加快后续编译速度
+    "skipLibCheck": true,     // 跳过 node_modules 类型检查
 
     // ========== 类型检查严格度 ==========
     "strictNullChecks": true,             // 严格空值检查

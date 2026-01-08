@@ -1,10 +1,19 @@
 import 'dotenv/config';
 
 import { NestFactory } from '@nestjs/core';
+import { Prisma } from '@prisma/generated/client';
 import { json, urlencoded } from 'express';
 
 import { AppModule } from './app.module';
 import { WinstonLoggerService } from './common/services/winston-logger.service';
+
+/**
+ * 配置 Prisma.Decimal 的 JSON 序列化行为
+ * 将 Decimal 实例序列化为 string，保持精度并便于前端消费
+ */
+Prisma.Decimal.prototype.toJSON = function () {
+  return this.toString();
+};
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

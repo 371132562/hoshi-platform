@@ -1,4 +1,13 @@
 {
+  /**
+   * TypeScript 项目引用配置
+   * 采用"项目引用"模式将配置拆分为：
+   * - tsconfig.app.json：前端应用代码（src 目录）
+   * - tsconfig.node.json：Node.js 环境代码（vite.config.ts 等）
+   */
   "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }

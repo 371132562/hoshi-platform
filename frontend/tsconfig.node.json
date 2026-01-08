@@ -1,24 +1,30 @@
 {
+  /**
+   * Node.js 环境代码的 TypeScript 配置
+   * 适用于 vite.config.ts 等构建工具配置文件
+   * 与 tsconfig.app.json 分离是因为构建工具运行在 Node.js 环境，不需要 DOM 类型
+   */
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-    "target": "ES2022",
-    "lib": ["ES2023"],
-    "module": "ESNext",
-    "skipLibCheck": true,
+    // ========== 编译目标与模块配置 ==========
+    "target": "ES2022",             // 编译目标，Node.js 22 完整支持
+    "lib": ["ES2022"],              // 仅 ES 标准库，无 DOM
+    "module": "ESNext",             // 模块系统
+    "skipLibCheck": true,           // 跳过 node_modules 类型检查
 
-    /* Bundler mode */
-    "moduleResolution": "bundler",
+    // ========== Bundler 模式配置 ==========
+    "moduleResolution": "bundler",  // bundler 模块解析策略
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
 
-    /* Linting */
+    // ========== 类型检查严格度 ==========
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo"
   },
   "include": ["vite.config.ts"]
 }

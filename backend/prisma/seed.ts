@@ -5,10 +5,10 @@
  */
 
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import * as bcrypt from 'bcrypt';
 import * as path from 'path';
 
 import { PrismaClient } from './generated/client';
-import { generateUsers } from './initialData/authData';
 
 // 解析数据库 URL
 const rawUrl = process.env.DATABASE_URL ?? 'file:./db/local.db';
@@ -21,6 +21,32 @@ if (!path.isAbsolute(url)) {
 
 const adapter = new PrismaBetterSqlite3({ url });
 const prisma = new PrismaClient({ adapter });
+
+// 初始超管用户数据
+const initialUsers = [
+  {
+    username: 'admin',
+    name: '超级管理员',
+    phone: '',
+    password: '88888888',
+  },
+];
+
+// 生成加密密码
+const generatePassword = async (password: string) => {
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
+};
+
+// 生成加密后的用户数据
+const generateEncryptedUsers = async () => {
+  return Promise.all(
+    initialUsers.map(async (user) => ({
+      ...user,
+      password: await generatePassword(user.password),
+    })),
+  );
+};
 
 /**
  * 认证相关数据初始化（角色和用户）
@@ -51,7 +77,7 @@ async function seedAuthData() {
     console.log('超管角色已创建');
   }
 
-  const encryptedUsers = await generateUsers();
+  const encryptedUsers = await generateEncryptedUsers();
   for (const user of encryptedUsers) {
     const existingUser = await prisma.user.findFirst({
       where: { username: user.username, delete: 0 },

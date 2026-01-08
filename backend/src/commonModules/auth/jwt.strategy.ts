@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
-import { TokenPayloadDto } from './auth.dto';
+import { TokenPayloadResDto } from './auth.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @param payload JWT payload
    * @returns 用户信息
    */
-  async validate(payload: TokenPayloadDto) {
+  async validate(payload: TokenPayloadResDto) {
     try {
       // 验证用户是否仍然存在且未删除
       const user = await this.prisma.user.findFirst({

@@ -1,31 +1,40 @@
 {
+  /**
+   * 前端应用代码的 TypeScript 配置
+   * 适用于 src 目录下的所有 React 组件和业务代码
+   */
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
+    // ========== 编译目标与模块配置 ==========
+    "target": "ES2022",             // 编译目标，现代浏览器完整支持
+    "lib": ["ES2022", "DOM", "DOM.Iterable"], // ES2022 + 浏览器 DOM API
+    "module": "ESNext",             // 模块系统，由 Vite 处理打包
+    "skipLibCheck": true,           // 跳过 node_modules 类型检查
+    "useDefineForClassFields": true, // 使用 ES 标准的类字段定义行为
 
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
+    /**
+     * Bundler 模式配置
+     * 专为 Vite 等现代打包工具优化
+     */
+    "moduleResolution": "bundler",  // bundler 模块解析策略
+    "allowImportingTsExtensions": true, // 允许导入 .ts/.tsx 扩展名
+    "isolatedModules": true,        // 强制每个文件作为独立模块
+    "moduleDetection": "force",     // 强制检测模块类型
+    "noEmit": true,                 // 不输出编译产物（由 Vite 负责）
+    "jsx": "react-jsx",             // React 17+ 新 JSX 转换
 
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    // ========== 类型检查严格度 ==========
+    "strict": true,                 // 启用所有严格类型检查
+    "noUnusedLocals": true,         // 检查未使用的局部变量
+    "noUnusedParameters": true,     // 检查未使用的函数参数
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
+    // ========== 路径别名 ==========
     "paths": {
-      "@/*": ["./src/*"],
-      "template-backend/*": ["../backend/*"] // <--- 根据你的 monorepo 结构调整路径
-    }
+      "@/*": ["./src/*"],           // @/* 指向 src 目录
+      "template-backend/*": ["../backend/*"] // 引用后端类型定义
+    },
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo"
   },
   "include": ["src"]
 }
