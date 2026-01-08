@@ -15,14 +15,30 @@ import {
 import { FC, useEffect, useMemo } from 'react'
 
 import { useSystemLogsStore } from '@/stores/systemLogsStore'
+import { LogFileLevel } from '@/types'
 import { dayjs } from '@/utils/dayjs'
 
 const { Text } = Typography
 
 type LogType = 'system' | 'user'
 
-interface LogPanelProps {
+type LogPanelProps = {
   type: LogType
+}
+
+/** 日志等级选项配置 */
+const LOG_LEVEL_OPTIONS: { label: string; value: LogFileLevel }[] = [
+  { label: 'INFO', value: 'info' },
+  { label: 'WARN', value: 'warn' },
+  { label: 'ERROR', value: 'error' }
+]
+
+/** 日志等级颜色映射 */
+const LOG_LEVEL_COLOR: Record<string, string> = {
+  info: 'blue',
+  warn: 'orange',
+  error: 'red',
+  debug: 'gray'
 }
 
 const LogPanel: FC<LogPanelProps> = ({ type }) => {
@@ -33,6 +49,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
   const selectedUsername = Form.useWatch('username', form)
   const keyword = Form.useWatch('keyword', form)
   const timeRange = Form.useWatch('timeRange', form)
+  const selectedLevel = Form.useWatch<LogFileLevel>('level', form)
 
   // Store actions and state
   const {
@@ -105,8 +122,14 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
     let data = rawData.map((l, idx) => ({
       key: `${idx}`,
       ts: l.ts,
+      level: l.level || 'info',
       message: l.message
     }))
+
+    // Filter by log level
+    if (selectedLevel) {
+      data = data.filter(item => item.level === selectedLevel)
+    }
 
     // Filter by keyword
     if (keyword?.trim()) {
@@ -127,7 +150,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
     }
 
     return data
-  }, [rawData, keyword, timeRange, selectedFilename])
+  }, [rawData, keyword, timeRange, selectedFilename, selectedLevel])
 
   // Columns
   const columns = useMemo(
@@ -138,6 +161,15 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
         key: 'ts',
         width: 180,
         render: (text: string) => <Tag color="blue">{text}</Tag>
+      },
+      {
+        title: '等级',
+        dataIndex: 'level',
+        key: 'level',
+        width: 80,
+        render: (level: string) => (
+          <Tag color={LOG_LEVEL_COLOR[level] || 'default'}>{level.toUpperCase()}</Tag>
+        )
       },
       {
         title: '内容',
@@ -199,6 +231,15 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
           allowClear
         />
 
+        <Select
+          placeholder="日志等级"
+          style={{ width: 120 }}
+          options={LOG_LEVEL_OPTIONS}
+          value={selectedLevel}
+          onChange={val => form.setFieldValue('level', val)}
+          allowClear
+        />
+
         <Input
           prefix={<SearchOutlined className="text-gray-400" />}
           placeholder="输入关键词搜索"
@@ -236,6 +277,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
         <Form.Item name="filename" />
         <Form.Item name="keyword" />
         <Form.Item name="timeRange" />
+        <Form.Item name="level" />
       </Form>
 
       {/* Content Area */}

@@ -108,9 +108,8 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
       const res = await request.post<SystemLogFilesResDto>(systemLogsListFiles, {})
       set({ files: res.data.files })
       return true
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : '获取日志文件失败'
-      console.error(msg)
+    } catch (error) {
+      console.error('获取日志文件失败:', error)
       return false
     } finally {
       set({ filesLoading: false })
@@ -127,9 +126,8 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
       const res = await request.post<LogLineItem[]>(systemLogsRead, payload)
       set({ readResult: res.data })
       return true
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : '读取日志失败'
-      console.error(msg)
+    } catch (error) {
+      console.error('读取日志失败:', error)
       return false
     } finally {
       set({ contentLoading: false })
@@ -165,9 +163,8 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
       const res = await request.post<SystemLogFilesResDto>(systemUserLogsListFiles, payload)
       set({ userFiles: res.data.files })
       return true
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : '获取用户日志文件失败'
-      console.error(msg)
+    } catch (error) {
+      console.error('获取用户日志文件失败:', error)
       return false
     } finally {
       set({ userFilesLoading: false })
@@ -184,9 +181,8 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
       const res = await request.post<LogLineItem[]>(systemUserLogsRead, payload)
       set({ readUserResult: res.data })
       return true
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : '读取用户日志失败'
-      console.error(msg)
+    } catch (error) {
+      console.error('读取用户日志失败:', error)
       return false
     } finally {
       set({ contentLoading: false })
