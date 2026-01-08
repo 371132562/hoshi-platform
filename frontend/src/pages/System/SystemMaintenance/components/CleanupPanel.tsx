@@ -12,10 +12,10 @@ import {
   Checkbox,
   Empty,
   Image,
-  List,
   message,
   Modal,
   Space,
+  Spin,
   Statistic,
   Typography
 } from 'antd'
@@ -159,25 +159,20 @@ const CleanupPanel: FC = () => {
           )
         }
       >
-        <List
-          grid={{ gutter: 24, xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
-          dataSource={orphanImages}
-          loading={scanning}
-          locale={{
-            emptyText: (
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={
-                  <span className="text-gray-400">
-                    {scanning ? '正在扫描中...' : '暂无孤立图片，系统非常干净 ✨'}
-                  </span>
-                }
-              />
-            )
-          }}
-          renderItem={filename => (
-            <List.Item>
+        {scanning ? (
+          <div className="flex h-64 items-center justify-center">
+            <Spin tip="正在扫描中..." />
+          </div>
+        ) : orphanImages.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={<span className="text-gray-400">暂无孤立图片，系统非常干净 ✨</span>}
+          />
+        ) : (
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {orphanImages.map(filename => (
               <div
+                key={filename}
                 className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all duration-200 ${
                   selected.includes(filename)
                     ? 'border-blue-500 bg-blue-50'
@@ -219,9 +214,9 @@ const CleanupPanel: FC = () => {
                   </Text>
                 </div>
               </div>
-            </List.Item>
-          )}
-        />
+            ))}
+          </div>
+        )}
       </Card>
 
       {/* 提示 Alert */}

@@ -30,7 +30,6 @@ const UserManagement: React.FC = () => {
   const loading = useUserStore(s => s.loading)
   const fetchUserList = useUserStore(s => s.fetchUserList)
   const updateUserPageParams = useUserStore(s => s.updateUserPageParams)
-  const handleUserPageChange = useUserStore(s => s.handleUserPageChange)
   const resetUserSearch = useUserStore(s => s.resetUserSearch)
   const createUser = useUserStore(s => s.createUser)
   const updateUser = useUserStore(s => s.updateUser)
@@ -40,9 +39,8 @@ const UserManagement: React.FC = () => {
   const organizationList = useOrganizationStore(s => s.organizationList)
   const fetchOrganizationList = useOrganizationStore(s => s.fetchOrganizationList)
 
-  // 搜索表单状态
-  const [searchName, setSearchName] = useState('')
-  const [searchRoleId, setSearchRoleId] = useState<string | undefined>(undefined)
+  // 搜索表单实例
+  const [searchForm] = Form.useForm()
 
   // 弹窗状态
   const [modalOpen, setModalOpen] = useState(false)
@@ -53,20 +51,26 @@ const UserManagement: React.FC = () => {
 
   // 初始化加载
   useEffect(() => {
+    // 从 Store 恢复筛选条件
+    const { name, roleId } = userPageParams
+    searchForm.setFieldsValue({
+      name: name || '',
+      roleId: roleId || undefined
+    })
     fetchUserList()
     fetchRoleList()
     fetchOrganizationList()
   }, [])
 
-  // 搜索处理
-  const onSearch = () => {
-    updateUserPageParams({ page: 1, name: searchName || undefined, roleId: searchRoleId })
+  // 搜索提交
+  const handleSearchSubmit = () => {
+    const { name, roleId } = searchForm.getFieldsValue()
+    updateUserPageParams({ page: 1, name: name || undefined, roleId })
   }
 
   // 重置搜索
-  const onReset = () => {
-    setSearchName('')
-    setSearchRoleId(undefined)
+  const handleResetSearch = () => {
+    searchForm.resetFields()
     resetUserSearch()
   }
 
@@ -191,52 +195,57 @@ const UserManagement: React.FC = () => {
   return (
     <div className="w-full">
       {/* 搜索区域 */}
-      <div className="mb-4 flex items-center gap-3">
-        <Input
-          placeholder="请输入姓名搜索"
-          value={searchName}
-          onChange={e => setSearchName(e.target.value)}
-          style={{ width: 180 }}
-          allowClear
-          onPressEnter={onSearch}
-          onClear={() => updateUserPageParams({ page: 1, name: undefined, roleId: searchRoleId })}
-        />
-        <Select
-          placeholder="请选择角色搜索"
-          value={searchRoleId}
-          onChange={value => {
-            setSearchRoleId(value)
-            updateUserPageParams({ page: 1, name: searchName || undefined, roleId: value })
-          }}
-          onClear={() => {
-            setSearchRoleId(undefined)
-            updateUserPageParams({ page: 1, name: searchName || undefined, roleId: undefined })
-          }}
-          allowClear
-          style={{ width: 180 }}
+      <div className="mb-4 flex flex-wrap items-start gap-3">
+        <Form
+          form={searchForm}
+          layout="inline"
+          onFinish={handleSearchSubmit}
         >
-          {roleList.map(r => (
-            <Select.Option
-              key={r.id}
-              value={r.id}
+          <Form.Item name="name">
+            <Input
+              placeholder="请输入姓名搜索"
+              style={{ width: 180 }}
+              allowClear
+              onPressEnter={handleSearchSubmit}
+              onClear={handleSearchSubmit}
+            />
+          </Form.Item>
+          <Form.Item name="roleId">
+            <Select
+              placeholder="请选择角色搜索"
+              allowClear
+              style={{ width: 180 }}
+              onChange={() => setTimeout(handleSearchSubmit, 0)}
+              onClear={() => setTimeout(handleSearchSubmit, 0)}
             >
-              {r.name === SYSTEM_ADMIN_ROLE_NAME ? '超级管理员' : r.name}
-            </Select.Option>
-          ))}
-        </Select>
-        <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          onClick={onSearch}
-        >
-          搜索
-        </Button>
-        <Button
-          icon={<UndoOutlined />}
-          onClick={onReset}
-        >
-          重置
-        </Button>
+              {roleList.map(r => (
+                <Select.Option
+                  key={r.id}
+                  value={r.id}
+                >
+                  {r.name === SYSTEM_ADMIN_ROLE_NAME ? '超级管理员' : r.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Space>
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon={<SearchOutlined />}
+              >
+                搜索
+              </Button>
+              <Button
+                icon={<UndoOutlined />}
+                onClick={handleResetSearch}
+              >
+                重置
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
         <div className="flex-1" />
         <Button
           type="primary"
@@ -256,7 +265,7 @@ const UserManagement: React.FC = () => {
           current: userPageParams.page,
           pageSize: userPageParams.pageSize,
           total: userTotal,
-          onChange: handleUserPageChange,
+          onChange: (page, pageSize) => updateUserPageParams({ page, pageSize }),
           showSizeChanger: true,
           showTotal: total => `共 ${total} 条`
         }}

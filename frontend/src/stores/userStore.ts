@@ -34,11 +34,10 @@ type ResetPasswordFormData = {
   newPassword: string
 }
 
-// 用户列表查询参数类型
+// 用户列表查询参数类型（分页 + 搜索统一对象）
 type UserPageParams = {
   page?: number
   pageSize?: number
-} & {
   name?: string
   roleId?: string
 }
@@ -51,8 +50,6 @@ type UserStoreState = {
   loading: boolean
   fetchUserList: (params?: Partial<UserPageParams>) => Promise<void>
   updateUserPageParams: (params: Partial<UserPageParams>) => void
-  handleUserPageChange: (page: number, pageSize?: number) => void
-  handleUserSearch: () => void
   resetUserSearch: () => void
   createUser: (data: CreateUserFormData) => Promise<boolean>
   updateUser: (data: UpdateUserReq) => Promise<boolean>
@@ -83,22 +80,10 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
     }
   },
 
-  // 更新分页/筛选参数并刷新列表
+  // 更新分页/筛选参数并刷新列表（统一入口，涵盖分页变化、搜索等场景）
   updateUserPageParams: (params: Partial<UserPageParams>) => {
     const merged = { ...get().userPageParams, ...params }
     get().fetchUserList(merged)
-  },
-
-  // 处理分页变化
-  handleUserPageChange: (page: number, pageSize?: number) => {
-    const update: Partial<UserPageParams> = { page }
-    if (pageSize !== undefined) update.pageSize = pageSize
-    get().updateUserPageParams(update)
-  },
-
-  // 处理搜索（重置到第一页）
-  handleUserSearch: () => {
-    get().updateUserPageParams({ page: 1 })
   },
 
   // 重置搜索条件

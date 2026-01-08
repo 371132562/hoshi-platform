@@ -21,14 +21,19 @@ import {
 } from '@/services/apis'
 import http from '@/services/base'
 
+// 文章列表查询参数类型（分页 + 搜索统一对象）
+type ArticlePageParams = {
+  page?: number
+  pageSize?: number
+  title?: string
+}
+
 type ArticleStore = {
   // 状态
   articles: ArticleMetaItemRes[]
   total: number
-  currentPage: number
-  pageSize: number
+  articlePageParams: ArticlePageParams
   loading: boolean
-  searchTitle: string
   articleDetail: ArticleItemRes | null
   detailLoading: boolean
   submitLoading: boolean
@@ -39,8 +44,9 @@ type ArticleStore = {
   previewLoading: boolean
 
   // 操作
-  getArticleList: (page?: number, pageSize?: number, title?: string) => Promise<void>
-  setSearchTitle: (title: string) => void
+  fetchArticleList: (params?: Partial<ArticlePageParams>) => Promise<void>
+  updateArticlePageParams: (params: Partial<ArticlePageParams>) => void
+  resetArticleSearch: () => void
   createArticle: (data: CreateArticleReq) => Promise<boolean>
   updateArticle: (data: UpdateArticleReq) => Promise<boolean>
   deleteArticle: (data: DeleteArticleReq) => Promise<boolean>
@@ -56,10 +62,8 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   // 初始状态
   articles: [],
   total: 0,
-  currentPage: 1,
-  pageSize: 10,
+  articlePageParams: { page: 1, pageSize: 10 },
   loading: false,
-  searchTitle: '',
   articleDetail: null,
   detailLoading: false,
   submitLoading: false,
@@ -69,25 +73,21 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   previewArticles: [],
   previewLoading: false,
 
-  // 获取文章列表
-  getArticleList: async (page = 1, pageSize = 10, title) => {
-    const searchTitle = title !== undefined ? title : get().searchTitle
-
-    set({ loading: true })
+  // 获取文章列表（支持分页和筛选）
+  fetchArticleList: async (params?: Partial<ArticlePageParams>) => {
+    const merged = { ...get().articlePageParams, ...params }
+    set({ loading: true, articlePageParams: merged })
     try {
-      // 明确响应数据类型：分页列表
-      const response = await http.post<ArticleListResDto>(articleList, {
-        page,
-        pageSize,
-        title: searchTitle
-      })
-
+      const response = await http.post<ArticleListResDto>(articleList, merged)
       if (response && response.data) {
         set({
           articles: response.data.list,
           total: response.data.total,
-          currentPage: page,
-          pageSize
+          articlePageParams: {
+            ...merged,
+            page: response.data.page,
+            pageSize: response.data.pageSize
+          }
         })
       }
     } catch (error) {
@@ -98,9 +98,15 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
-  // 设置搜索标题
-  setSearchTitle: (title: string) => {
-    set({ searchTitle: title })
+  // 更新分页/筛选参数并刷新列表（统一入口）
+  updateArticlePageParams: (params: Partial<ArticlePageParams>) => {
+    const merged = { ...get().articlePageParams, ...params }
+    get().fetchArticleList(merged)
+  },
+
+  // 重置搜索条件
+  resetArticleSearch: () => {
+    get().updateArticlePageParams({ page: 1, title: undefined })
   },
 
   // 创建文章
@@ -108,8 +114,8 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ submitLoading: true })
     try {
       await http.post(articleCreate, data)
-      await get().getArticleList(1, get().pageSize, '') // 创建成功后回到第一页并清空搜索条件
-      set({ searchTitle: '' })
+      // 创建成功后回到第一页并清空搜索条件
+      await get().fetchArticleList({ page: 1, title: undefined })
       return true
     } catch (error) {
       console.error('创建文章失败:', error)
@@ -124,7 +130,8 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ submitLoading: true })
     try {
       await http.post(articleUpdate, data)
-      await get().getArticleList(get().currentPage, get().pageSize) // 更新成功后刷新当前页
+      // 更新成功后刷新当前页
+      await get().fetchArticleList()
       return true
     } catch (error) {
       console.error('更新文章失败:', error)
@@ -138,13 +145,14 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   deleteArticle: async (data: DeleteArticleReq) => {
     try {
       await http.post(articleDelete, data)
-      const { articles, currentPage, pageSize } = get()
+      const { articles, articlePageParams } = get()
+      const currentPage = articlePageParams.page || 1
       // 删除成功后，处理分页逻辑
       // 当删除的是当前页的最后一条数据时，需要返回上一页
       if (articles.length === 1 && currentPage > 1) {
-        await get().getArticleList(currentPage - 1, pageSize)
+        await get().fetchArticleList({ page: currentPage - 1 })
       } else {
-        await get().getArticleList(currentPage, pageSize) // 否则刷新当前页
+        await get().fetchArticleList()
       }
       return true
     } catch (error) {

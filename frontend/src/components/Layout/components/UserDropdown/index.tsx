@@ -2,10 +2,10 @@ import { KeyOutlined, LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-d
 import { Avatar, Dropdown, MenuProps, message, Tag } from 'antd'
 import { FC, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'
 
 import ResetPasswordModal from '@/components/ResetPasswordModal'
 import { useAuthStore } from '@/stores/authStore'
-import { SYSTEM_ADMIN_ROLE_NAME } from '@/types'
 
 /**
  * 用户头像下拉菜单组件

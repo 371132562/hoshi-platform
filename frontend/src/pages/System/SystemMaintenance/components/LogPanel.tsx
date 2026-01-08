@@ -4,7 +4,6 @@ import {
   Card,
   DatePicker,
   Empty,
-  Form,
   Input,
   Select,
   Skeleton,
@@ -12,7 +11,8 @@ import {
   Tag,
   Typography
 } from 'antd'
-import { FC, useEffect, useMemo } from 'react'
+import type { Dayjs } from 'dayjs'
+import { FC, useEffect, useMemo, useState } from 'react'
 import type { LogFileLevel } from 'template-backend/src/types/dto'
 
 import { useSystemLogsStore } from '@/stores/systemLogsStore'
@@ -42,14 +42,12 @@ const LOG_LEVEL_COLOR: Record<string, string> = {
 }
 
 const LogPanel: FC<LogPanelProps> = ({ type }) => {
-  const [form] = Form.useForm()
-
-  // Watch form values for real-time filtering
-  const selectedFilename = Form.useWatch('filename', form)
-  const selectedUsername = Form.useWatch('username', form)
-  const keyword = Form.useWatch('keyword', form)
-  const timeRange = Form.useWatch('timeRange', form)
-  const selectedLevel = Form.useWatch<LogFileLevel>('level', form)
+  // State for filtering
+  const [selectedFilename, setSelectedFilename] = useState<string>()
+  const [selectedUsername, setSelectedUsername] = useState<string>()
+  const [keyword, setKeyword] = useState<string>()
+  const [timeRange, setTimeRange] = useState<[Dayjs | null, Dayjs | null] | null>()
+  const [selectedLevel, setSelectedLevel] = useState<LogFileLevel>()
 
   // Store actions and state
   const {
@@ -88,8 +86,8 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
 
   // Handle User Change
   const handleUserChange = async (username: string | undefined) => {
-    form.setFieldValue('username', username)
-    form.setFieldValue('filename', undefined)
+    setSelectedUsername(username)
+    setSelectedFilename(undefined)
     if (username) {
       await refreshUserFilesWithDebounce(username, true)
     }
@@ -227,7 +225,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
           loading={type === 'system' ? filesLoading : userFilesLoading}
           disabled={type === 'user' && !selectedUsername}
           value={selectedFilename}
-          onChange={val => form.setFieldValue('filename', val)}
+          onChange={val => setSelectedFilename(val)}
           allowClear
         />
 
@@ -236,7 +234,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
           style={{ width: 120 }}
           options={LOG_LEVEL_OPTIONS}
           value={selectedLevel}
-          onChange={val => form.setFieldValue('level', val)}
+          onChange={val => setSelectedLevel(val)}
           allowClear
         />
 
@@ -246,7 +244,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
           allowClear
           style={{ width: 220 }}
           value={keyword}
-          onChange={e => form.setFieldValue('keyword', e.target.value)}
+          onChange={e => setKeyword(e.target.value)}
         />
 
         <DatePicker.RangePicker
@@ -254,13 +252,17 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
           placeholder={['开始时间', '结束时间']}
           style={{ width: 380 }}
           value={timeRange}
-          onChange={val => form.setFieldValue('timeRange', val)}
+          onChange={val => setTimeRange(val)}
         />
 
         <Button
           icon={<ReloadOutlined />}
           onClick={() => {
-            form.resetFields()
+            setSelectedUsername(undefined)
+            setSelectedFilename(undefined)
+            setKeyword(undefined)
+            setTimeRange(null)
+            setSelectedLevel(undefined)
             if (type === 'system') refreshFilesWithDebounce(true)
             else if (selectedUsername) refreshUserFilesWithDebounce(selectedUsername, true)
           }}
@@ -268,17 +270,6 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
           重置
         </Button>
       </div>
-
-      <Form
-        form={form}
-        className="hidden"
-      >
-        <Form.Item name="username" />
-        <Form.Item name="filename" />
-        <Form.Item name="keyword" />
-        <Form.Item name="timeRange" />
-        <Form.Item name="level" />
-      </Form>
 
       {/* Content Area */}
       <Card

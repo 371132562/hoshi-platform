@@ -1,6 +1,5 @@
 import { PlusOutlined, SearchOutlined, UndoOutlined } from '@ant-design/icons'
-import { Button, Input, message, Popconfirm, Space, Table } from 'antd'
-import type { TablePaginationConfig } from 'antd/es/table/interface'
+import { Button, Form, Input, message, Popconfirm, Space, Table } from 'antd'
 import React, { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router'
 import type { ArticleMetaItemRes } from 'template-backend/src/types/dto'
@@ -15,32 +14,33 @@ const ArticleManagement: React.FC = () => {
   // Store 取值
   const articles = useArticleStore(state => state.articles)
   const total = useArticleStore(state => state.total)
-  const currentPage = useArticleStore(state => state.currentPage)
-  const pageSize = useArticleStore(state => state.pageSize)
+  const articlePageParams = useArticleStore(state => state.articlePageParams)
   const loading = useArticleStore(state => state.loading)
-  const searchTitle = useArticleStore(state => state.searchTitle)
-  const getArticleList = useArticleStore(state => state.getArticleList)
-  const setSearchTitle = useArticleStore(state => state.setSearchTitle)
+  const fetchArticleList = useArticleStore(state => state.fetchArticleList)
+  const updateArticlePageParams = useArticleStore(state => state.updateArticlePageParams)
+  const resetArticleSearch = useArticleStore(state => state.resetArticleSearch)
   const deleteArticle = useArticleStore(state => state.deleteArticle)
+
+  // Form 实例
+  const [searchForm] = Form.useForm()
 
   // React Hooks: useEffect
   useEffect(() => {
-    getArticleList(1, 10, '')
+    // 初始化时从 Store 恢复筛选条件
+    searchForm.setFieldsValue({ title: articlePageParams.title || '' })
+    fetchArticleList()
   }, [])
 
-  const onSearch = () => {
-    getArticleList(1, pageSize, searchTitle)
+  // 搜索提交
+  const handleSearchSubmit = () => {
+    const { title } = searchForm.getFieldsValue()
+    updateArticlePageParams({ page: 1, title: title || undefined })
   }
 
-  const onReset = () => {
-    setSearchTitle('')
-    getArticleList(1, pageSize, '')
-  }
-
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    const current = pagination.current ?? 1
-    const size = pagination.pageSize ?? pageSize
-    getArticleList(current, size)
+  // 重置搜索
+  const handleResetSearch = () => {
+    searchForm.resetFields()
+    resetArticleSearch()
   }
 
   // Const 变量 - 派生变量
@@ -109,32 +109,39 @@ const ArticleManagement: React.FC = () => {
   return (
     <div className="w-full">
       {/* 搜索区域 */}
-      <div className="mb-4 flex items-center gap-3">
-        <Input
-          placeholder="请输入标题搜索"
-          value={searchTitle}
-          onChange={e => setSearchTitle(e.target.value)}
-          style={{ width: 180 }}
-          allowClear
-          onPressEnter={onSearch}
-          onClear={() => {
-            setSearchTitle('')
-            getArticleList(1, pageSize, '')
-          }}
-        />
-        <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          onClick={onSearch}
+      <div className="mb-4 flex flex-wrap items-start gap-3">
+        <Form
+          form={searchForm}
+          layout="inline"
+          onFinish={handleSearchSubmit}
         >
-          搜索
-        </Button>
-        <Button
-          icon={<UndoOutlined />}
-          onClick={onReset}
-        >
-          重置
-        </Button>
+          <Form.Item name="title">
+            <Input
+              placeholder="请输入标题搜索"
+              style={{ width: 180 }}
+              allowClear
+              onPressEnter={handleSearchSubmit}
+              onClear={handleSearchSubmit}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Space>
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon={<SearchOutlined />}
+              >
+                搜索
+              </Button>
+              <Button
+                icon={<UndoOutlined />}
+                onClick={handleResetSearch}
+              >
+                重置
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
         <div className="flex-1" />
         <Button
           type="primary"
@@ -150,13 +157,15 @@ const ArticleManagement: React.FC = () => {
         rowKey="id"
         pagination={{
           total,
-          current: currentPage,
-          pageSize,
+          current: articlePageParams.page,
+          pageSize: articlePageParams.pageSize,
           showSizeChanger: true,
           showTotal: total => `共 ${total} 条`
         }}
         loading={loading}
-        onChange={handleTableChange}
+        onChange={pagination =>
+          updateArticlePageParams({ page: pagination.current, pageSize: pagination.pageSize })
+        }
       />
     </div>
   )
