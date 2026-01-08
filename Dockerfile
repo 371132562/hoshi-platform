@@ -36,7 +36,7 @@ WORKDIR /app/backend
 
 # 生成 Prisma 客户端
 # 这将在 backend/node_modules/.prisma 目录下生成客户端
-RUN npx prisma generate
+# RUN npx prisma generate
 
 # 构建后端项目
 RUN pnpm build

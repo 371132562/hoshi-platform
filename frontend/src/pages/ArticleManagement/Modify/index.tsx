@@ -1,7 +1,6 @@
 import { Button, Form, Input, message, Modal, Skeleton, Space } from 'antd'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { ArticleType } from 'template-backend/src/types/dto'
 
 // 引入自定义的富文本编辑器组件和文章状态管理 store
 import RichEditor, { type RichEditorRef } from '@/components/RichEditor'
@@ -9,7 +8,7 @@ import useArticleStore from '@/stores/articleStore'
 import { extractFilename, toFilenameContent, toFullPathContent } from '@/utils'
 
 // 引入请求DTO类型
-import type { CreateArticleReq, UpdateArticleReq } from '../../../types'
+import type { ArticleType, CreateArticleReq, UpdateArticleReq } from '../../../types'
 
 /**
  * 文章创建/编辑组件

@@ -1,4 +1,4 @@
-import './index.less'
+import './index.css'
 
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'

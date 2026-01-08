@@ -4,6 +4,7 @@ import type {
   ArticleItemRes,
   ArticleListResDto,
   ArticleMetaItemRes,
+  ArticleType,
   // 角色管理相关类型
   AssignRoleRoutesReq,
   // 通用分页参数
@@ -76,6 +77,7 @@ export type {
   ArticleItemRes,
   ArticleListResDto,
   ArticleMetaItemRes,
+  ArticleType,
   CreateArticleReq,
   DeleteArticleReq,
   UpdateArticleReq
