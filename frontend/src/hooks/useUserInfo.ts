@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useAuthStore } from '../stores/authStore'
 
@@ -36,7 +36,7 @@ export const useUserInfo = (): UseUserInfoResult => {
   const storeError = useAuthStore(s => s.error)
 
   // 获取用户信息的核心逻辑
-  const fetchUserInfo = useCallback(async () => {
+  const fetchUserInfo = async () => {
     // 如果没有 token，直接判定为认证失败
     if (!token) {
       setStatus(UserInfoStatus.AUTH_FAILED)
@@ -72,7 +72,7 @@ export const useUserInfo = (): UseUserInfoResult => {
       setStatus(UserInfoStatus.NETWORK_ERROR)
       setError('网络连接失败，请检查网络连接或稍后重试')
     }
-  }, [token, fetchProfile])
+  }
 
   // 当 token 变化或组件挂载时获取用户信息
   useEffect(() => {
@@ -80,7 +80,7 @@ export const useUserInfo = (): UseUserInfoResult => {
       await fetchUserInfo()
     }
     init()
-  }, [token, fetchUserInfo])
+  }, [token])
 
   return {
     status,

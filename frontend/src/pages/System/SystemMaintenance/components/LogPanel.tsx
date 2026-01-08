@@ -13,9 +13,9 @@ import {
   Typography
 } from 'antd'
 import { FC, useEffect, useMemo } from 'react'
+import type { LogFileLevel } from 'template-backend/src/types/dto'
 
 import { useSystemLogsStore } from '@/stores/systemLogsStore'
-import { LogFileLevel } from '@/types'
 import { dayjs } from '@/utils/dayjs'
 
 const { Text } = Typography

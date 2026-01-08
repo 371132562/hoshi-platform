@@ -13,13 +13,14 @@ import {
   TreeSelect
 } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
+import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'
+import type { UserItemRes } from 'template-backend/src/types/dto'
 
 import ResetPasswordModal from '@/components/ResetPasswordModal'
 
 import { useOrganizationStore } from '../../../stores/organizationStore'
 import { useRoleStore } from '../../../stores/roleStore'
 import { useUserStore } from '../../../stores/userStore'
-import { SYSTEM_ADMIN_ROLE_NAME, UserItemRes } from '../../../types'
 
 const UserManagement: React.FC = () => {
   // Store 取值

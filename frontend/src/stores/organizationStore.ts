@@ -1,3 +1,8 @@
+import type {
+  CreateOrganizationReqDto,
+  OrganizationRes,
+  UpdateOrganizationReqDto
+} from 'template-backend/src/types/dto'
 import { create } from 'zustand'
 
 import {
@@ -7,12 +12,7 @@ import {
   organizationUpdateApi
 } from '../services/apis'
 import request from '../services/base'
-import type {
-  CreateOrganizationReqDto,
-  OrganizationRes,
-  OrganizationTreeNode,
-  UpdateOrganizationReqDto
-} from '../types'
+import type { OrganizationTreeNode } from '../types'
 
 const transformToTreeNode = (data: OrganizationRes[]): OrganizationTreeNode[] => {
   return data.map(item => ({

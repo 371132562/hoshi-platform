@@ -1,6 +1,7 @@
 import React from 'react'
+import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'
 
-import { RouteItem, SYSTEM_ADMIN_ROLE_NAME } from '@/types'
+import { RouteItem } from '@/types'
 
 import { adminRoutes } from './adminRoutes'
 import { publicRoutes } from './publicRoutes'

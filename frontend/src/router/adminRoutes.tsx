@@ -1,7 +1,7 @@
 import { FileTextOutlined, SettingOutlined } from '@ant-design/icons'
 import { lazy } from 'react'
 
-import { RouteItem, SYSTEM_ADMIN_ROLE_NAME } from '@/types'
+import { RouteItem } from '@/types'
 
 // 后台页面懒加载
 const ArticleManagement = lazy(() => import('@/pages/ArticleManagement'))
@@ -55,6 +55,3 @@ export const adminRoutes: RouteItem[] = [
     ]
   }
 ]
-
-// 导出系统管理员角色名常量供权限判断使用
-export { SYSTEM_ADMIN_ROLE_NAME }

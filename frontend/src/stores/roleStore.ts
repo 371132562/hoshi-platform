@@ -1,3 +1,11 @@
+import type {
+  AssignRoleRoutesReq,
+  CreateRoleReq,
+  DeleteRoleReq,
+  RoleListItemResDto,
+  RoleListResDto,
+  UpdateRoleReq
+} from 'template-backend/src/types/dto'
 import { create } from 'zustand'
 
 import {
@@ -8,14 +16,6 @@ import {
   roleUpdateApi
 } from '../services/apis'
 import request from '../services/base'
-import type {
-  AssignRoleRoutesReq,
-  CreateRoleReq,
-  DeleteRoleReq,
-  RoleListItemResDto,
-  RoleListResDto,
-  UpdateRoleReq
-} from '../types'
 
 // 角色管理store
 export const useRoleStore = create<{

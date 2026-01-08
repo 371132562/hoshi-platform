@@ -1,3 +1,10 @@
+import type {
+  LogLineItemRes,
+  LogUsersResDto,
+  ReadLogReq,
+  SystemLogFilesResDto,
+  UserLogFilesReq
+} from 'template-backend/src/types/dto'
 import { create } from 'zustand'
 
 import {
@@ -8,13 +15,6 @@ import {
   systemUserLogsRead
 } from '@/services/apis'
 import request from '@/services/base'
-import {
-  LogLineItem,
-  LogUsersResDto,
-  ReadLog,
-  SystemLogFilesResDto,
-  UserLogFilesReq
-} from '@/types'
 
 /**
  * 用户选项类型
@@ -44,7 +44,7 @@ type SystemLogsState = {
   /** 系统日志文件列表（原始数据） */
   files: SystemLogFilesResDto['files']
   /** 系统日志读取结果 */
-  readResult?: LogLineItem[]
+  readResult?: LogLineItemRes[]
 
   // ==================== 用户日志相关状态 ====================
   /** 用户日志文件列表（原始数据） */
@@ -52,7 +52,7 @@ type SystemLogsState = {
   /** 用户选项列表（用于用户选择） */
   userOptions: UserOption[]
   /** 用户日志读取结果 */
-  readUserResult?: LogLineItem[]
+  readUserResult?: LogLineItemRes[]
 
   // ==================== 防抖相关状态 ====================
   /** 上次刷新时间戳（用于防抖控制） */
@@ -62,7 +62,7 @@ type SystemLogsState = {
   /** 获取系统日志文件列表 */
   listFiles: () => Promise<boolean>
   /** 读取系统日志内容 */
-  readLog: (payload: ReadLog) => Promise<boolean>
+  readLog: (payload: ReadLogReq) => Promise<boolean>
   /** 带防抖的文件列表刷新 */
   refreshFilesWithDebounce: (force?: boolean) => Promise<boolean>
 
@@ -70,7 +70,7 @@ type SystemLogsState = {
   /** 获取用户日志文件列表 */
   listUserFiles: (payload: UserLogFilesReq) => Promise<boolean>
   /** 读取用户日志内容 */
-  readUserLog: (payload: ReadLog & { username: string }) => Promise<boolean>
+  readUserLog: (payload: ReadLogReq & { username: string }) => Promise<boolean>
   /** 列出日志用户 */
   listUsers: () => Promise<LogUsersResDto>
   /** 带防抖的用户文件列表刷新 */
@@ -123,7 +123,7 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
   async readLog(payload) {
     set({ contentLoading: true })
     try {
-      const res = await request.post<LogLineItem[]>(systemLogsRead, payload)
+      const res = await request.post<LogLineItemRes[]>(systemLogsRead, payload)
       set({ readResult: res.data })
       return true
     } catch (error) {
@@ -178,7 +178,7 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
   async readUserLog(payload) {
     set({ contentLoading: true })
     try {
-      const res = await request.post<LogLineItem[]>(systemUserLogsRead, payload)
+      const res = await request.post<LogLineItemRes[]>(systemUserLogsRead, payload)
       set({ readUserResult: res.data })
       return true
     } catch (error) {

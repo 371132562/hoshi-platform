@@ -1,3 +1,11 @@
+import type {
+  ArticleItemRes,
+  ArticleListResDto,
+  ArticleMetaItemRes,
+  CreateArticleReq,
+  DeleteArticleReq,
+  UpdateArticleReq
+} from 'template-backend/src/types/dto'
 import { create } from 'zustand'
 
 import {
@@ -12,15 +20,6 @@ import {
   articleUpsertOrder
 } from '@/services/apis'
 import http from '@/services/base'
-
-import type {
-  ArticleItemRes,
-  ArticleListResDto,
-  ArticleMetaItemRes,
-  CreateArticleReq,
-  DeleteArticleReq,
-  UpdateArticleReq
-} from '../types'
 
 type ArticleStore = {
   // 状态
@@ -136,9 +135,9 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   },
 
   // 删除文章
-  deleteArticle: async (id: string) => {
+  deleteArticle: async (data: DeleteArticleReq) => {
     try {
-      await http.post(articleDelete, { id })
+      await http.post(articleDelete, data)
       const { articles, currentPage, pageSize } = get()
       // 删除成功后，处理分页逻辑
       // 当删除的是当前页的最后一条数据时，需要返回上一页

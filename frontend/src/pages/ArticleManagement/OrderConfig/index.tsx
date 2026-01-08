@@ -18,12 +18,12 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Button, message, Modal, Select, Skeleton, Space, Tabs } from 'antd'
 import React, { useEffect, useState } from 'react'
+import type { ArticleItemRes, ArticleMetaItemRes } from 'template-backend/src/types/dto'
+import { ArticleType } from 'template-backend/src/types/dto'
 import { v4 as uuidv4 } from 'uuid'
 
 import ArticleDisplay from '@/components/ArticleDisplay'
 import useArticleStore from '@/stores/articleStore'
-
-import type { ArticleItemRes, ArticleMetaItemRes } from '../../../types'
 
 // SortableItem 组件
 interface SortableItemProps {
@@ -64,14 +64,14 @@ const SortableItem: React.FC<SortableItemProps> = ({
         className="cursor-grab"
       />
       <Select
-        showSearch
+        showSearch={{
+          filterOption: (input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+        }}
         value={article.id || undefined}
         placeholder="请选择一篇文章"
         className="min-w-0 flex-1"
         onChange={value => onSelect(article.uniqueId, value)}
-        filterOption={(input, option) =>
-          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-        }
         options={allArticles.map(a => ({
           value: a.id,
           label: a.title,
@@ -185,6 +185,7 @@ const OrderConfig = () => {
         title: '请选择一篇文章',
         content: '',
         images: [],
+        type: ArticleType.NORMAL,
         uniqueId: uuidv4()
       } as ArticleItemRes & { uniqueId: string }
     ])

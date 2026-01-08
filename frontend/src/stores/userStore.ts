@@ -1,3 +1,11 @@
+import type {
+  CreateUserEncryptedReq,
+  DeleteUserReq,
+  ResetUserPasswordEncryptedReq,
+  UpdateUserReq,
+  UserItemRes,
+  UserListResDto
+} from 'template-backend/src/types/dto'
 import { create } from 'zustand'
 
 import {
@@ -9,14 +17,6 @@ import {
   userUpdateApi
 } from '../services/apis'
 import request from '../services/base'
-import type {
-  CreateUserEncryptedReq,
-  DeleteUserReq,
-  ResetUserPasswordEncryptedReq,
-  UpdateUserReq,
-  UserItemRes,
-  UserListResDto
-} from '../types'
 import { decryptSalt, encryptData } from '../utils/crypto'
 
 // 临时类型定义，用于前端表单

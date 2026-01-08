@@ -3,11 +3,10 @@ import { Button, Input, message, Popconfirm, Space, Table } from 'antd'
 import type { TablePaginationConfig } from 'antd/es/table/interface'
 import React, { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router'
+import type { ArticleMetaItemRes } from 'template-backend/src/types/dto'
 
 import useArticleStore from '@/stores/articleStore'
 import { dayjs } from '@/utils/dayjs'
-
-import type { ArticleMetaItemRes } from '../../types'
 
 const ArticleManagement: React.FC = () => {
   // Router hooks
@@ -101,7 +100,7 @@ const ArticleManagement: React.FC = () => {
   )
 
   const handleDelete = async (id: string) => {
-    const success = await deleteArticle(id)
+    const success = await deleteArticle({ id })
     if (success) {
       message.success('文章删除成功')
     }

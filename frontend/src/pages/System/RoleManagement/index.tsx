@@ -13,10 +13,11 @@ import {
   Tag
 } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
+import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'
+import type { RoleListItemResDto } from 'template-backend/src/types/dto'
 
 import { getMenuOptionsForRoleEdit } from '../../../router/routesConfig'
 import { useRoleStore } from '../../../stores/roleStore'
-import { RoleListItemResDto, SYSTEM_ADMIN_ROLE_NAME } from '../../../types'
 
 // 角色管理页面
 const RoleManagement: React.FC = () => {
@@ -247,8 +248,7 @@ const RoleManagement: React.FC = () => {
             <Select
               mode="multiple"
               options={menuOptions}
-              optionFilterProp="label"
-              showSearch
+              showSearch={{ optionFilterProp: 'label' }}
               maxTagCount={6}
               placeholder="请选择可访问菜单"
             />

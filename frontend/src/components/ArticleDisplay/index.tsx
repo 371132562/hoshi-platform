@@ -1,8 +1,8 @@
 import React from 'react'
+import type { ArticleItemRes } from 'template-backend/src/types/dto'
 
 import { toFullPathContent } from '@/utils'
 
-import type { ArticleItemRes } from '../../types'
 import RichEditor from '../RichEditor'
 
 interface ArticleDisplayProps {

@@ -1,14 +1,14 @@
 import { Button, Form, Input, message, Modal, Skeleton, Space } from 'antd'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
+// 引入请求DTO类型
+import type { CreateArticleReq, UpdateArticleReq } from 'template-backend/src/types/dto'
+import { ArticleType } from 'template-backend/src/types/dto'
 
 // 引入自定义的富文本编辑器组件和文章状态管理 store
 import RichEditor, { type RichEditorRef } from '@/components/RichEditor'
 import useArticleStore from '@/stores/articleStore'
 import { extractFilename, toFilenameContent, toFullPathContent } from '@/utils'
-
-// 引入请求DTO类型
-import type { ArticleType, CreateArticleReq, UpdateArticleReq } from '../../../types'
 
 /**
  * 文章创建/编辑组件
@@ -40,8 +40,6 @@ const ArticleModify: FC = () => {
 
   // 判断当前是否为编辑模式（用 useMemo 优化）
   const isEditMode = useMemo(() => !!id, [id])
-  // 计算页面标题
-  const pageTitle = isEditMode ? '编辑文章' : '新增文章'
 
   // 1. 处理数据加载和清理
   useEffect(() => {

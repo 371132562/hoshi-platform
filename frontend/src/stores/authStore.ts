@@ -1,10 +1,10 @@
+import type { LoginReq, LoginResDto, UserProfileResDto } from 'template-backend/src/types/dto'
 import { ErrorCode } from 'template-backend/src/types/response'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { challengeApiUrl, loginApiUrl, profileApiUrl } from '../services/apis'
 import http from '../services/base'
-import type { LoginReq, LoginResDto, UserProfileResDto } from '../types'
 import { decryptSalt, encryptData } from '../utils/crypto'
 
 // 认证store的类型定义
