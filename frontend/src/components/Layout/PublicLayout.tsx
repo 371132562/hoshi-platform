@@ -1,6 +1,8 @@
-import { Breadcrumb, FloatButton, Layout, Menu, MenuProps } from 'antd'
+import { SettingOutlined } from '@ant-design/icons'
+import { Breadcrumb, FloatButton, Layout, Menu, MenuProps, Tooltip } from 'antd'
 import { FC, useMemo, useRef } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
+import { useNavigate } from 'react-router'
 import { Link, useLocation, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
@@ -18,6 +20,7 @@ const { Header, Content } = Layout
 export const PublicLayout: FC = () => {
   // Router hooks
   const outlet = useOutlet()
+  const navigate = useNavigate()
 
   const { pathname } = useLocation()
 
@@ -65,6 +68,18 @@ export const PublicLayout: FC = () => {
           style={{ minWidth: 0 }}
         />
         <div className="flex-grow" />
+        <Tooltip
+          title="管理后台"
+          placement="bottomRight"
+          
+        >
+          <div
+            className="ml-4 flex cursor-pointer items-center justify-center rounded-lg px-3 py-2 transition-colors hover:bg-white/20"
+            onClick={() => navigate('/admin')}
+          >
+            <SettingOutlined className="!text-gray-300 hover:text-white" />
+          </div>
+        </Tooltip>
       </Header>
       <Layout>
         <Content className="!flex flex-grow flex-col bg-gray-100 p-6 pt-4">
