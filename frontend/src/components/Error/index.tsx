@@ -1,12 +1,8 @@
 import { Button, Result } from 'antd'
+import type { FallbackProps } from 'react-error-boundary'
 import { isRouteErrorResponse, useNavigate, useRouteError } from 'react-router'
 
-interface IProps {
-  error?: Error
-  resetErrorBoundary?: () => void
-}
-
-const ErrorPage = ({ error: propsError, resetErrorBoundary }: IProps) => {
+const ErrorPage = ({ error: propsError, resetErrorBoundary }: FallbackProps) => {
   const navigate = useNavigate()
   // React Router 会自动捕获路由错误，并通过这个 hook 提供
   const routeError = useRouteError()

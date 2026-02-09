@@ -20,10 +20,12 @@ onlyBuiltDependencies:
   - '@prisma/engines'
   - '@swc/core'
   - '@tailwindcss/oxide'
+  - bcrypt
   - better-sqlite3
   - electron
   - electron-winstaller
   - es5-ext
   - esbuild
+  - less
   - prisma
   - sqlite3

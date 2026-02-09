@@ -2,7 +2,7 @@ import { Empty, Skeleton } from 'antd'
 import { useEffect } from 'react'
 
 // import { useNavigate } from 'react-router' // 移除未使用的引用
-import ArticleDisplay from '@/components/ArticleDisplay'
+import ArticleDisplay from '@/components/Article/ArticleDisplay'
 import useArticleStore from '@/stores/articleStore'
 
 const Component = () => {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { User } from '@prisma/generated/client';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';

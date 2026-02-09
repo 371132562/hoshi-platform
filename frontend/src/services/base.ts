@@ -138,10 +138,25 @@ const handleError = (error: Error | unknown) => {
   return Promise.reject(error)
 }
 
+// 请求缓存 Map：Key -> { promise, timer }
+const requestCache = new Map<string, Promise<ResponseBody<any>>>()
+
+// 生成请求唯一标识 Key
+const generateRequestKey = (method: string, url: string, bodyOrParams: unknown): string => {
+  try {
+    const safeBody = bodyOrParams ? JSON.stringify(bodyOrParams) : ''
+    return `${method}:${url}:${safeBody}`
+  } catch {
+    // 如果无法序列化（例如包含循环引用），退化为仅使用 url + method，或者直接返回随机串避免错误的缓存命中
+    return `${method}:${url}:${Date.now()}`
+  }
+}
+
 // 创建fetch请求函数
 const createRequest = async <T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  customTimeout?: number
 ): Promise<ResponseBody<T>> => {
   const baseURL = getBaseURL()
   const token = getToken()
@@ -151,8 +166,12 @@ const createRequest = async <T>(
 
   // 构建请求头
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>)
+  }
+
+  // 只有当 body 不是 FormData 时才设置 Content-Type
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json'
   }
 
   // 添加认证token
@@ -160,51 +179,76 @@ const createRequest = async <T>(
     headers.Authorization = `Bearer ${token}`
   }
 
+  // === 请求去重逻辑开始 ===
+  // 1. 生成唯一 Key
+  const method = (options.method || 'GET').toUpperCase()
+  const requestKey = generateRequestKey(method, fullUrl, options.body)
+
+  // 2. 检查缓存
+  const cachedPromise = requestCache.get(requestKey)
+  if (cachedPromise) {
+    return cachedPromise as Promise<ResponseBody<T>>
+  }
+
   // 创建AbortController用于超时控制
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 10000) // 10秒超时
+  const timeout = customTimeout || 10000
+  const timeoutId = setTimeout(() => controller.abort(), timeout)
 
-  try {
-    const response = await fetch(fullUrl, {
-      ...options,
-      headers,
-      signal: controller.signal
-    })
+  // 3. 定义真实的请求 Promise
+  const requestPromise = (async () => {
+    try {
+      const response = await fetch(fullUrl, {
+        ...options,
+        headers,
+        signal: controller.signal
+      })
 
-    clearTimeout(timeoutId)
+      clearTimeout(timeoutId)
 
-    // 处理HTTP错误状态
-    if (!response.ok) {
-      if (response.status === 401) {
-        const errorMessage = '您的认证已过期或无效，请重新登录！'
-        handleAuthFailure(errorMessage)
+      // 处理HTTP错误状态
+      if (!response.ok) {
+        if (response.status === 401) {
+          const errorMessage = '您的认证已过期或无效，请重新登录！'
+          handleAuthFailure(errorMessage)
+          return Promise.reject(new Error(errorMessage))
+        }
+
+        let errorMessage = '未知错误'
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData?.msg || errorData?.message || errorMessage
+        } catch {
+          // 如果无法解析错误响应，使用默认错误信息
+        }
+
+        notification.error({
+          message: '请求错误',
+          description: `HTTP ${response.status} - ${errorMessage}`
+        })
         return Promise.reject(new Error(errorMessage))
       }
 
-      let errorMessage = '未知错误'
-      try {
-        const errorData = await response.json()
-        errorMessage = errorData?.msg || errorData?.message || errorMessage
-      } catch {
-        // 如果无法解析错误响应，使用默认错误信息
+      return await handleResponse<T>(response)
+    } catch (error) {
+      clearTimeout(timeoutId)
+      // 若是业务错误（handleResponse 已提示过），避免二次通知
+      if (error && typeof error === 'object' && 'code' in (error as Record<string, unknown>)) {
+        return Promise.reject(error)
       }
-
-      notification.error({
-        message: '请求错误',
-        description: `HTTP ${response.status} - ${errorMessage}`
-      })
-      return Promise.reject(new Error(errorMessage))
+      return handleError(error)
     }
+  })()
 
-    return await handleResponse<T>(response)
-  } catch (error) {
-    clearTimeout(timeoutId)
-    // 若是业务错误（handleResponse 已提示过），避免二次通知
-    if (error && typeof error === 'object' && 'code' in (error as Record<string, unknown>)) {
-      return Promise.reject(error)
-    }
-    return handleError(error)
-  }
+  // 4. 存入缓存
+  requestCache.set(requestKey, requestPromise)
+
+  // 5. 设置 2 秒后清理缓存
+  setTimeout(() => {
+    requestCache.delete(requestKey)
+  }, 2000)
+
+  return requestPromise
 }
 
 // 创建http对象，模拟axios的API

@@ -22,7 +22,7 @@ import type { ArticleItemRes, ArticleMetaItemRes } from 'template-backend/src/ty
 import { ArticleType } from 'template-backend/src/types/dto'
 import { v4 as uuidv4 } from 'uuid'
 
-import ArticleDisplay from '@/components/ArticleDisplay'
+import ArticleDisplay from '@/components/Article/ArticleDisplay'
 import useArticleStore from '@/stores/articleStore'
 
 // SortableItem 组件

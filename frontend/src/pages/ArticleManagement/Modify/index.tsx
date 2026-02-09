@@ -1,11 +1,12 @@
-import { Button, Form, Input, message, Modal, Skeleton, Space } from 'antd'
+import { Button, Form, Input, message, Skeleton, Space } from 'antd'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 // 引入请求DTO类型
-import type { CreateArticleReq, UpdateArticleReq } from 'template-backend/src/types/dto'
+import type { CreateArticleReqDto, UpdateArticleReqDto } from 'template-backend/src/types/dto'
 import { ArticleType } from 'template-backend/src/types/dto'
 
 // 引入自定义的富文本编辑器组件和文章状态管理 store
+import ArticlePreviewModal from '@/components/Article/ArticlePreviewModal'
 import RichEditor, { type RichEditorRef } from '@/components/RichEditor'
 import useArticleStore from '@/stores/articleStore'
 import { extractFilename, toFilenameContent, toFullPathContent } from '@/utils'
@@ -94,7 +95,7 @@ const ArticleModify: FC = () => {
     // 根据是否为编辑模式，调用不同的 store 方法
     if (isEditMode) {
       // 编辑模式：需要传入文章 ID
-      const data: UpdateArticleReq = {
+      const data: UpdateArticleReqDto = {
         id: id as string,
         title: values.title,
         content: contentWithFilenames,
@@ -104,7 +105,7 @@ const ArticleModify: FC = () => {
       success = await updateArticle(data)
     } else {
       // 新增模式：直接使用表单数据
-      const data: CreateArticleReq = {
+      const data: CreateArticleReqDto = {
         title: values.title,
         content: contentWithFilenames,
         images: processedImages,

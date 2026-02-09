@@ -71,7 +71,6 @@ export const PublicLayout: FC = () => {
         <Tooltip
           title="管理后台"
           placement="bottomRight"
-          
         >
           <div
             className="ml-4 flex cursor-pointer items-center justify-center rounded-lg px-3 py-2 transition-colors hover:bg-white/20"

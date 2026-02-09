@@ -1,9 +1,10 @@
-import { PlusOutlined, SearchOutlined, UndoOutlined } from '@ant-design/icons'
+import { EyeOutlined, PlusOutlined, SearchOutlined, UndoOutlined } from '@ant-design/icons'
 import { Button, Form, Input, message, Popconfirm, Space, Table } from 'antd'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
 import type { ArticleMetaItemRes } from 'template-backend/src/types/dto'
 
+import ArticlePreviewModal from '@/components/Article/ArticlePreviewModal'
 import useArticleStore from '@/stores/articleStore'
 import { dayjs } from '@/utils/dayjs'
 
@@ -23,6 +24,10 @@ const ArticleManagement: React.FC = () => {
 
   // Form 实例
   const [searchForm] = Form.useForm()
+
+  // 预览 Modal 状态
+  const [previewVisible, setPreviewVisible] = useState(false)
+  const [previewArticleId, setPreviewArticleId] = useState<string | null>(null)
 
   // React Hooks: useEffect
   useEffect(() => {
@@ -44,66 +49,83 @@ const ArticleManagement: React.FC = () => {
   }
 
   // Const 变量 - 派生变量
-  const columns = useMemo(
-    () => [
-      {
-        title: '标题',
-        dataIndex: 'title',
-        key: 'title'
-      },
-      {
-        title: '更新时间',
-        dataIndex: 'updateTime',
-        key: 'updateTime',
-        render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss')
-      },
-      {
-        title: '操作',
-        key: 'action',
-        render: (_: unknown, record: ArticleMetaItemRes) => (
-          <Space>
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => navigate(`/admin/article/modify/${record.id}`)}
-            >
-              编辑
-            </Button>
-            <Popconfirm
-              title="确定要删除这篇文章吗？"
-              description={
-                <span>
-                  此操作不可恢复，请谨慎操作。
-                  <br />
-                  <span style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                    将被删除：文章《{record.title}》
-                  </span>
+  const columns = [
+    {
+      title: '标题',
+      dataIndex: 'title',
+      key: 'title'
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss')
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: (_: unknown, record: ArticleMetaItemRes) => (
+        <Space>
+          <Button
+            color="primary"
+            variant="outlined"
+            icon={<EyeOutlined />}
+            onClick={() => handlePreview(record.id)}
+          >
+            预览
+          </Button>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => navigate(`/admin/article/modify/${record.id}`)}
+          >
+            编辑
+          </Button>
+          <Popconfirm
+            title="确定要删除这篇文章吗？"
+            description={
+              <span>
+                此操作不可恢复，请谨慎操作。
+                <br />
+                <span style={{ color: '#1890ff', fontWeight: 'bold' }}>
+                  将被删除：文章《{record.title}》
                 </span>
-              }
-              onConfirm={() => handleDelete(record.id)}
-              okText="确定"
-              cancelText="取消"
+              </span>
+            }
+            onConfirm={() => handleDelete(record.id)}
+            okText="确定"
+            cancelText="取消"
+          >
+            <Button
+              color="danger"
+              variant="outlined"
+              disabled={record.title === '关于我们'} // 示例：保护特定文章
             >
-              <Button
-                color="danger"
-                variant="outlined"
-                disabled={record.title === '关于我们'} // 示例：保护特定文章
-              >
-                删除
-              </Button>
-            </Popconfirm>
-          </Space>
-        )
-      }
-    ],
-    [navigate]
-  )
+              删除
+            </Button>
+          </Popconfirm>
+        </Space>
+      )
+    }
+  ]
 
   const handleDelete = async (id: string) => {
     const success = await deleteArticle({ id })
     if (success) {
       message.success('文章删除成功')
     }
+  }
+
+  // 打开预览 Modal
+  const handlePreview = (id: string) => {
+    setPreviewArticleId(id)
+    setPreviewVisible(true)
+  }
+
+  // 关闭预览 Modal
+  const handlePreviewClose = () => {
+    setPreviewVisible(false)
+    setPreviewArticleId(null)
   }
 
   return (
@@ -166,6 +188,14 @@ const ArticleManagement: React.FC = () => {
         onChange={pagination =>
           updateArticlePageParams({ page: pagination.current, pageSize: pagination.pageSize })
         }
+      />
+
+      {/* 文章预览 Modal */}
+      <ArticlePreviewModal
+        mode="id"
+        visible={previewVisible}
+        articleId={previewArticleId}
+        onClose={handlePreviewClose}
       />
     </div>
   )
