@@ -60,7 +60,8 @@ export class AuthService {
           role: {
             select: {
               id: true,
-              name: true,
+              code: true, // code
+              displayName: true, // displayName
               description: true,
               allowedRoutes: true,
               createTime: true,
@@ -96,28 +97,28 @@ export class AuthService {
         sub: user.id,
         userId: user.id,
         username: user.username,
-        name: user.name,
-        userName: user.name,
+        displayName: user.displayName,
         roleId: user.roleId || undefined,
-        roleName: user.role?.name,
       };
       const token = this.jwtService.sign(payload);
       this.logger.log(
-        `[操作] 用户登录成功 - 用户名: ${username}, 姓名: ${user.name}`,
+        `[操作] 用户登录成功 - 用户名: ${username}, 姓名: ${user.displayName}`,
       );
       return {
         token,
         user: {
           id: user.id,
           username: user.username,
-          name: user.name,
+          displayName: user.displayName,
+          isSystem: user.isSystem,
           organizationId: user.organizationId ?? null,
           organization: user.organization
             ? { id: user.organization.id, name: user.organization.name }
             : null,
           phone: user.phone || null,
           role: {
-            name: user.role!.name,
+            code: user.role!.code,
+            displayName: user.role!.displayName,
             allowedRoutes: (user.role!.allowedRoutes as string[]) || [],
           },
         },
@@ -148,7 +149,8 @@ export class AuthService {
           role: {
             select: {
               id: true,
-              name: true,
+              code: true,
+              displayName: true,
               description: true,
               allowedRoutes: true,
               createTime: true,
@@ -175,20 +177,22 @@ export class AuthService {
       }
 
       this.logger.log(
-        `[操作] 获取用户信息 - 用户ID: ${userId}, 用户名: ${user.username}, 姓名: ${user.name}`,
+        `[操作] 获取用户信息 - 用户ID: ${userId}, 用户名: ${user.username}, 姓名: ${user.displayName}`,
       );
 
       return {
         id: user.id,
         username: user.username,
-        name: user.name,
+        displayName: user.displayName,
+        isSystem: user.isSystem,
         organizationId: user.organizationId ?? null,
         organization: user.organization
           ? { id: user.organization.id, name: user.organization.name }
           : null,
         phone: user.phone || null,
         role: {
-          name: user.role!.name,
+          code: user.role!.code,
+          displayName: user.role!.displayName,
           allowedRoutes: (user.role!.allowedRoutes as string[]) || [],
         },
       };

@@ -8,7 +8,9 @@ import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 // 角色最小字段集（列表/业务使用）
 export type RoleItemRes = {
   id: string;
-  name: string;
+  code: string;
+  displayName: string;
+  isSystem: boolean;
   description?: string | null;
   allowedRoutes?: string[];
 };
@@ -18,8 +20,12 @@ export type RoleItemRes = {
  */
 export class CreateRoleReqDto {
   @IsString()
-  @IsNotEmpty({ message: '角色名称不能为空' })
-  name: string;
+  @IsNotEmpty({ message: '角色编码不能为空' })
+  code: string;
+
+  @IsString()
+  @IsNotEmpty({ message: '角色显示名称不能为空' })
+  displayName: string;
 
   @IsOptional()
   @IsString()
@@ -42,7 +48,7 @@ export class UpdateRoleReqDto {
 
   @IsOptional()
   @IsString()
-  name?: string;
+  displayName?: string;
 
   @IsOptional()
   @IsString()
@@ -68,7 +74,7 @@ export class RoleListReqDto {
 
   @IsOptional()
   @IsString()
-  name?: string;
+  displayName?: string;
 }
 
 /**

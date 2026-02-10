@@ -13,7 +13,7 @@ import {
   TreeSelect
 } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
-import { SYSTEM_INIT_DATA } from 'template-backend/src/common/config/constants'
+import { RoleCode } from 'template-backend/src/common/config/constants'
 import type { UserItemRes } from 'template-backend/src/types/dto'
 
 import ResetPasswordModal from '@/components/ResetPasswordModal'
@@ -52,9 +52,9 @@ const UserManagement: React.FC = () => {
   // 初始化加载
   useEffect(() => {
     // 从 Store 恢复筛选条件
-    const { name, roleId } = userPageParams
+    const { displayName, roleId } = userPageParams
     searchForm.setFieldsValue({
-      name: name || '',
+      displayName: displayName || '',
       roleId: roleId || undefined
     })
     fetchUserList()
@@ -64,8 +64,8 @@ const UserManagement: React.FC = () => {
 
   // 搜索提交
   const handleSearchSubmit = () => {
-    const { name, roleId } = searchForm.getFieldsValue()
-    updateUserPageParams({ page: 1, name: name || undefined, roleId })
+    const { displayName, roleId } = searchForm.getFieldsValue()
+    updateUserPageParams({ page: 1, displayName: displayName || undefined, roleId })
   }
 
   // 重置搜索
@@ -117,18 +117,15 @@ const UserManagement: React.FC = () => {
         dataIndex: 'username',
         key: 'username'
       },
-      { title: '姓名', dataIndex: 'name', key: 'name' },
+      { title: '姓名', dataIndex: 'displayName', key: 'displayName' },
       {
         title: '角色',
         key: 'role',
         render: (_: unknown, record: UserItemRes) => {
-          const roleName = record.role?.name || '未分配角色'
-          const systemRole = SYSTEM_INIT_DATA.roles.find(r => r.name === roleName && r.isSystem)
-          return systemRole ? (
-            <Tag color="red">{record.role?.description || '系统内置'}</Tag>
-          ) : (
-            <Tag>{roleName}</Tag>
-          )
+          const roleDisplayName = record.role?.displayName || '未分配角色'
+          // 系统管理员角色特殊显示
+          const isSystemAdmin = record.role?.code === RoleCode.ADMIN
+          return isSystemAdmin ? <Tag color="red">系统管理员</Tag> : <Tag>{roleDisplayName}</Tag>
         }
       },
       {
@@ -153,7 +150,7 @@ const UserManagement: React.FC = () => {
               color="primary"
               variant="outlined"
               onClick={() => openModal(record)}
-              disabled={record.username === 'admin'}
+              disabled={record.isSystem}
             >
               编辑
             </Button>
@@ -164,7 +161,7 @@ const UserManagement: React.FC = () => {
                   此操作不可恢复，请谨慎操作。
                   <br />
                   <span style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                    将被删除：用户 {record.name}（{record.username}）
+                    将被删除：用户 {record.displayName}（{record.username}）
                   </span>
                 </span>
               }
@@ -174,14 +171,14 @@ const UserManagement: React.FC = () => {
                   message.success('用户删除成功')
                 }
               }}
-              disabled={record.username === 'admin'}
+              disabled={record.isSystem}
               okText="确定"
               cancelText="取消"
             >
               <Button
                 color="danger"
                 variant="outlined"
-                disabled={record.username === 'admin'}
+                disabled={record.isSystem}
               >
                 删除
               </Button>
@@ -202,7 +199,7 @@ const UserManagement: React.FC = () => {
           layout="inline"
           onFinish={handleSearchSubmit}
         >
-          <Form.Item name="name">
+          <Form.Item name="displayName">
             <Input
               placeholder="请输入姓名搜索"
               style={{ width: 180 }}
@@ -219,11 +216,8 @@ const UserManagement: React.FC = () => {
               onChange={() => setTimeout(handleSearchSubmit, 0)}
               onClear={() => setTimeout(handleSearchSubmit, 0)}
               options={roleList.map(r => {
-                const systemRole = SYSTEM_INIT_DATA.roles.find(
-                  sr => sr.name === r.name && sr.isSystem
-                )
                 return {
-                  label: systemRole ? '系统管理员' : r.name,
+                  label: r.isSystem ? '系统管理员' : r.displayName, // 简单处理，系统角色显示特定名称或原名
                   value: r.id
                 }
               })}
@@ -284,7 +278,7 @@ const UserManagement: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ name: '' }}
+          initialValues={{ displayName: '' }}
         >
           <Form.Item
             name="username"
@@ -343,14 +337,12 @@ const UserManagement: React.FC = () => {
               optionLabelProp="selectedLabel"
               showSearch={{ optionFilterProp: 'selectedLabel' }}
               options={roleList.map(r => {
-                const systemRole = SYSTEM_INIT_DATA.roles.find(
-                  sr => sr.name === r.name && sr.isSystem
-                )
+                const isSystem = r.isSystem
                 return {
                   value: r.id,
                   label: (
                     <div>
-                      <div>{systemRole ? <Tag color="red">系统管理员</Tag> : r.name}</div>
+                      <div>{isSystem ? <Tag color="red">系统管理员</Tag> : r.displayName}</div>
                       {r.description && (
                         <div
                           style={{
@@ -368,13 +360,13 @@ const UserManagement: React.FC = () => {
                       )}
                     </div>
                   ),
-                  selectedLabel: systemRole ? '系统管理员' : r.name
+                  selectedLabel: isSystem ? '系统管理员' : r.displayName
                 }
               })}
             />
           </Form.Item>
           <Form.Item
-            name="name"
+            name="displayName"
             label="姓名"
             rules={[{ required: true, message: '请输入姓名' }]}
           >
@@ -411,7 +403,7 @@ const UserManagement: React.FC = () => {
       <ResetPasswordModal
         open={resetModalOpen}
         userId={resetUser ? String(resetUser.id) : ''}
-        userName={resetUser?.name}
+        userName={resetUser?.displayName}
         onCancel={() => setResetModalOpen(false)}
       />
     </div>

@@ -53,14 +53,10 @@ export class LoginWithHashReqDto {
 /**
  * Token 载荷 DTO
  */
-export type TokenPayloadResDto = {
+export class TokenPayloadResDto {
   sub: string;
-  username: string;
-  name: string;
   userId: string;
-  userName: string;
+  username: string; // account
+  displayName: string; // localized name
   roleId?: string;
-  roleName?: string;
-  iat?: number;
-  exp?: number;
-};
+}

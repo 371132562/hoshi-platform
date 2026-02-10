@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import type { Role } from '@prisma/generated/client';
 import { Prisma } from '@prisma/generated/client';
 
-import { SYSTEM_ADMIN_ROLE_NAME } from '../../common/config/constants';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -38,7 +37,9 @@ export class RoleService {
 
       const roleList = roles.map((role) => ({
         id: role.id,
-        name: role.name,
+        code: role.code,
+        displayName: role.displayName,
+        isSystem: role.isSystem,
         description: role.description ?? null,
         allowedRoutes: Array.isArray(role.allowedRoutes)
           ? (role.allowedRoutes as unknown[]).filter(
@@ -62,18 +63,21 @@ export class RoleService {
    * 创建角色
    */
   async createRole(dto: CreateRoleReqDto) {
-    this.logger.log(`[操作] 创建角色 - 名称: ${dto.name}`);
+    this.logger.log(`[操作] 创建角色 - 名称: ${dto.displayName} (${dto.code})`);
 
     try {
       await this.prisma.role.create({
         data: {
-          name: dto.name,
+          code: dto.code,
+          displayName: dto.displayName,
           description: dto.description,
           allowedRoutes: dto.allowedRoutes,
         },
       });
 
-      this.logger.log(`[操作] 创建角色成功 - 名称: ${dto.name}`);
+      this.logger.log(
+        `[操作] 创建角色成功 - 名称: ${dto.displayName} (${dto.code})`,
+      );
       return true;
     } catch (error) {
       if (error instanceof BusinessException) {
@@ -92,28 +96,35 @@ export class RoleService {
    */
   async updateRole(role: Role, dto: UpdateRoleReqDto) {
     try {
-      this.logger.log(`[操作] 编辑角色 - ID: ${role.id}, 名称: ${role.name}`);
+      this.logger.log(
+        `[操作] 编辑角色 - ID: ${role.id}, 名称: ${role.displayName}`,
+      );
 
-      if (role.name === SYSTEM_ADMIN_ROLE_NAME) {
+      if (role.isSystem) {
         this.logger.warn(
-          `[验证失败] 编辑角色 - 超管角色 ${role.name} 不可编辑`,
+          `[验证失败] 编辑角色 - 系统角色 ${role.displayName} (${role.code}) 不可编辑`,
         );
         throw new BusinessException(
           ErrorCode.ROLE_CANNOT_EDIT_ADMIN,
-          '系统管理员角色不可编辑',
+          '系统内置角色不可编辑',
         );
       }
 
-      // 角色名唯一校验
-      if (dto.name && dto.name !== role.name) {
+      // 角色名(displayName)是否重复？
+      // 业务上可能允许重复，或者在此处增加唯一性校验。
+      // 这里暂时只校验code的唯一性（但在updateRoleDto中通常不传code，code一般不可改）
+      // 如果 dto 中包含 displayName，检查是否与其他角色的 displayName 重复（可选，视业务需求而定）
+      if (dto.displayName && dto.displayName !== role.displayName) {
         const exist = await this.prisma.role.findFirst({
-          where: { name: dto.name, delete: 0 },
+          where: { displayName: dto.displayName, delete: 0 },
         });
         if (exist) {
-          this.logger.warn(`[验证失败] 编辑角色 - 角色名 ${dto.name} 已存在`);
+          this.logger.warn(
+            `[验证失败] 编辑角色 - 角色显示名称 ${dto.displayName} 已存在`,
+          );
           throw new BusinessException(
             ErrorCode.ROLE_NAME_EXIST,
-            '角色名已存在',
+            '角色显示名称已存在',
           );
         }
       }
@@ -121,7 +132,7 @@ export class RoleService {
       await this.prisma.role.update({
         where: { id: role.id },
         data: {
-          name: dto.name ?? role.name,
+          displayName: dto.displayName ?? role.displayName,
           description: dto.description ?? role.description,
           allowedRoutes:
             dto.allowedRoutes !== undefined
@@ -131,7 +142,7 @@ export class RoleService {
       });
 
       this.logger.log(
-        `[操作] 编辑角色成功 - ID: ${role.id}, 名称: ${dto.name || role.name}`,
+        `[操作] 编辑角色成功 - ID: ${role.id}, 名称: ${dto.displayName || role.displayName}`,
       );
       return true;
     } catch (error) {
@@ -151,15 +162,17 @@ export class RoleService {
    */
   async deleteRole(role: Role) {
     try {
-      this.logger.log(`[操作] 删除角色 - ID: ${role.id}, 名称: ${role.name}`);
+      this.logger.log(
+        `[操作] 删除角色 - ID: ${role.id}, 名称: ${role.displayName}`,
+      );
 
-      if (role.name === SYSTEM_ADMIN_ROLE_NAME) {
+      if (role.isSystem) {
         this.logger.warn(
-          `[验证失败] 删除角色 - 超管角色 ${role.name} 不可删除`,
+          `[验证失败] 删除角色 - 系统角色 ${role.displayName} (${role.code}) 不可删除`,
         );
         throw new BusinessException(
           ErrorCode.ROLE_CANNOT_DELETE_ADMIN,
-          '系统管理员角色不可删除',
+          '系统内置角色不可删除',
         );
       }
 
@@ -169,7 +182,7 @@ export class RoleService {
       });
       if (userCount > 0) {
         this.logger.warn(
-          `[验证失败] 删除角色 - 角色 ${role.name} 有 ${userCount} 个用户关联，无法删除`,
+          `[验证失败] 删除角色 - 角色 ${role.displayName} 有 ${userCount} 个用户关联，无法删除`,
         );
         throw new BusinessException(
           ErrorCode.DATA_STILL_REFERENCED,
@@ -183,7 +196,7 @@ export class RoleService {
       });
 
       this.logger.log(
-        `[操作] 删除角色成功 - ID: ${role.id}, 名称: ${role.name}`,
+        `[操作] 删除角色成功 - ID: ${role.id}, 名称: ${role.displayName}`,
       );
       return true;
     } catch (error) {
@@ -206,7 +219,7 @@ export class RoleService {
       const role = await this.prisma.role.findUnique({ where: { id: dto.id } });
       this.logger.log(
         role
-          ? `[操作] 分配角色菜单权限 - 角色ID: ${dto.id}, 名称: ${role.name}`
+          ? `[操作] 分配角色菜单权限 - 角色ID: ${dto.id}, 名称: ${role.displayName}`
           : `[操作] 分配角色菜单权限 - 角色ID: ${dto.id}`,
       );
       if (!role || role.delete !== 0) {
@@ -216,13 +229,13 @@ export class RoleService {
         throw new BusinessException(ErrorCode.ROLE_NOT_FOUND, '角色不存在');
       }
 
-      if (role.name === SYSTEM_ADMIN_ROLE_NAME) {
+      if (role.isSystem) {
         this.logger.warn(
-          `[验证失败] 分配角色菜单权限 - 超管角色 ${role.name} 不可编辑`,
+          `[验证失败] 分配角色菜单权限 - 系统角色 ${role.displayName} 不可编辑`,
         );
         throw new BusinessException(
           ErrorCode.ROLE_CANNOT_EDIT_ADMIN,
-          '系统管理员角色不可编辑',
+          '系统内置角色不可编辑',
         );
       }
 
@@ -238,7 +251,7 @@ export class RoleService {
       });
 
       this.logger.log(
-        `[操作] 分配角色菜单权限成功 - 角色ID: ${dto.id}, 名称: ${role.name}, 权限数量: ${filteredRoutes.length}`,
+        `[操作] 分配角色菜单权限成功 - 角色ID: ${dto.id}, 名称: ${role.displayName}, 权限数量: ${filteredRoutes.length}`,
       );
       return true;
     } catch (error) {

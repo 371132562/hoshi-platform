@@ -1,14 +1,19 @@
-// 系统内置超级管理员角色名称
-export const SYSTEM_ADMIN_ROLE_NAME = 'admin';
+/**
+ * 系统角色编码枚举
+ */
+export enum RoleCode {
+  ADMIN = 'admin',
+}
 
 /**
  * 系统内置角色
  */
 export const SYSTEM_INIT_ROLES = [
   {
-    name: SYSTEM_ADMIN_ROLE_NAME,
+    code: RoleCode.ADMIN,
+    displayName: '系统管理员', // 本地化显示名称
     description: '拥有所有权限，可以访问所有功能模块',
-    isSystem: true, // 标识为系统内置，前端可据此显示"禁止删除"或特殊Tag
+    isSystem: true, // 标识为系统内置，不可删除
   },
 ] as const;
 
@@ -18,11 +23,11 @@ export const SYSTEM_INIT_ROLES = [
 export const SYSTEM_INIT_USERS = [
   {
     username: 'admin',
-    name: '系统管理员',
+    displayName: '系统管理员',
     phone: '',
     password: '88888888',
-    roleName: SYSTEM_ADMIN_ROLE_NAME,
-    isSystem: true,
+    roleCode: RoleCode.ADMIN,
+    isSystem: true, // 标识为系统内置，不可删除
   },
 ] as const;
 

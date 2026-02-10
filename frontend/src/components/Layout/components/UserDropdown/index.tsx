@@ -2,7 +2,7 @@ import { KeyOutlined, LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-d
 import { Avatar, Dropdown, MenuProps, message, Tag } from 'antd'
 import { FC, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/common/config/constants'
+import { RoleCode } from 'template-backend/src/common/config/constants'
 
 import ResetPasswordModal from '@/components/ResetPasswordModal'
 import { useAuthStore } from '@/stores/authStore'
@@ -30,7 +30,9 @@ const UserDropdown: FC = () => {
                   className="max-w-[340px] min-w-[280px] rounded-lg bg-white px-4 py-3"
                   style={{ lineHeight: 1.6 }}
                 >
-                  <div className="mb-2 text-base font-semibold text-gray-800">{user.name}</div>
+                  <div className="mb-2 text-base font-semibold text-gray-800">
+                    {user.displayName}
+                  </div>
                   <div className="mb-2 flex items-center text-sm text-gray-600">
                     <span className="mr-2 text-gray-400">用户名：</span>
                     <span className="font-mono">{user.username || '-'}</span>
@@ -38,10 +40,10 @@ const UserDropdown: FC = () => {
                   <div className="mb-2 flex items-center text-sm text-gray-600">
                     <span className="mr-2 text-gray-400">角色：</span>
                     <span>
-                      {(user.role?.name === SYSTEM_ADMIN_ROLE_NAME ? (
+                      {(user.role?.code === RoleCode.ADMIN ? (
                         <Tag color="red">系统管理员</Tag>
                       ) : (
-                        user.role?.name
+                        user.role?.displayName
                       )) || '-'}
                     </span>
                   </div>
@@ -113,7 +115,7 @@ const UserDropdown: FC = () => {
         >
           <div
             className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-white/10"
-            title={user?.name || '访客'}
+            title={user?.displayName || '访客'}
           >
             <Avatar
               icon={<UserOutlined />}
@@ -123,7 +125,7 @@ const UserDropdown: FC = () => {
               style={{ width: 32, height: 32 }}
             />
             <span className="max-w-[120px] truncate text-sm font-medium text-white">
-              {user?.name || '访客'}
+              {user?.displayName || '访客'}
             </span>
           </div>
         </Dropdown>
@@ -134,7 +136,7 @@ const UserDropdown: FC = () => {
         <ResetPasswordModal
           open={resetModalOpen}
           userId={String(user.id)}
-          userName={user.name}
+          userName={user.displayName}
           onCancel={() => setResetModalOpen(false)}
         />
       )}

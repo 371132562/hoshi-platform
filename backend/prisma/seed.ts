@@ -8,8 +8,8 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import * as bcrypt from 'bcryptjs';
 import * as path from 'path';
 
+import { SYSTEM_INIT_DATA } from '../src/common/config/constants';
 import { PrismaClient } from './generated/client';
-import { SYSTEM_INIT_DATA } from '../src/types/constants';
 
 // 解析数据库 URL
 const rawUrl = process.env.DATABASE_URL ?? 'file:./db/local.db';
@@ -48,38 +48,48 @@ async function seedAuthData() {
   const roleMap = new Map<string, string>();
 
   for (const roleData of SYSTEM_INIT_DATA.roles) {
+    // 使用 code 查找角色
     let role = await prisma.role.findFirst({
-      where: { name: roleData.name, delete: 0 },
+      where: { code: roleData.code, delete: 0 },
     });
 
     if (role) {
       role = await prisma.role.update({
         where: { id: role.id },
         data: {
+          displayName: roleData.displayName,
           description: roleData.description,
+          isSystem: roleData.isSystem,
           allowedRoutes: [],
         },
       });
-      console.log(`系统角色 "${roleData.name}" 已更新`);
+      console.log(
+        `系统角色 "${roleData.displayName}" (${roleData.code}) 已更新`,
+      );
     } else {
       role = await prisma.role.create({
         data: {
-          name: roleData.name,
+          code: roleData.code,
+          displayName: roleData.displayName,
           description: roleData.description,
+          isSystem: roleData.isSystem,
           allowedRoutes: [],
         },
       });
-      console.log(`系统角色 "${roleData.name}" 已创建`);
+      console.log(
+        `系统角色 "${roleData.displayName}" (${roleData.code}) 已创建`,
+      );
     }
-    roleMap.set(roleData.name, role.id);
+    roleMap.set(roleData.code, role.id);
   }
 
   const encryptedUsers = await generateEncryptedUsers();
   for (const user of encryptedUsers) {
-    const roleId = roleMap.get(user.roleName);
+    // 使用 roleCode 关联角色
+    const roleId = roleMap.get(user.roleCode);
     if (!roleId) {
       console.warn(
-        `警告: 用户 "${user.username}" 引用的角色 "${user.roleName}" 未找到，跳过创建`,
+        `警告: 用户 "${user.username}" 引用的角色 "${user.roleCode}" 未找到，跳过创建`,
       );
       continue;
     }
@@ -92,31 +102,33 @@ async function seedAuthData() {
       await prisma.user.update({
         where: { id: existingUser.id },
         data: {
-          name: user.name,
+          displayName: user.displayName,
           phone: user.phone,
           password: user.password,
+          isSystem: user.isSystem,
           roleId: roleId,
         },
       });
-      console.log(`系统用户 "${user.name}" (${user.username}) 已更新`);
+      console.log(`系统用户 "${user.displayName}" (${user.username}) 已更新`);
     } else {
       await prisma.user.create({
         data: {
           username: user.username,
-          name: user.name,
+          displayName: user.displayName,
           phone: user.phone,
           password: user.password,
+          isSystem: user.isSystem,
           roleId: roleId,
         },
       });
-      console.log(`系统用户 "${user.name}" (${user.username}) 已创建`);
+      console.log(`系统用户 "${user.displayName}" (${user.username}) 已创建`);
     }
   }
 
   console.log('认证数据初始化完成！');
   console.log('\n初始用户账号：');
   SYSTEM_INIT_DATA.users.forEach((u) => {
-    console.log(`账号: ${u.username} / 密码: ${u.password} (${u.name})`);
+    console.log(`账号: ${u.username} / 密码: ${u.password} (${u.displayName})`);
   });
 }
 

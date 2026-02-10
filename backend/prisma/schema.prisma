@@ -36,32 +36,35 @@ model Organization {
 // 角色表
 model Role {
   id            String   @id @default(uuid()) // 主键ID（UUID）
-  name          String // 角色名称（唯一）
-  description   String? // 角色描述
+  code          String   @unique // 角色编码（唯一，如: admin），用于系统逻辑判断
+  displayName   String   // 角色显示名称（如: 系统管理员）
+  description   String?  // 角色描述
+  isSystem      Boolean  @default(false) // 是否为系统内置角色（不可删除）
   allowedRoutes Json     @default("[]") // 允许访问的前端路由地址（JSON数组）
-  users         User[] // 关联到用户表
+  users         User[]   // 关联到用户表
   createTime    DateTime @default(now())
   updateTime    DateTime @updatedAt
   delete        Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@index([id])
-  @@index([name, delete])
+  @@index([displayName, delete])
 }
 
 // 用户表
 model User {
-  id         String   @id @default(uuid()) // 主键ID（UUID）
-  username   String // 用户名（唯一）
-  name       String // 用户姓名
-  phone      String? // 电话号码（可选）
-  password   String // 密码（加密存储）
-  roleId         String // 角色ID（必填）
-  role           Role     @relation(fields: [roleId], references: [id]) // 关联到角色表
-  organizationId String? // 所属组织ID
+  id             String        @id @default(uuid()) // 主键ID（UUID）
+  username       String        // 用户名（唯一）
+  displayName    String        // 用户显示姓名
+  isSystem       Boolean       @default(false) // 是否为系统内置用户（不可删除）
+  phone          String?       // 电话号码（可选）
+  password       String        // 密码（加密存储）
+  roleId         String        // 角色ID（必填）
+  role           Role          @relation(fields: [roleId], references: [id]) // 关联到角色表
+  organizationId String?       // 所属组织ID
   organization   Organization? @relation(fields: [organizationId], references: [id]) // 关联到组织表
-  createTime     DateTime @default(now())
-  updateTime DateTime @updatedAt
-  delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
+  createTime     DateTime      @default(now())
+  updateTime     DateTime      @updatedAt
+  delete         Int           @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@unique([username, delete]) // 用户名在未删除状态下唯一
   @@index([id])

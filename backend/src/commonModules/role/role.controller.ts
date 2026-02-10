@@ -8,7 +8,7 @@ import {
   RoleListResDto,
   UpdateRoleReqDto,
 } from './role.dto';
-import { RoleByIdPipe, RoleNameExistsValidationPipe } from './role.pipes';
+import { RoleByIdPipe } from './role.pipes';
 import { RoleService } from './role.service';
 
 @Controller('role')
@@ -29,7 +29,8 @@ export class RoleController {
   @Post('create')
   async createRole(
     @Body() createRoleDto: CreateRoleReqDto,
-    @Body('name', RoleNameExistsValidationPipe) _name: string,
+    // 这里可以添加 Pipe 校验 code 和 displayName 的唯一性
+    // 为简化，暂时可以在 Service 中校验，或者使用自定义 Pipe
   ) {
     return this.roleService.createRole(createRoleDto);
   }

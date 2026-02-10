@@ -26,16 +26,16 @@ export class UserService {
    * 获取用户列表，支持分页和筛选
    */
   async getUserList(query: UserListReqDto): Promise<UserListResDto> {
-    const { page = 1, pageSize = 10, name, roleId } = query;
+    const { page = 1, pageSize = 10, displayName, roleId } = query;
     this.logger.log(
-      `[操作] 获取用户列表 - 页码: ${page}, 每页: ${pageSize}, 姓名: ${name || '无'}, 角色ID: ${roleId || '无'}`,
+      `[操作] 获取用户列表 - 页码: ${page}, 每页: ${pageSize}, 姓名: ${displayName || '无'}, 角色ID: ${roleId || '无'}`,
     );
 
     try {
       // 构建筛选条件
       const where: Record<string, unknown> = { delete: 0 };
-      if (name) {
-        where.name = { contains: name };
+      if (displayName) {
+        where.displayName = { contains: displayName };
       }
       if (roleId) {
         where.roleId = roleId;
@@ -64,10 +64,14 @@ export class UserService {
       const list = users.map((user) => ({
         id: user.id,
         username: user.username,
-        name: user.name,
+        displayName: user.displayName,
+        isSystem: user.isSystem,
         organizationId: user.organizationId ?? null,
         phone: user.phone ?? null,
-        role: { name: user.role!.name },
+        role: {
+          code: user.role!.code,
+          displayName: user.role!.displayName,
+        },
       }));
 
       return { list, total, page, pageSize };
@@ -85,7 +89,7 @@ export class UserService {
    */
   async createUserEncrypted(dto: CreateUserEncryptedReqDto) {
     this.logger.log(
-      `[操作] 创建用户 - 用户名: ${dto.username}, 姓名: ${dto.name}`,
+      `[操作] 创建用户 - 用户名: ${dto.username}, 姓名: ${dto.displayName}`,
     );
 
     try {
@@ -100,7 +104,7 @@ export class UserService {
       await this.prisma.user.create({
         data: {
           username: dto.username,
-          name: dto.name,
+          displayName: dto.displayName,
           phone: dto.phone,
           password: hashedPassword,
           roleId: dto.roleId,
@@ -108,7 +112,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[操作] 创建用户成功 - 用户名: ${dto.username}, 姓名: ${dto.name}`,
+        `[操作] 创建用户成功 - 用户名: ${dto.username}, 姓名: ${dto.displayName}`,
       );
       return true;
     } catch (error) {
@@ -129,30 +133,30 @@ export class UserService {
   async updateUser(user: User, dto: UpdateUserReqDto) {
     try {
       this.logger.log(
-        `[操作] 编辑用户 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.name}`,
+        `[操作] 编辑用户 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.displayName}`,
       );
 
-      if (user.username === 'admin') {
+      if (user.isSystem) {
         this.logger.warn(
-          `[验证失败] 编辑用户 - 超管用户 ${user.username} 不可编辑`,
+          `[验证失败] 编辑用户 - 系统用户 ${user.username} 不可编辑`,
         );
         throw new BusinessException(
           ErrorCode.USER_CANNOT_EDIT_ADMIN,
-          '系统管理员不可编辑',
+          '系统内置用户不可编辑',
         );
       }
 
       await this.prisma.user.update({
         where: { id: user.id },
         data: {
-          name: dto.name ?? user.name,
+          displayName: dto.displayName ?? user.displayName,
           phone: dto.phone ?? user.phone,
           roleId: dto.roleId ?? user.roleId,
         },
       });
 
       this.logger.log(
-        `[操作] 编辑用户成功 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${dto.name || user.name}`,
+        `[操作] 编辑用户成功 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${dto.displayName || user.displayName}`,
       );
       return true;
     } catch (error) {
@@ -173,16 +177,16 @@ export class UserService {
   async deleteUser(user: User) {
     try {
       this.logger.log(
-        `[操作] 删除用户 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.name}`,
+        `[操作] 删除用户 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.displayName}`,
       );
 
-      if (user.username === 'admin') {
+      if (user.isSystem) {
         this.logger.warn(
-          `[验证失败] 删除用户 - 超管用户 ${user.username} 不可删除`,
+          `[验证失败] 删除用户 - 系统用户 ${user.username} 不可删除`,
         );
         throw new BusinessException(
           ErrorCode.USER_CANNOT_DELETE_ADMIN,
-          '系统管理员不可删除',
+          '系统内置用户不可删除',
         );
       }
 
@@ -192,7 +196,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[操作] 删除用户成功 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.name}`,
+        `[操作] 删除用户成功 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.displayName}`,
       );
       return true;
     } catch (error) {
@@ -216,7 +220,7 @@ export class UserService {
       const user = await this.prisma.user.findUnique({ where: { id: dto.id } });
       this.logger.log(
         user
-          ? `[操作] 重置用户密码 - ID: ${dto.id}, 用户名: ${user.username}, 姓名: ${user.name}`
+          ? `[操作] 重置用户密码 - ID: ${dto.id}, 用户名: ${user.username}, 姓名: ${user.displayName}`
           : `[操作] 重置用户密码 - ID: ${dto.id}`,
       );
       if (!user || user.delete !== 0) {
@@ -238,7 +242,7 @@ export class UserService {
       });
 
       this.logger.log(
-        `[操作] 重置用户密码成功 - ID: ${dto.id}, 用户名: ${user.username}, 姓名: ${user.name}`,
+        `[操作] 重置用户密码成功 - ID: ${dto.id}, 用户名: ${user.username}, 姓名: ${user.displayName}`,
       );
       return true;
     } catch (error) {

@@ -11,12 +11,14 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export type UserItemRes = {
   id: string;
   username: string;
-  name: string;
+  displayName: string;
+  isSystem: boolean;
   organizationId: string | null;
   organization?: { id: string; name: string } | null;
   phone: string | null;
   role: {
-    name?: string;
+    code?: string;
+    displayName?: string;
     description?: string | null;
     allowedRoutes?: string[];
   };
@@ -36,7 +38,7 @@ export class UpdateUserReqDto {
 
   @IsOptional()
   @IsString()
-  name?: string;
+  displayName?: string;
 
   @IsOptional()
   @IsString()
@@ -65,7 +67,7 @@ export class UserListReqDto {
 
   @IsOptional()
   @IsString()
-  name?: string;
+  displayName?: string;
 
   @IsOptional()
   @IsString()
@@ -101,7 +103,7 @@ export class CreateUserEncryptedReqDto {
 
   @IsString()
   @IsNotEmpty({ message: '用户姓名不能为空' })
-  name: string;
+  displayName: string;
 
   @IsOptional()
   @IsString()

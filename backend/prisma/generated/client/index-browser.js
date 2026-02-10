@@ -129,8 +129,10 @@ exports.Prisma.OrganizationScalarFieldEnum = {
 
 exports.Prisma.RoleScalarFieldEnum = {
   id: 'id',
-  name: 'name',
+  code: 'code',
+  displayName: 'displayName',
   description: 'description',
+  isSystem: 'isSystem',
   allowedRoutes: 'allowedRoutes',
   createTime: 'createTime',
   updateTime: 'updateTime',
@@ -140,7 +142,8 @@ exports.Prisma.RoleScalarFieldEnum = {
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
-  name: 'name',
+  displayName: 'displayName',
+  isSystem: 'isSystem',
   phone: 'phone',
   password: 'password',
   roleId: 'roleId',

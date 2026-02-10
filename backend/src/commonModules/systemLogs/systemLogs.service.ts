@@ -304,9 +304,11 @@ export class SystemLogsService {
       // 查询用户表，匹配用户名 -> 姓名
       const users = await this.prisma.user.findMany({
         where: { username: { in: usernames }, delete: 0 },
-        select: { username: true, name: true },
+        select: { username: true, displayName: true },
       });
-      const usernameToName = new Map(users.map((u) => [u.username, u.name]));
+      const usernameToName = new Map(
+        users.map((u) => [u.username, u.displayName]),
+      );
 
       const list = usernames.map((username) => ({
         username: username,

@@ -1,5 +1,5 @@
 import React from 'react'
-import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/common/config/constants'
+import { RoleCode } from 'template-backend/src/common/config/constants'
 
 import { RouteItem } from '@/types'
 
@@ -62,16 +62,16 @@ export const getPublicMenuRoutes = (): RouteItem[] => publicRoutes
  * - 未登录/无角色：返回空数组
  *
  * @param userRole - 用户角色信息
- * @param userRole.name - 角色名称
+ * @param userRole.code - 角色编码
  * @param userRole.allowedRoutes - 该角色允许访问的路由路径数组
  * @returns 过滤后的后台菜单路由
  */
 export const getAdminMenuRoutes = (userRole?: {
-  name: string
+  code: string
   allowedRoutes: string[]
 }): RouteItem[] => {
   // 超管：全部后台菜单
-  if (userRole?.name === SYSTEM_ADMIN_ROLE_NAME) {
+  if (userRole?.code === RoleCode.ADMIN) {
     return adminRoutes
   }
 
@@ -285,15 +285,15 @@ export const getPublicLayoutData = (pathname: string) => {
  */
 export const getAdminLayoutData = (
   pathname: string,
-  user?: { role?: { name?: string; allowedRoutes?: string[] } } | null
+  user?: { role?: { code?: string; allowedRoutes?: string[] } } | null
 ) => {
   const allRoutes = getAllRoutes()
   const pathSegments = pathname.split('/').filter(Boolean)
 
   // 1. 获取侧边菜单路由（已根据用户权限过滤）
   const sideMenuRoutes = getAdminMenuRoutes(
-    user?.role?.name
-      ? { name: user.role.name, allowedRoutes: user.role.allowedRoutes || [] }
+    user?.role?.code
+      ? { code: user.role.code, allowedRoutes: user.role.allowedRoutes || [] }
       : undefined
   )
 
@@ -317,7 +317,7 @@ export const getAdminLayoutData = (
   // 5. 权限判断
   let hasPermission = false
   if (user) {
-    if (user.role?.name === SYSTEM_ADMIN_ROLE_NAME) {
+    if (user.role?.code === RoleCode.ADMIN) {
       // 系统管理员有全部权限
       hasPermission = true
     } else if (currentRoute?.menuParent) {

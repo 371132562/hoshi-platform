@@ -22,7 +22,7 @@ import { decryptSalt, encryptData } from '../utils/crypto'
 // 临时类型定义，用于前端表单
 type CreateUserFormData = {
   username: string
-  name: string
+  displayName: string
   organizationId?: string
   phone?: string
   password: string
@@ -38,7 +38,7 @@ type ResetPasswordFormData = {
 type UserPageParams = {
   page?: number
   pageSize?: number
-  name?: string
+  displayName?: string
   roleId?: string
 }
 
@@ -88,7 +88,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
 
   // 重置搜索条件
   resetUserSearch: () => {
-    get().updateUserPageParams({ page: 1, name: undefined, roleId: undefined })
+    get().updateUserPageParams({ page: 1, displayName: undefined, roleId: undefined })
   },
 
   // 创建用户

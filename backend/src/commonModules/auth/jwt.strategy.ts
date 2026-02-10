@@ -34,7 +34,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           role: {
             select: {
               id: true,
-              name: true,
+              code: true,
+              displayName: true,
               description: true,
               allowedRoutes: true,
             },
@@ -56,21 +57,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }
 
       // 返回用户信息，这些信息会被注入到请求对象中
+      // 必须符合 UserInfo 类型定义
       return {
         userId: user.id,
         username: user.username,
-        userName: user.name,
+        displayName: user.displayName,
         phone: user.phone,
         organizationId: user.organizationId,
         organization: user.organization
           ? { id: user.organization.id, name: user.organization.name }
           : null,
         roleId: user.roleId,
-        roleName: user.role?.name,
         role: user.role
           ? {
               id: user.role.id,
-              name: user.role.name,
+              code: user.role.code,
+              displayName: user.role.displayName,
               description: user.role.description,
               allowedRoutes: Array.isArray(user.role.allowedRoutes)
                 ? (user.role.allowedRoutes as string[])

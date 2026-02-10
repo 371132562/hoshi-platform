@@ -6,14 +6,14 @@ interface RequestWithUser {
 
 export type UserInfo = {
   userId: string;
-  userCode: string;
-  userName: string;
+  username: string; // account name (login)
+  displayName: string; // localized display name
   phone?: string;
   roleId?: string;
-  roleName?: string;
   role?: {
     id: string;
-    name: string;
+    code?: string;
+    displayName?: string;
     description?: string;
     allowedRoutes: string[];
   };

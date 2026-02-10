@@ -13,10 +13,7 @@ import {
   Tag
 } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
-import {
-  SYSTEM_ADMIN_ROLE_NAME,
-  SYSTEM_INIT_DATA
-} from 'template-backend/src/common/config/constants'
+import { RoleCode } from 'template-backend/src/common/config/constants'
 import type { RoleListItemResDto } from 'template-backend/src/types/dto'
 
 import { getMenuOptionsForRoleEdit } from '../../../router/routesConfig'
@@ -24,7 +21,6 @@ import { useRoleStore } from '../../../stores/roleStore'
 
 // 角色管理页面
 const RoleManagement: React.FC = () => {
-  // Store 取值
   const roleList = useRoleStore(s => s.roleList)
   const loading = useRoleStore(s => s.loading)
   const fetchRoleList = useRoleStore(s => s.fetchRoleList)
@@ -33,7 +29,6 @@ const RoleManagement: React.FC = () => {
   const deleteRole = useRoleStore(s => s.deleteRole)
   const assignRoleRoutes = useRoleStore(s => s.assignRoleRoutes)
 
-  // React Hooks: useState
   const [modalOpen, setModalOpen] = useState(false)
   const [editRole, setEditRole] = useState<RoleListItemResDto | null>(null)
   const [form] = Form.useForm()
@@ -41,12 +36,10 @@ const RoleManagement: React.FC = () => {
   const [assignRole, setAssignRole] = useState<RoleListItemResDto | null>(null)
   const [assignForm] = Form.useForm()
 
-  // React Hooks: useEffect
   useEffect(() => {
     fetchRoleList()
   }, [])
 
-  // 方法定义
   const openModal = (role?: RoleListItemResDto) => {
     setEditRole(role || null)
     setModalOpen(true)
@@ -96,18 +89,21 @@ const RoleManagement: React.FC = () => {
     }
   }
 
-  // Const 变量 - 派生变量
   const menuOptions = getMenuOptionsForRoleEdit()
 
   const columns = useMemo(
     () => [
       {
+        title: '角色编码',
+        dataIndex: 'code',
+        key: 'code'
+      },
+      {
         title: '角色名称',
-        dataIndex: 'name',
-        key: 'name',
-        render: (v: string) => {
-          const systemRole = SYSTEM_INIT_DATA.roles.find(r => r.name === v && r.isSystem)
-          return systemRole ? <Tag color="red">系统管理员</Tag> : v
+        dataIndex: 'displayName',
+        key: 'displayName',
+        render: (v: string, record: RoleListItemResDto) => {
+          return record.isSystem ? <Tag color="red">{v}</Tag> : v
         }
       },
       { title: '描述', dataIndex: 'description', key: 'description' },
@@ -121,7 +117,7 @@ const RoleManagement: React.FC = () => {
               color="primary"
               variant="outlined"
               onClick={() => openAssignModal(record)}
-              disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
+              disabled={record.code === RoleCode.ADMIN} // 仅系统管理员(admin)拥有所有权限，无需分配
             >
               分配权限
             </Button>
@@ -129,7 +125,7 @@ const RoleManagement: React.FC = () => {
               color="primary"
               variant="outlined"
               onClick={() => openModal(record)}
-              disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
+              // 系统角色允许编辑名称和描述，但不允许修改code
             >
               编辑
             </Button>
@@ -140,7 +136,7 @@ const RoleManagement: React.FC = () => {
                   此操作不可恢复，请谨慎操作。
                   <br />
                   <span style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                    将被删除：角色 {record.name}
+                    将被删除：角色 {record.displayName}
                   </span>
                 </span>
               }
@@ -150,14 +146,14 @@ const RoleManagement: React.FC = () => {
                   message.success('角色删除成功')
                 }
               }}
-              disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
+              disabled={record.isSystem}
               okText="确定"
               cancelText="取消"
             >
               <Button
                 color="danger"
                 variant="outlined"
-                disabled={record.name === SYSTEM_ADMIN_ROLE_NAME}
+                disabled={record.isSystem}
               >
                 删除
               </Button>
@@ -199,15 +195,26 @@ const RoleManagement: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ name: '', description: '' }}
+          initialValues={{ code: '', displayName: '', description: '' }}
         >
           <Form.Item
-            name="name"
-            label="角色名称（admin为系统保留角色名，不可新增/编辑）"
+            name="code"
+            label="角色编码（唯一标识，不可重复）"
+            rules={[{ required: true, message: '请输入角色编码' }]}
+          >
+            <Input
+              disabled={!!editRole} // 编辑时不可修改编码
+              maxLength={20}
+              placeholder="请输入角色编码 (e.g. admin)"
+              showCount
+            />
+          </Form.Item>
+          <Form.Item
+            name="displayName"
+            label="角色显示名称"
             rules={[{ required: true, message: '请输入角色名称' }]}
           >
             <Input
-              disabled={editRole?.name === SYSTEM_ADMIN_ROLE_NAME}
               maxLength={20}
               placeholder="请输入角色名称"
               showCount

@@ -2618,8 +2618,10 @@ export namespace Prisma {
 
   export type RoleMinAggregateOutputType = {
     id: string | null
-    name: string | null
+    code: string | null
+    displayName: string | null
     description: string | null
+    isSystem: boolean | null
     createTime: Date | null
     updateTime: Date | null
     delete: number | null
@@ -2627,8 +2629,10 @@ export namespace Prisma {
 
   export type RoleMaxAggregateOutputType = {
     id: string | null
-    name: string | null
+    code: string | null
+    displayName: string | null
     description: string | null
+    isSystem: boolean | null
     createTime: Date | null
     updateTime: Date | null
     delete: number | null
@@ -2636,8 +2640,10 @@ export namespace Prisma {
 
   export type RoleCountAggregateOutputType = {
     id: number
-    name: number
+    code: number
+    displayName: number
     description: number
+    isSystem: number
     allowedRoutes: number
     createTime: number
     updateTime: number
@@ -2656,8 +2662,10 @@ export namespace Prisma {
 
   export type RoleMinAggregateInputType = {
     id?: true
-    name?: true
+    code?: true
+    displayName?: true
     description?: true
+    isSystem?: true
     createTime?: true
     updateTime?: true
     delete?: true
@@ -2665,8 +2673,10 @@ export namespace Prisma {
 
   export type RoleMaxAggregateInputType = {
     id?: true
-    name?: true
+    code?: true
+    displayName?: true
     description?: true
+    isSystem?: true
     createTime?: true
     updateTime?: true
     delete?: true
@@ -2674,8 +2684,10 @@ export namespace Prisma {
 
   export type RoleCountAggregateInputType = {
     id?: true
-    name?: true
+    code?: true
+    displayName?: true
     description?: true
+    isSystem?: true
     allowedRoutes?: true
     createTime?: true
     updateTime?: true
@@ -2771,8 +2783,10 @@ export namespace Prisma {
 
   export type RoleGroupByOutputType = {
     id: string
-    name: string
+    code: string
+    displayName: string
     description: string | null
+    isSystem: boolean
     allowedRoutes: JsonValue
     createTime: Date
     updateTime: Date
@@ -2800,8 +2814,10 @@ export namespace Prisma {
 
   export type RoleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
+    code?: boolean
+    displayName?: boolean
     description?: boolean
+    isSystem?: boolean
     allowedRoutes?: boolean
     createTime?: boolean
     updateTime?: boolean
@@ -2812,8 +2828,10 @@ export namespace Prisma {
 
   export type RoleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
+    code?: boolean
+    displayName?: boolean
     description?: boolean
+    isSystem?: boolean
     allowedRoutes?: boolean
     createTime?: boolean
     updateTime?: boolean
@@ -2822,8 +2840,10 @@ export namespace Prisma {
 
   export type RoleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
+    code?: boolean
+    displayName?: boolean
     description?: boolean
+    isSystem?: boolean
     allowedRoutes?: boolean
     createTime?: boolean
     updateTime?: boolean
@@ -2832,15 +2852,17 @@ export namespace Prisma {
 
   export type RoleSelectScalar = {
     id?: boolean
-    name?: boolean
+    code?: boolean
+    displayName?: boolean
     description?: boolean
+    isSystem?: boolean
     allowedRoutes?: boolean
     createTime?: boolean
     updateTime?: boolean
     delete?: boolean
   }
 
-  export type RoleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "allowedRoutes" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["role"]>
+  export type RoleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "displayName" | "description" | "isSystem" | "allowedRoutes" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["role"]>
   export type RoleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Role$usersArgs<ExtArgs>
     _count?: boolean | RoleCountOutputTypeDefaultArgs<ExtArgs>
@@ -2855,8 +2877,10 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      name: string
+      code: string
+      displayName: string
       description: string | null
+      isSystem: boolean
       allowedRoutes: Prisma.JsonValue
       createTime: Date
       updateTime: Date
@@ -3286,8 +3310,10 @@ export namespace Prisma {
    */
   interface RoleFieldRefs {
     readonly id: FieldRef<"Role", 'String'>
-    readonly name: FieldRef<"Role", 'String'>
+    readonly code: FieldRef<"Role", 'String'>
+    readonly displayName: FieldRef<"Role", 'String'>
     readonly description: FieldRef<"Role", 'String'>
+    readonly isSystem: FieldRef<"Role", 'Boolean'>
     readonly allowedRoutes: FieldRef<"Role", 'Json'>
     readonly createTime: FieldRef<"Role", 'DateTime'>
     readonly updateTime: FieldRef<"Role", 'DateTime'>
@@ -3743,7 +3769,8 @@ export namespace Prisma {
   export type UserMinAggregateOutputType = {
     id: string | null
     username: string | null
-    name: string | null
+    displayName: string | null
+    isSystem: boolean | null
     phone: string | null
     password: string | null
     roleId: string | null
@@ -3756,7 +3783,8 @@ export namespace Prisma {
   export type UserMaxAggregateOutputType = {
     id: string | null
     username: string | null
-    name: string | null
+    displayName: string | null
+    isSystem: boolean | null
     phone: string | null
     password: string | null
     roleId: string | null
@@ -3769,7 +3797,8 @@ export namespace Prisma {
   export type UserCountAggregateOutputType = {
     id: number
     username: number
-    name: number
+    displayName: number
+    isSystem: number
     phone: number
     password: number
     roleId: number
@@ -3792,7 +3821,8 @@ export namespace Prisma {
   export type UserMinAggregateInputType = {
     id?: true
     username?: true
-    name?: true
+    displayName?: true
+    isSystem?: true
     phone?: true
     password?: true
     roleId?: true
@@ -3805,7 +3835,8 @@ export namespace Prisma {
   export type UserMaxAggregateInputType = {
     id?: true
     username?: true
-    name?: true
+    displayName?: true
+    isSystem?: true
     phone?: true
     password?: true
     roleId?: true
@@ -3818,7 +3849,8 @@ export namespace Prisma {
   export type UserCountAggregateInputType = {
     id?: true
     username?: true
-    name?: true
+    displayName?: true
+    isSystem?: true
     phone?: true
     password?: true
     roleId?: true
@@ -3918,7 +3950,8 @@ export namespace Prisma {
   export type UserGroupByOutputType = {
     id: string
     username: string
-    name: string
+    displayName: string
+    isSystem: boolean
     phone: string | null
     password: string
     roleId: string
@@ -3950,7 +3983,8 @@ export namespace Prisma {
   export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     username?: boolean
-    name?: boolean
+    displayName?: boolean
+    isSystem?: boolean
     phone?: boolean
     password?: boolean
     roleId?: boolean
@@ -3965,7 +3999,8 @@ export namespace Prisma {
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     username?: boolean
-    name?: boolean
+    displayName?: boolean
+    isSystem?: boolean
     phone?: boolean
     password?: boolean
     roleId?: boolean
@@ -3980,7 +4015,8 @@ export namespace Prisma {
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     username?: boolean
-    name?: boolean
+    displayName?: boolean
+    isSystem?: boolean
     phone?: boolean
     password?: boolean
     roleId?: boolean
@@ -3995,7 +4031,8 @@ export namespace Prisma {
   export type UserSelectScalar = {
     id?: boolean
     username?: boolean
-    name?: boolean
+    displayName?: boolean
+    isSystem?: boolean
     phone?: boolean
     password?: boolean
     roleId?: boolean
@@ -4005,7 +4042,7 @@ export namespace Prisma {
     delete?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "name" | "phone" | "password" | "roleId" | "organizationId" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "displayName" | "isSystem" | "phone" | "password" | "roleId" | "organizationId" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     role?: boolean | RoleDefaultArgs<ExtArgs>
     organization?: boolean | User$organizationArgs<ExtArgs>
@@ -4028,7 +4065,8 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       username: string
-      name: string
+      displayName: string
+      isSystem: boolean
       phone: string | null
       password: string
       roleId: string
@@ -4463,7 +4501,8 @@ export namespace Prisma {
   interface UserFieldRefs {
     readonly id: FieldRef<"User", 'String'>
     readonly username: FieldRef<"User", 'String'>
-    readonly name: FieldRef<"User", 'String'>
+    readonly displayName: FieldRef<"User", 'String'>
+    readonly isSystem: FieldRef<"User", 'Boolean'>
     readonly phone: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
     readonly roleId: FieldRef<"User", 'String'>
@@ -8079,8 +8118,10 @@ export namespace Prisma {
 
   export const RoleScalarFieldEnum: {
     id: 'id',
-    name: 'name',
+    code: 'code',
+    displayName: 'displayName',
     description: 'description',
+    isSystem: 'isSystem',
     allowedRoutes: 'allowedRoutes',
     createTime: 'createTime',
     updateTime: 'updateTime',
@@ -8093,7 +8134,8 @@ export namespace Prisma {
   export const UserScalarFieldEnum: {
     id: 'id',
     username: 'username',
-    name: 'name',
+    displayName: 'displayName',
+    isSystem: 'isSystem',
     phone: 'phone',
     password: 'password',
     roleId: 'roleId',
@@ -8212,6 +8254,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -8320,8 +8369,10 @@ export namespace Prisma {
     OR?: RoleWhereInput[]
     NOT?: RoleWhereInput | RoleWhereInput[]
     id?: StringFilter<"Role"> | string
-    name?: StringFilter<"Role"> | string
+    code?: StringFilter<"Role"> | string
+    displayName?: StringFilter<"Role"> | string
     description?: StringNullableFilter<"Role"> | string | null
+    isSystem?: BoolFilter<"Role"> | boolean
     allowedRoutes?: JsonFilter<"Role">
     createTime?: DateTimeFilter<"Role"> | Date | string
     updateTime?: DateTimeFilter<"Role"> | Date | string
@@ -8331,8 +8382,10 @@ export namespace Prisma {
 
   export type RoleOrderByWithRelationInput = {
     id?: SortOrder
-    name?: SortOrder
+    code?: SortOrder
+    displayName?: SortOrder
     description?: SortOrderInput | SortOrder
+    isSystem?: SortOrder
     allowedRoutes?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -8342,22 +8395,26 @@ export namespace Prisma {
 
   export type RoleWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    code?: string
     AND?: RoleWhereInput | RoleWhereInput[]
     OR?: RoleWhereInput[]
     NOT?: RoleWhereInput | RoleWhereInput[]
-    name?: StringFilter<"Role"> | string
+    displayName?: StringFilter<"Role"> | string
     description?: StringNullableFilter<"Role"> | string | null
+    isSystem?: BoolFilter<"Role"> | boolean
     allowedRoutes?: JsonFilter<"Role">
     createTime?: DateTimeFilter<"Role"> | Date | string
     updateTime?: DateTimeFilter<"Role"> | Date | string
     delete?: IntFilter<"Role"> | number
     users?: UserListRelationFilter
-  }, "id">
+  }, "id" | "code">
 
   export type RoleOrderByWithAggregationInput = {
     id?: SortOrder
-    name?: SortOrder
+    code?: SortOrder
+    displayName?: SortOrder
     description?: SortOrderInput | SortOrder
+    isSystem?: SortOrder
     allowedRoutes?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -8374,8 +8431,10 @@ export namespace Prisma {
     OR?: RoleScalarWhereWithAggregatesInput[]
     NOT?: RoleScalarWhereWithAggregatesInput | RoleScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Role"> | string
-    name?: StringWithAggregatesFilter<"Role"> | string
+    code?: StringWithAggregatesFilter<"Role"> | string
+    displayName?: StringWithAggregatesFilter<"Role"> | string
     description?: StringNullableWithAggregatesFilter<"Role"> | string | null
+    isSystem?: BoolWithAggregatesFilter<"Role"> | boolean
     allowedRoutes?: JsonWithAggregatesFilter<"Role">
     createTime?: DateTimeWithAggregatesFilter<"Role"> | Date | string
     updateTime?: DateTimeWithAggregatesFilter<"Role"> | Date | string
@@ -8388,7 +8447,8 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     id?: StringFilter<"User"> | string
     username?: StringFilter<"User"> | string
-    name?: StringFilter<"User"> | string
+    displayName?: StringFilter<"User"> | string
+    isSystem?: BoolFilter<"User"> | boolean
     phone?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
     roleId?: StringFilter<"User"> | string
@@ -8403,7 +8463,8 @@ export namespace Prisma {
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     username?: SortOrder
-    name?: SortOrder
+    displayName?: SortOrder
+    isSystem?: SortOrder
     phone?: SortOrderInput | SortOrder
     password?: SortOrder
     roleId?: SortOrder
@@ -8422,7 +8483,8 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     username?: StringFilter<"User"> | string
-    name?: StringFilter<"User"> | string
+    displayName?: StringFilter<"User"> | string
+    isSystem?: BoolFilter<"User"> | boolean
     phone?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
     roleId?: StringFilter<"User"> | string
@@ -8437,7 +8499,8 @@ export namespace Prisma {
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     username?: SortOrder
-    name?: SortOrder
+    displayName?: SortOrder
+    isSystem?: SortOrder
     phone?: SortOrderInput | SortOrder
     password?: SortOrder
     roleId?: SortOrder
@@ -8458,7 +8521,8 @@ export namespace Prisma {
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"User"> | string
     username?: StringWithAggregatesFilter<"User"> | string
-    name?: StringWithAggregatesFilter<"User"> | string
+    displayName?: StringWithAggregatesFilter<"User"> | string
+    isSystem?: BoolWithAggregatesFilter<"User"> | boolean
     phone?: StringNullableWithAggregatesFilter<"User"> | string | null
     password?: StringWithAggregatesFilter<"User"> | string
     roleId?: StringWithAggregatesFilter<"User"> | string
@@ -8740,8 +8804,10 @@ export namespace Prisma {
 
   export type RoleCreateInput = {
     id?: string
-    name: string
+    code: string
+    displayName: string
     description?: string | null
+    isSystem?: boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -8751,8 +8817,10 @@ export namespace Prisma {
 
   export type RoleUncheckedCreateInput = {
     id?: string
-    name: string
+    code: string
+    displayName: string
     description?: string | null
+    isSystem?: boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -8762,8 +8830,10 @@ export namespace Prisma {
 
   export type RoleUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8773,8 +8843,10 @@ export namespace Prisma {
 
   export type RoleUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8784,8 +8856,10 @@ export namespace Prisma {
 
   export type RoleCreateManyInput = {
     id?: string
-    name: string
+    code: string
+    displayName: string
     description?: string | null
+    isSystem?: boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -8794,8 +8868,10 @@ export namespace Prisma {
 
   export type RoleUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8804,8 +8880,10 @@ export namespace Prisma {
 
   export type RoleUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8815,7 +8893,8 @@ export namespace Prisma {
   export type UserCreateInput = {
     id?: string
     username: string
-    name: string
+    displayName: string
+    isSystem?: boolean
     phone?: string | null
     password: string
     createTime?: Date | string
@@ -8828,7 +8907,8 @@ export namespace Prisma {
   export type UserUncheckedCreateInput = {
     id?: string
     username: string
-    name: string
+    displayName: string
+    isSystem?: boolean
     phone?: string | null
     password: string
     roleId: string
@@ -8841,7 +8921,8 @@ export namespace Prisma {
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8854,7 +8935,8 @@ export namespace Prisma {
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     roleId?: StringFieldUpdateOperationsInput | string
@@ -8867,7 +8949,8 @@ export namespace Prisma {
   export type UserCreateManyInput = {
     id?: string
     username: string
-    name: string
+    displayName: string
+    isSystem?: boolean
     phone?: string | null
     password: string
     roleId: string
@@ -8880,7 +8963,8 @@ export namespace Prisma {
   export type UserUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8891,7 +8975,8 @@ export namespace Prisma {
   export type UserUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     roleId?: StringFieldUpdateOperationsInput | string
@@ -9292,6 +9377,11 @@ export namespace Prisma {
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
   }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -9313,8 +9403,10 @@ export namespace Prisma {
 
   export type RoleCountOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
+    code?: SortOrder
+    displayName?: SortOrder
     description?: SortOrder
+    isSystem?: SortOrder
     allowedRoutes?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -9327,8 +9419,10 @@ export namespace Prisma {
 
   export type RoleMaxOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
+    code?: SortOrder
+    displayName?: SortOrder
     description?: SortOrder
+    isSystem?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
     delete?: SortOrder
@@ -9336,8 +9430,10 @@ export namespace Prisma {
 
   export type RoleMinOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
+    code?: SortOrder
+    displayName?: SortOrder
     description?: SortOrder
+    isSystem?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
     delete?: SortOrder
@@ -9345,6 +9441,14 @@ export namespace Prisma {
 
   export type RoleSumOrderByAggregateInput = {
     delete?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -9381,7 +9485,8 @@ export namespace Prisma {
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     username?: SortOrder
-    name?: SortOrder
+    displayName?: SortOrder
+    isSystem?: SortOrder
     phone?: SortOrder
     password?: SortOrder
     roleId?: SortOrder
@@ -9398,7 +9503,8 @@ export namespace Prisma {
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
     username?: SortOrder
-    name?: SortOrder
+    displayName?: SortOrder
+    isSystem?: SortOrder
     phone?: SortOrder
     password?: SortOrder
     roleId?: SortOrder
@@ -9411,7 +9517,8 @@ export namespace Prisma {
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
     username?: SortOrder
-    name?: SortOrder
+    displayName?: SortOrder
+    isSystem?: SortOrder
     phone?: SortOrder
     password?: SortOrder
     roleId?: SortOrder
@@ -9691,6 +9798,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type UserUpdateManyWithoutRoleNestedInput = {
     create?: XOR<UserCreateWithoutRoleInput, UserUncheckedCreateWithoutRoleInput> | UserCreateWithoutRoleInput[] | UserUncheckedCreateWithoutRoleInput[]
     connectOrCreate?: UserCreateOrConnectWithoutRoleInput | UserCreateOrConnectWithoutRoleInput[]
@@ -9888,6 +9999,19 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
   }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -9985,7 +10109,8 @@ export namespace Prisma {
   export type UserCreateWithoutOrganizationInput = {
     id?: string
     username: string
-    name: string
+    displayName: string
+    isSystem?: boolean
     phone?: string | null
     password: string
     createTime?: Date | string
@@ -9997,7 +10122,8 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutOrganizationInput = {
     id?: string
     username: string
-    name: string
+    displayName: string
+    isSystem?: boolean
     phone?: string | null
     password: string
     roleId: string
@@ -10099,7 +10225,8 @@ export namespace Prisma {
     NOT?: UserScalarWhereInput | UserScalarWhereInput[]
     id?: StringFilter<"User"> | string
     username?: StringFilter<"User"> | string
-    name?: StringFilter<"User"> | string
+    displayName?: StringFilter<"User"> | string
+    isSystem?: BoolFilter<"User"> | boolean
     phone?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
     roleId?: StringFilter<"User"> | string
@@ -10112,7 +10239,8 @@ export namespace Prisma {
   export type UserCreateWithoutRoleInput = {
     id?: string
     username: string
-    name: string
+    displayName: string
+    isSystem?: boolean
     phone?: string | null
     password: string
     createTime?: Date | string
@@ -10124,7 +10252,8 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutRoleInput = {
     id?: string
     username: string
-    name: string
+    displayName: string
+    isSystem?: boolean
     phone?: string | null
     password: string
     organizationId?: string | null
@@ -10160,8 +10289,10 @@ export namespace Prisma {
 
   export type RoleCreateWithoutUsersInput = {
     id?: string
-    name: string
+    code: string
+    displayName: string
     description?: string | null
+    isSystem?: boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -10170,8 +10301,10 @@ export namespace Prisma {
 
   export type RoleUncheckedCreateWithoutUsersInput = {
     id?: string
-    name: string
+    code: string
+    displayName: string
     description?: string | null
+    isSystem?: boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -10223,8 +10356,10 @@ export namespace Prisma {
 
   export type RoleUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10233,8 +10368,10 @@ export namespace Prisma {
 
   export type RoleUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     allowedRoutes?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10286,7 +10423,8 @@ export namespace Prisma {
   export type UserCreateManyOrganizationInput = {
     id?: string
     username: string
-    name: string
+    displayName: string
+    isSystem?: boolean
     phone?: string | null
     password: string
     roleId: string
@@ -10329,7 +10467,8 @@ export namespace Prisma {
   export type UserUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10341,7 +10480,8 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     roleId?: StringFieldUpdateOperationsInput | string
@@ -10353,7 +10493,8 @@ export namespace Prisma {
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     roleId?: StringFieldUpdateOperationsInput | string
@@ -10365,7 +10506,8 @@ export namespace Prisma {
   export type UserCreateManyRoleInput = {
     id?: string
     username: string
-    name: string
+    displayName: string
+    isSystem?: boolean
     phone?: string | null
     password: string
     organizationId?: string | null
@@ -10377,7 +10519,8 @@ export namespace Prisma {
   export type UserUpdateWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10389,7 +10532,8 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10401,7 +10545,8 @@ export namespace Prisma {
   export type UserUncheckedUpdateManyWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
