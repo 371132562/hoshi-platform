@@ -21,14 +21,14 @@ export enum ErrorCode {
   // 角色管理相关错误 (4xxxx)
   ROLE_NOT_FOUND = 40001, // 角色不存在
   ROLE_NAME_EXIST = 40002, // 角色名已存在
-  ROLE_CANNOT_DELETE_ADMIN = 40003, // 超管角色不可删除
-  ROLE_CANNOT_EDIT_ADMIN = 40004, // 超管角色不可编辑
+  ROLE_CANNOT_DELETE_ADMIN = 40003, // 系统管理员角色不可删除
+  ROLE_CANNOT_EDIT_ADMIN = 40004, // 系统管理员角色不可编辑
 
   // 用户管理相关错误 (4xxxx)
   USER_NOT_FOUND = 40011, // 用户不存在
   USER_CODE_EXIST = 40012, // 用户编号已存在
-  USER_CANNOT_DELETE_ADMIN = 40013, // 超管用户不可删除
-  USER_CANNOT_EDIT_ADMIN = 40014, // 超管用户不可编辑
+  USER_CANNOT_DELETE_ADMIN = 40013, // 系统管理员不可删除
+  USER_CANNOT_EDIT_ADMIN = 40014, // 系统管理员不可编辑
 
   // 文章管理相关错误 (4xxxx)
   ARTICLE_NOT_FOUND = 40021, // 文章不存在

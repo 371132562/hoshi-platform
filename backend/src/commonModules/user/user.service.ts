@@ -138,7 +138,7 @@ export class UserService {
         );
         throw new BusinessException(
           ErrorCode.USER_CANNOT_EDIT_ADMIN,
-          '超管用户不可编辑',
+          '系统管理员不可编辑',
         );
       }
 
@@ -182,7 +182,7 @@ export class UserService {
         );
         throw new BusinessException(
           ErrorCode.USER_CANNOT_DELETE_ADMIN,
-          '超管用户不可删除',
+          '系统管理员不可删除',
         );
       }
 

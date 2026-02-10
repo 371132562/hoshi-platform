@@ -9,6 +9,7 @@ import * as bcrypt from 'bcryptjs';
 import * as path from 'path';
 
 import { PrismaClient } from './generated/client';
+import { SYSTEM_INIT_DATA } from '../src/types/constants';
 
 // 解析数据库 URL
 const rawUrl = process.env.DATABASE_URL ?? 'file:./db/local.db';
@@ -22,16 +23,6 @@ if (!path.isAbsolute(url)) {
 const adapter = new PrismaBetterSqlite3({ url });
 const prisma = new PrismaClient({ adapter });
 
-// 初始超管用户数据
-const initialUsers = [
-  {
-    username: 'admin',
-    name: '超级管理员',
-    phone: '',
-    password: '88888888',
-  },
-];
-
 // 生成加密密码
 const generatePassword = async (password: string) => {
   const saltRounds = 10;
@@ -41,7 +32,7 @@ const generatePassword = async (password: string) => {
 // 生成加密后的用户数据
 const generateEncryptedUsers = async () => {
   return Promise.all(
-    initialUsers.map(async (user) => ({
+    SYSTEM_INIT_DATA.users.map(async (user) => ({
       ...user,
       password: await generatePassword(user.password),
     })),
@@ -53,35 +44,50 @@ const generateEncryptedUsers = async () => {
  */
 async function seedAuthData() {
   console.log('开始初始化认证数据...');
-  // 只保留超管角色
-  let adminRole = await prisma.role.findFirst({
-    where: { name: 'admin', delete: 0 },
-  });
-  if (adminRole) {
-    adminRole = await prisma.role.update({
-      where: { id: adminRole.id },
-      data: {
-        description: '拥有所有权限，可以访问所有功能模块',
-        allowedRoutes: [],
-      },
+
+  const roleMap = new Map<string, string>();
+
+  for (const roleData of SYSTEM_INIT_DATA.roles) {
+    let role = await prisma.role.findFirst({
+      where: { name: roleData.name, delete: 0 },
     });
-    console.log('超管角色已存在，已更新');
-  } else {
-    adminRole = await prisma.role.create({
-      data: {
-        name: 'admin',
-        description: '拥有所有权限，可以访问所有功能模块',
-        allowedRoutes: [],
-      },
-    });
-    console.log('超管角色已创建');
+
+    if (role) {
+      role = await prisma.role.update({
+        where: { id: role.id },
+        data: {
+          description: roleData.description,
+          allowedRoutes: [],
+        },
+      });
+      console.log(`系统角色 "${roleData.name}" 已更新`);
+    } else {
+      role = await prisma.role.create({
+        data: {
+          name: roleData.name,
+          description: roleData.description,
+          allowedRoutes: [],
+        },
+      });
+      console.log(`系统角色 "${roleData.name}" 已创建`);
+    }
+    roleMap.set(roleData.name, role.id);
   }
 
   const encryptedUsers = await generateEncryptedUsers();
   for (const user of encryptedUsers) {
+    const roleId = roleMap.get(user.roleName);
+    if (!roleId) {
+      console.warn(
+        `警告: 用户 "${user.username}" 引用的角色 "${user.roleName}" 未找到，跳过创建`,
+      );
+      continue;
+    }
+
     const existingUser = await prisma.user.findFirst({
       where: { username: user.username, delete: 0 },
     });
+
     if (existingUser) {
       await prisma.user.update({
         where: { id: existingUser.id },
@@ -89,10 +95,10 @@ async function seedAuthData() {
           name: user.name,
           phone: user.phone,
           password: user.password,
-          roleId: adminRole.id,
+          roleId: roleId,
         },
       });
-      console.log(`超管用户 "${user.name}" (${user.username}) 已更新`);
+      console.log(`系统用户 "${user.name}" (${user.username}) 已更新`);
     } else {
       await prisma.user.create({
         data: {
@@ -100,15 +106,18 @@ async function seedAuthData() {
           name: user.name,
           phone: user.phone,
           password: user.password,
-          roleId: adminRole.id,
+          roleId: roleId,
         },
       });
-      console.log(`超管用户 "${user.name}" (${user.username}) 已创建`);
+      console.log(`系统用户 "${user.name}" (${user.username}) 已创建`);
     }
   }
+
   console.log('认证数据初始化完成！');
   console.log('\n初始用户账号：');
-  console.log('超管 账号/密码均为 8个8');
+  SYSTEM_INIT_DATA.users.forEach((u) => {
+    console.log(`账号: ${u.username} / 密码: ${u.password} (${u.name})`);
+  });
 }
 
 /**

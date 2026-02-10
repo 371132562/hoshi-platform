@@ -2,7 +2,7 @@ import { KeyOutlined, LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-d
 import { Avatar, Dropdown, MenuProps, message, Tag } from 'antd'
 import { FC, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'
+import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/common/config/constants'
 
 import ResetPasswordModal from '@/components/ResetPasswordModal'
 import { useAuthStore } from '@/stores/authStore'
@@ -39,7 +39,7 @@ const UserDropdown: FC = () => {
                     <span className="mr-2 text-gray-400">角色：</span>
                     <span>
                       {(user.role?.name === SYSTEM_ADMIN_ROLE_NAME ? (
-                        <Tag color="red">超级管理员</Tag>
+                        <Tag color="red">系统管理员</Tag>
                       ) : (
                         user.role?.name
                       )) || '-'}

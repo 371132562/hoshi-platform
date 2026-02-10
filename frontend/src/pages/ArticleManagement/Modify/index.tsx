@@ -205,27 +205,13 @@ const ArticleModify: FC = () => {
       </Form>
 
       {/* 内容预览 Modal */}
-      <Modal
-        title="文章预览"
-        open={isPreviewVisible}
-        onCancel={() => setIsPreviewVisible(false)}
-        footer={[
-          <Button
-            key="close"
-            onClick={() => setIsPreviewVisible(false)}
-          >
-            关闭
-          </Button>
-        ]}
-        width="50vw" // 使用视口宽度的 80%
-        style={{ minWidth: '600px' }} // 增加最小宽度
-      >
-        {/* 使用只读模式的 RichEditor 来展示预览内容 */}
-        <RichEditor
-          value={previewContent}
-          readOnly
-        />
-      </Modal>
+      <ArticlePreviewModal
+        visible={isPreviewVisible}
+        onClose={() => setIsPreviewVisible(false)}
+        mode="content"
+        title={form.getFieldValue('title') || '无标题'}
+        content={previewContent}
+      />
     </div>
   )
 }

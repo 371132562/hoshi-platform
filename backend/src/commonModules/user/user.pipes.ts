@@ -23,7 +23,7 @@ export class UserCodeExistsValidationPipe implements PipeTransform {
     if (value === 'admin') {
       throw new BusinessException(
         ErrorCode.USER_CODE_EXIST,
-        '超管用户名不可用',
+        '系统管理员用户名不可用',
       );
     }
 

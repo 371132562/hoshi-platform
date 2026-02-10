@@ -3,7 +3,7 @@ import type { ArticleItemRes } from 'template-backend/src/types/dto'
 
 import { toFullPathContent } from '@/utils'
 
-import RichEditor from '../RichEditor'
+import RichEditor from '../../RichEditor'
 
 interface ArticleDisplayProps {
   articles: ArticleItemRes[]

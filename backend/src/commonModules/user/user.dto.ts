@@ -15,7 +15,11 @@ export type UserItemRes = {
   organizationId: string | null;
   organization?: { id: string; name: string } | null;
   phone: string | null;
-  role: { name?: string; allowedRoutes?: string[] };
+  role: {
+    name?: string;
+    description?: string | null;
+    allowedRoutes?: string[];
+  };
 };
 
 /**

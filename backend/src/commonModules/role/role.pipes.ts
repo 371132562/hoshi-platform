@@ -1,9 +1,9 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
 import type { Role } from '@prisma/generated/client';
 
+import { SYSTEM_ADMIN_ROLE_NAME } from '../../common/config/constants';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SYSTEM_ADMIN_ROLE_NAME } from '../../types/constants';
 import { ErrorCode } from '../../types/response';
 
 /**

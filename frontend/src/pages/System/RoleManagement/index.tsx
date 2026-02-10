@@ -13,7 +13,10 @@ import {
   Tag
 } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
-import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'
+import {
+  SYSTEM_ADMIN_ROLE_NAME,
+  SYSTEM_INIT_DATA
+} from 'template-backend/src/common/config/constants'
 import type { RoleListItemResDto } from 'template-backend/src/types/dto'
 
 import { getMenuOptionsForRoleEdit } from '../../../router/routesConfig'
@@ -102,8 +105,10 @@ const RoleManagement: React.FC = () => {
         title: '角色名称',
         dataIndex: 'name',
         key: 'name',
-        render: (v: string) =>
-          v === SYSTEM_ADMIN_ROLE_NAME ? <Tag color="red">超级管理员</Tag> : v
+        render: (v: string) => {
+          const systemRole = SYSTEM_INIT_DATA.roles.find(r => r.name === v && r.isSystem)
+          return systemRole ? <Tag color="red">系统管理员</Tag> : v
+        }
       },
       { title: '描述', dataIndex: 'description', key: 'description' },
       { title: '用户数', dataIndex: 'userCount', key: 'userCount' },
@@ -231,7 +236,7 @@ const RoleManagement: React.FC = () => {
         {/* 说明提示：系统管理菜单为超级管理员默认权限，不允许分配 */}
         <Alert
           title="提示"
-          description="系统管理 菜单为超级管理员默认权限，不支持分配。"
+          description="系统管理 菜单为系统管理员默认权限，不支持分配。"
           type="info"
           showIcon
           style={{ marginBottom: 12 }}

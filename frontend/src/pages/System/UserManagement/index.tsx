@@ -13,7 +13,7 @@ import {
   TreeSelect
 } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
-import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'
+import { SYSTEM_INIT_DATA } from 'template-backend/src/common/config/constants'
 import type { UserItemRes } from 'template-backend/src/types/dto'
 
 import ResetPasswordModal from '@/components/ResetPasswordModal'
@@ -123,8 +123,9 @@ const UserManagement: React.FC = () => {
         key: 'role',
         render: (_: unknown, record: UserItemRes) => {
           const roleName = record.role?.name || '未分配角色'
-          return roleName === SYSTEM_ADMIN_ROLE_NAME ? (
-            <Tag color="red">超级管理员</Tag>
+          const systemRole = SYSTEM_INIT_DATA.roles.find(r => r.name === roleName && r.isSystem)
+          return systemRole ? (
+            <Tag color="red">{record.role?.description || '系统内置'}</Tag>
           ) : (
             <Tag>{roleName}</Tag>
           )
@@ -217,16 +218,16 @@ const UserManagement: React.FC = () => {
               style={{ width: 180 }}
               onChange={() => setTimeout(handleSearchSubmit, 0)}
               onClear={() => setTimeout(handleSearchSubmit, 0)}
-            >
-              {roleList.map(r => (
-                <Select.Option
-                  key={r.id}
-                  value={r.id}
-                >
-                  {r.name === SYSTEM_ADMIN_ROLE_NAME ? '超级管理员' : r.name}
-                </Select.Option>
-              ))}
-            </Select>
+              options={roleList.map(r => {
+                const systemRole = SYSTEM_INIT_DATA.roles.find(
+                  sr => sr.name === r.name && sr.isSystem
+                )
+                return {
+                  label: systemRole ? '系统管理员' : r.name,
+                  value: r.id
+                }
+              })}
+            />
           </Form.Item>
           <Form.Item>
             <Space>
@@ -339,41 +340,38 @@ const UserManagement: React.FC = () => {
             <Select
               allowClear
               placeholder="请选择角色"
-              optionLabelProp="label"
-            >
-              {roleList.map(r => (
-                <Select.Option
-                  value={r.id}
-                  key={r.id}
-                  label={r.name === SYSTEM_ADMIN_ROLE_NAME ? '超级管理员' : r.name}
-                >
-                  <div>
+              optionLabelProp="selectedLabel"
+              showSearch={{ optionFilterProp: 'selectedLabel' }}
+              options={roleList.map(r => {
+                const systemRole = SYSTEM_INIT_DATA.roles.find(
+                  sr => sr.name === r.name && sr.isSystem
+                )
+                return {
+                  value: r.id,
+                  label: (
                     <div>
-                      {r.name === SYSTEM_ADMIN_ROLE_NAME ? (
-                        <Tag color="red">超级管理员</Tag>
-                      ) : (
-                        r.name
+                      <div>{systemRole ? <Tag color="red">系统管理员</Tag> : r.name}</div>
+                      {r.description && (
+                        <div
+                          style={{
+                            color: '#8c8c8c',
+                            fontSize: '12px',
+                            marginTop: '2px',
+                            wordBreak: 'break-word',
+                            whiteSpace: 'pre-wrap',
+                            width: '100%',
+                            boxSizing: 'border-box'
+                          }}
+                        >
+                          {r.description}
+                        </div>
                       )}
                     </div>
-                    {r.description && (
-                      <div
-                        style={{
-                          color: '#8c8c8c',
-                          fontSize: '12px',
-                          marginTop: '2px',
-                          wordBreak: 'break-word',
-                          whiteSpace: 'pre-wrap',
-                          width: '100%',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        {r.description}
-                      </div>
-                    )}
-                  </div>
-                </Select.Option>
-              ))}
-            </Select>
+                  ),
+                  selectedLabel: systemRole ? '系统管理员' : r.name
+                }
+              })}
+            />
           </Form.Item>
           <Form.Item
             name="name"

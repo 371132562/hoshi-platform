@@ -1,5 +1,5 @@
 import React from 'react'
-import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/types/constants'
+import { SYSTEM_ADMIN_ROLE_NAME } from 'template-backend/src/common/config/constants'
 
 import { RouteItem } from '@/types'
 
@@ -57,7 +57,7 @@ export const getPublicMenuRoutes = (): RouteItem[] => publicRoutes
  * 获取后台侧边菜单路由（根据用户角色过滤）
  *
  * 根据当前用户的角色权限，过滤并返回该用户可访问的后台菜单。
- * - 超级管理员（admin）：返回全部后台菜单
+ * - 系统管理员（admin）：返回全部后台菜单
  * - 普通用户：根据 allowedRoutes 过滤，只返回有权限的菜单项
  * - 未登录/无角色：返回空数组
  *
@@ -318,7 +318,7 @@ export const getAdminLayoutData = (
   let hasPermission = false
   if (user) {
     if (user.role?.name === SYSTEM_ADMIN_ROLE_NAME) {
-      // 超级管理员有全部权限
+      // 系统管理员有全部权限
       hasPermission = true
     } else if (currentRoute?.menuParent) {
       // 有 menuParent 的路由（如新增/编辑页）继承父路由权限

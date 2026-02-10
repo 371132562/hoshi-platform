@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import type { Role } from '@prisma/generated/client';
 import { Prisma } from '@prisma/generated/client';
 
+import { SYSTEM_ADMIN_ROLE_NAME } from '../../common/config/constants';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SYSTEM_ADMIN_ROLE_NAME } from '../../types/constants';
 import { ErrorCode } from '../../types/response';
 import {
   AssignRoleRoutesReqDto,
@@ -100,7 +100,7 @@ export class RoleService {
         );
         throw new BusinessException(
           ErrorCode.ROLE_CANNOT_EDIT_ADMIN,
-          '超管角色不可编辑',
+          '系统管理员角色不可编辑',
         );
       }
 
@@ -159,7 +159,7 @@ export class RoleService {
         );
         throw new BusinessException(
           ErrorCode.ROLE_CANNOT_DELETE_ADMIN,
-          '超管角色不可删除',
+          '系统管理员角色不可删除',
         );
       }
 
@@ -222,7 +222,7 @@ export class RoleService {
         );
         throw new BusinessException(
           ErrorCode.ROLE_CANNOT_EDIT_ADMIN,
-          '超管角色不可编辑',
+          '系统管理员角色不可编辑',
         );
       }
 

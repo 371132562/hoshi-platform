@@ -3,7 +3,7 @@ import type { OrganizationRes } from 'template-backend/src/types/dto'
 
 // ==================== 前端专用类型 ====================
 // 后端共享类型请直接从 'template-backend/src/types/dto' 导入
-// 后端常量请直接从 'template-backend/src/types/constants' 导入
+// 后端常量请直接从 'template-backend/src/common/config/constants' 导入
 
 /**
  * 路由项类型定义
