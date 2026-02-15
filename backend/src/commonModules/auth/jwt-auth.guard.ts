@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
 
 import { IS_PUBLIC_KEY } from '../../common/auth/public.decorator';
 import { ErrorCode } from '../../types/response';
@@ -17,15 +16,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   canActivate(context: ExecutionContext) {
-    const request = context.switchToHttp().getRequest<Request>();
-    const authHeader = request.headers.authorization;
-    const token = authHeader?.split(' ')[1]; // 获取 token
-
-    // 未登录的情况下，这时前端做了路由访问的限制，可以访问只读性质的宣传页面，直接返回 true
-    if (!token) {
-      return true; // 允许访问
-    }
-
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -34,7 +24,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return true;
     }
 
-    // 对于非公开接口，必须进行JWT验证
     return super.canActivate(context);
   }
 

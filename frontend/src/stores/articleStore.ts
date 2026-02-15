@@ -16,6 +16,7 @@ import {
   articleGetDetailsByIds,
   articleList,
   articleListAll,
+  articlePublicGetByPage,
   articleUpdate,
   articleUpsertOrder
 } from '@/services/apis'
@@ -53,6 +54,7 @@ type ArticleStore = {
   getArticleDetail: (id: string) => Promise<void>
   clearArticleDetail: () => void
   getAllArticles: () => Promise<void>
+  getPublicArticlesByPage: (page: string) => Promise<void>
   getArticlesByPage: (page: string) => Promise<void>
   upsertArticleOrder: (page: string, articleIds: string[]) => Promise<boolean>
   getArticleDetailsByIds: (ids: string[]) => Promise<void>
@@ -199,7 +201,22 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
-  // 根据页面获取文章
+  getPublicArticlesByPage: async (page: string) => {
+    set({ orderConfigLoading: true })
+    try {
+      // 明确响应数据类型：页面文章列表
+      const response = await http.post<ArticleItemRes[]>(articlePublicGetByPage, { page })
+      if (response && response.data) {
+        set({ pageArticles: response.data })
+      }
+    } catch (error) {
+      console.error(`获取前台页面 ${page} 文章失败:`, error)
+      set({ pageArticles: [] })
+    } finally {
+      set({ orderConfigLoading: false })
+    }
+  },
+
   getArticlesByPage: async (page: string) => {
     set({ orderConfigLoading: true })
     try {
@@ -209,7 +226,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
         set({ pageArticles: response.data })
       }
     } catch (error) {
-      console.error(`获取页面 ${page} 文章失败:`, error)
+      console.error(`获取后台页面 ${page} 文章失败:`, error)
       set({ pageArticles: [] })
     } finally {
       set({ orderConfigLoading: false })

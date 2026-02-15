@@ -6,7 +6,8 @@ export const articleDelete = '/article/delete' // 删除文章
 export const articleDetail = '/article/detail' // 获取文章详情
 export const articleListAll = '/article/listAll' // 获取所有文章列表
 export const articleUpsertOrder = '/article/order' // 更新文章排序
-export const articleGetByPage = '/article/getByPage' // 按页面获取文章
+export const articlePublicGetByPage = '/article/public/getByPage'
+export const articleGetByPage = '/article/getByPage'
 export const articleGetDetailsByIds = '/article/getDetailsByIds' // 根据ID批量获取文章详情
 
 // 角色管理API

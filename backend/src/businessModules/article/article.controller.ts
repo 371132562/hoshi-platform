@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import type { Article } from '@prisma/generated/client';
 
+import { Public } from '../../common/auth/public.decorator';
 import {
   ArticleItemRes,
   ArticleListReqDto,
@@ -70,8 +71,16 @@ export class ArticleController {
     return this.articleService.upsertArticleOrder(upsertArticleOrderDto);
   }
 
+  @Public()
+  @Post('public/getByPage')
+  async getPublicArticlesByPage(
+    @Body() { page }: GetArticlesByPageReqDto,
+  ): Promise<ArticleItemRes[]> {
+    return this.articleService.getArticlesByPage(page);
+  }
+
   @Post('getByPage')
-  async getArticlesByPage(
+  async getAdminArticlesByPage(
     @Body() { page }: GetArticlesByPageReqDto,
   ): Promise<ArticleItemRes[]> {
     return this.articleService.getArticlesByPage(page);

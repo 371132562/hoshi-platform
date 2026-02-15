@@ -7,13 +7,13 @@ import useArticleStore from '@/stores/articleStore'
 
 const Component = () => {
   // Store 取值
-  const getArticlesByPage = useArticleStore(state => state.getArticlesByPage)
+  const getPublicArticlesByPage = useArticleStore(state => state.getPublicArticlesByPage)
   const pageArticles = useArticleStore(state => state.pageArticles)
   const orderConfigLoading = useArticleStore(state => state.orderConfigLoading)
 
   // React Hooks: useEffect
   useEffect(() => {
-    getArticlesByPage('home')
+    getPublicArticlesByPage('home')
   }, [])
 
   if (orderConfigLoading) {
