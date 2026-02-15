@@ -57,7 +57,12 @@ export const PublicLayout: FC = () => {
   return (
     <Layout className="h-screen w-full">
       <Header className="flex items-center !pl-[29px] text-white">
-        <div className="flex-shrink-0 text-xl font-bold text-white">模版平台</div>
+        <Link
+          to="/home"
+          className="flex-shrink-0 text-xl font-bold !text-white no-underline visited:!text-white hover:!text-white focus:!text-white"
+        >
+          模版平台
+        </Link>
         <div className="flex-grow" />
         <Menu
           theme="dark"
