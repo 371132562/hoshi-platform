@@ -48,7 +48,7 @@ const UserDropdown: FC = () => {
                     </span>
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
-                    <span className="mr-2 text-gray-400">组织：</span>
+                    <span className="mr-2 text-gray-400">部门：</span>
                     <span>{user.organization?.name || '-'}</span>
                   </div>
                 </div>

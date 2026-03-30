@@ -20,7 +20,7 @@ export type RouteItem = {
 }
 
 /**
- * 带有 key 属性的组织树节点类型（AntD Tree 组件专用）
+ * 带有 key 属性的部门树节点类型（AntD Tree 组件专用）
  */
 export type OrganizationTreeNode = Omit<OrganizationRes, 'children'> & {
   key: string

@@ -64,6 +64,9 @@ hoshi-platform/
 
 ## 禁止操作
 
+- 禁止默认执行 `install / dev / start / preview / build` 类命令（如 `pnpm install`、`pnpm dev`、`pnpm start:dev`、`pnpm build`），除非用户明确要求，或该命令是完成当前任务不可缺少的一步。
+- 禁止默认启动长时间驻留任务或无明确收敛条件的本地服务。
+- Prisma / 数据库结构相关任务属于例外：当修改了 `schema.prisma`、seed 或 Prisma Client 依赖时，可按最小必要范围执行 `generate / migrate / db push / seed` 等命令，但必须先确认执行目的、影响范围与回滚风险。
 - 禁止跳过 `services/base.ts` 或后端统一响应约定，直接自造请求/响应协议。
 - 禁止用 `any` 作为常规开发逃生口；需要共享类型时优先复用 `backend/src/types/*`。
 - 禁止因为检查报错就删除注释、关闭校验、绕开 DTO / Pipe / BusinessException。

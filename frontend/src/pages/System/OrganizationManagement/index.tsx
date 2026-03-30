@@ -13,7 +13,7 @@ const isRootOrg = (id: string) => id === '0'
 
 /**
  * 部门管理页面
- * 参考 operation-webapp 组织管理页面样式与功能
+ * 参考 operation-webapp 部门管理页面样式与功能
  */
 const OrganizationManagement: React.FC = () => {
   const organizationList = useOrganizationStore(s => s.organizationList)
