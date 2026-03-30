@@ -7,6 +7,7 @@
 - 跨前后端或需求尚未收敛：先走 `/.agents/skills/project-workflow/SKILL.md`
 - 页面、组件、布局、样式、路由承载页：先走 `/.agents/skills/create-frontend-component/SKILL.md`
 - Zustand Store、分页筛选状态、异步 action：先走 `/.agents/skills/create-zustand-store/SKILL.md`
+- 涉及 Ant Design 组件 API、示例、交互组合或官方文档查阅：补充走 `/.agents/skills/ant-design-docs/SKILL.md`
 
 ## 先看哪里
 

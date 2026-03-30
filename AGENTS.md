@@ -29,6 +29,12 @@ Hoshi Platform 是一个 `pnpm` monorepo 管理平台模板，前端采用 React
 | 新增或调整系统日志、用户日志、操作日志链路                  | `/implement-system-log`      |
 | 运行或修复 ESLint / TypeScript 检查                         | `/eslint-fix`                |
 
+## 可选但推荐的 Skills
+
+| 场景 | 推荐 Skill |
+| --- | --- |
+| 需要确认 Ant Design 组件 API、示例、交互模式或让 Codex 按官方组件文档回答 | `/ant-design-docs` |
+
 ## 目录路由
 
 ```text

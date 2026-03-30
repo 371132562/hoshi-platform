@@ -7,6 +7,8 @@ description: 创建或修改 React 页面、组件、布局、样式、路由承
 
 开始前先阅读 `frontend/AGENTS.md`，本 skill 只补充前端页面与 UI 交付流程，不重复根规则。
 
+若任务强依赖 Ant Design 官方组件 API、示例或组合模式，继续加载 `ant-design-docs` skill。
+
 ## 开发前先查
 
 1. 页面参考：`frontend/src/pages/System/UserManagement/index.tsx`
