@@ -4,7 +4,7 @@
 
 ## 进入后端任务前先选 Skill
 
-完整路由见根 `AGENTS.md`；后端常用 skill：`create-backend-module`、`prisma-workflow`、`implement-system-log`。
+完整路由见根 `AGENTS.md`；后端常用 skill：`create-backend-module`、`type-contract-guidelines`、`prisma-workflow`、`implement-system-log`。
 
 ## 先看哪里
 
@@ -22,5 +22,5 @@
 - 接口统一使用 `POST`，成功响应由统一拦截器包装成 `{ code, msg, data }`。
 - 后端常规开发默认走 `controller / service / dto / pipes` 分层；细则按需加载 `create-backend-module`。
 - 数据库访问统一通过 `PrismaService`；结构变更按需加载 `prisma-workflow`。
-- 共享契约统一从 `src/types/dto.ts` 与 `src/types/response.ts` 暴露，不要把 Prisma 实体或内部中间结构直接暴露给前端。
-- 日志链路、DTO/Pipe 细则、Prisma 顺序等执行性规范，按需加载对应 skill，不在此重复展开。
+- 共享契约细则转 `type-contract-guidelines`。
+- 日志链路、DTO/Pipe 细则、类型契约目录结构、Prisma 顺序等执行性规范，按需加载对应 skill，不在此重复展开。

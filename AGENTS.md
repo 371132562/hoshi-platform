@@ -25,14 +25,15 @@ Hoshi Platform 是一个 `pnpm` monorepo 管理平台模板，前端采用 React
 | 创建/修改 React 页面、布局、组件、样式、路由承载页面        | `/create-frontend-component` |
 | 创建/修改 Zustand Store、列表查询状态、异步 Action          | `/create-zustand-store`      |
 | 创建/修改 NestJS controller / service / dto / pipe / module | `/create-backend-module`     |
+| 创建/修改 DTO、共享 type、`src/types` 导出与前后端契约      | `/type-contract-guidelines`  |
 | 修改 Prisma schema、seed、生成客户端、涉及数据库落库逻辑    | `/prisma-workflow`           |
 | 新增或调整系统日志、用户日志、操作日志链路                  | `/implement-system-log`      |
 | 运行或修复 ESLint / TypeScript 检查                         | `/eslint-fix`                |
 
 ## 可选但推荐的 Skills
 
-| 场景 | 推荐 Skill |
-| --- | --- |
+| 场景                                                                      | 推荐 Skill         |
+| ------------------------------------------------------------------------- | ------------------ |
 | 需要确认 Ant Design 组件 API、示例、交互模式或让 Codex 按官方组件文档回答 | `/ant-design-docs` |
 
 ## 目录路由

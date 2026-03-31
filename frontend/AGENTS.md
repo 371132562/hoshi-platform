@@ -4,7 +4,7 @@
 
 ## 进入前端任务前先选 Skill
 
-完整路由见根 `AGENTS.md`；前端常用 skill：`create-frontend-component`、`create-zustand-store`、`ant-design-docs`。
+完整路由见根 `AGENTS.md`；前端常用 skill：`create-frontend-component`、`create-zustand-store`、`ant-design-docs`、`type-contract-guidelines`。
 
 ## 先看哪里
 
@@ -19,6 +19,6 @@
 ## 非协商约束
 
 - 请求统一走 `src/services/base.ts`，接口地址统一收敛到 `src/services/apis.ts`。
-- 共享类型统一从 `template-backend/src/types/dto` 与 `template-backend/src/types/response` 导入，不要深层引用后端模块内部 `*.dto.ts`。
+- 共享类型契约细则转 `type-contract-guidelines`。
 - 路由、菜单、面包屑相关改动统一落在 `router/`。
-- 页面与组件的实现细则、Store 设计、Ant Design 文档消费方式，按需加载对应 skill，不在此重复展开。
+- 页面与组件、Store、共享类型契约、Ant Design 文档消费方式，按需加载对应 skill，不在此重复展开。
