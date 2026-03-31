@@ -14,7 +14,7 @@ import {
 } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
 import { RoleCode } from 'template-backend/src/common/config/constants'
-import type { UserItemRes } from 'template-backend/src/types/dto'
+import type { UserItemResDto } from 'template-backend/src/types/dto'
 
 import ResetPasswordModal from '@/components/ResetPasswordModal'
 
@@ -44,10 +44,10 @@ const UserManagement: React.FC = () => {
 
   // 弹窗状态
   const [modalOpen, setModalOpen] = useState(false)
-  const [editUser, setEditUser] = useState<UserItemRes | null>(null)
+  const [editUser, setEditUser] = useState<UserItemResDto | null>(null)
   const [form] = Form.useForm()
   const [resetModalOpen, setResetModalOpen] = useState(false)
-  const [resetUser, setResetUser] = useState<UserItemRes | null>(null)
+  const [resetUser, setResetUser] = useState<UserItemResDto | null>(null)
 
   // 初始化加载
   useEffect(() => {
@@ -75,7 +75,7 @@ const UserManagement: React.FC = () => {
   }
 
   // 打开编辑/新建弹窗
-  const openModal = (user?: UserItemRes) => {
+  const openModal = (user?: UserItemResDto) => {
     setEditUser(user || null)
     setModalOpen(true)
     if (user) {
@@ -104,7 +104,7 @@ const UserManagement: React.FC = () => {
     }
   }
 
-  const openResetModal = (user: UserItemRes) => {
+  const openResetModal = (user: UserItemResDto) => {
     setResetUser(user)
     setResetModalOpen(true)
   }
@@ -121,7 +121,7 @@ const UserManagement: React.FC = () => {
       {
         title: '角色',
         key: 'role',
-        render: (_: unknown, record: UserItemRes) => {
+        render: (_: unknown, record: UserItemResDto) => {
           const roleDisplayName = record.role?.displayName || '未分配角色'
           // 系统管理员角色特殊显示
           const isSystemAdmin = record.role?.code === RoleCode.ADMIN
@@ -131,13 +131,13 @@ const UserManagement: React.FC = () => {
       {
         title: '所属部门',
         key: 'organization',
-        render: (_: unknown, record: UserItemRes) => record.organization?.name || '-'
+        render: (_: unknown, record: UserItemResDto) => record.organization?.name || '-'
       },
       { title: '电话', dataIndex: 'phone', key: 'phone' },
       {
         title: '操作',
         key: 'action',
-        render: (_: unknown, record: UserItemRes) => (
+        render: (_: unknown, record: UserItemResDto) => (
           <Space>
             <Button
               color="primary"

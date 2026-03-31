@@ -9,9 +9,9 @@ import { UploadService } from '../../commonModules/upload/upload.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
 import {
-  ArticleItemRes,
+  ArticleItemResDto,
   ArticleListResDto,
-  ArticleMetaItemRes,
+  ArticleMetaItemResDto,
   ArticleOrderResDto,
   ArticleType,
   CreateArticleReqDto,
@@ -28,7 +28,7 @@ export class ArticleService {
     private readonly logger: WinstonLoggerService,
   ) {}
 
-  private mapToDto(article: Article): ArticleItemRes {
+  private mapToDto(article: Article): ArticleItemResDto {
     return {
       id: article.id,
       title: article.title,
@@ -40,7 +40,7 @@ export class ArticleService {
 
   private mapToMetaDto(
     article: Pick<Article, 'id' | 'title' | 'createTime' | 'updateTime'>,
-  ): ArticleMetaItemRes {
+  ): ArticleMetaItemResDto {
     return {
       id: article.id,
       title: article.title,
@@ -58,7 +58,7 @@ export class ArticleService {
     };
   }
 
-  detail(article: Article): ArticleItemRes {
+  detail(article: Article): ArticleItemResDto {
     try {
       this.logger.log(
         `[操作] 获取文章详情 - 文章ID: ${article.id}, 标题: ${article.title}`,
@@ -133,7 +133,7 @@ export class ArticleService {
     }
   }
 
-  async listAll(): Promise<ArticleMetaItemRes[]> {
+  async listAll(): Promise<ArticleMetaItemResDto[]> {
     this.logger.log('[操作] 获取所有文章列表');
 
     try {
@@ -163,7 +163,9 @@ export class ArticleService {
     }
   }
 
-  async create(createArticleDto: CreateArticleReqDto): Promise<ArticleItemRes> {
+  async create(
+    createArticleDto: CreateArticleReqDto,
+  ): Promise<ArticleItemResDto> {
     this.logger.log(`[操作] 创建文章 - 标题: ${createArticleDto.title}`);
 
     try {
@@ -217,7 +219,7 @@ export class ArticleService {
   async update(
     article: Article,
     updateArticleDto: UpdateArticleReqDto,
-  ): Promise<ArticleItemRes> {
+  ): Promise<ArticleItemResDto> {
     try {
       const { id } = article;
       const { deletedImages: incomingDeletedImages, ...data } =
@@ -267,7 +269,7 @@ export class ArticleService {
     }
   }
 
-  async delete(article: Article): Promise<ArticleItemRes> {
+  async delete(article: Article): Promise<ArticleItemResDto> {
     try {
       const id = article.id;
       this.logger.log(
@@ -386,7 +388,7 @@ export class ArticleService {
     }
   }
 
-  async getArticlesByPage(page: string): Promise<ArticleItemRes[]> {
+  async getArticlesByPage(page: string): Promise<ArticleItemResDto[]> {
     this.logger.log(`[操作] 获取页面文章 - 页面: ${page}`);
 
     try {
@@ -434,7 +436,7 @@ export class ArticleService {
     }
   }
 
-  async getDetailsByIds(ids: string[]): Promise<ArticleItemRes[]> {
+  async getDetailsByIds(ids: string[]): Promise<ArticleItemResDto[]> {
     if (!ids || ids.length === 0) {
       this.logger.log('[操作] 获取文章详情 - 文章ID列表为空');
       return [];

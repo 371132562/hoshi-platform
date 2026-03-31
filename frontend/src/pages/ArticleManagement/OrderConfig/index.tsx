@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Button, message, Modal, Select, Skeleton, Space, Tabs } from 'antd'
 import React, { useEffect, useState } from 'react'
-import type { ArticleItemRes, ArticleMetaItemRes } from 'template-backend/src/types/dto'
+import type { ArticleItemResDto, ArticleMetaItemResDto } from 'template-backend/src/types/dto'
 import { ArticleType } from 'template-backend/src/types/dto'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -28,8 +28,8 @@ import useArticleStore from '@/stores/articleStore'
 // SortableItem 组件
 interface SortableItemProps {
   id: string
-  article: ArticleItemRes & { uniqueId: string }
-  allArticles: ArticleMetaItemRes[]
+  article: ArticleItemResDto & { uniqueId: string }
+  allArticles: ArticleMetaItemResDto[]
   selectedArticleIds: Set<string>
   onSelect: (uniqueId: string, articleId: string) => void
   onRemove: (uniqueId: string) => void
@@ -137,7 +137,7 @@ const OrderConfig = () => {
 
   const [activePage, setActivePage] = useState(PAGES[0].key)
   const [selectedArticles, setSelectedArticles] = useState<
-    (ArticleItemRes & { uniqueId: string })[]
+    (ArticleItemResDto & { uniqueId: string })[]
   >([])
   const [previewVisible, setPreviewVisible] = useState(false)
   // 使用渲染期间状态调整模式 (Adjust state during rendering) 代替 useEffect
@@ -187,7 +187,7 @@ const OrderConfig = () => {
         images: [],
         type: ArticleType.NORMAL,
         uniqueId: uuidv4()
-      } as ArticleItemRes & { uniqueId: string }
+      } as ArticleItemResDto & { uniqueId: string }
     ])
   }
 

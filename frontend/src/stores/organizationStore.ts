@@ -1,6 +1,6 @@
 import type {
   CreateOrganizationReqDto,
-  OrganizationRes,
+  OrganizationResDto,
   UpdateOrganizationReqDto
 } from 'template-backend/src/types/dto'
 import { create } from 'zustand'
@@ -14,7 +14,7 @@ import {
 import request from '../services/base'
 import type { OrganizationTreeNode } from '../types'
 
-const transformToTreeNode = (data: OrganizationRes[]): OrganizationTreeNode[] => {
+const transformToTreeNode = (data: OrganizationResDto[]): OrganizationTreeNode[] => {
   return data.map(item => ({
     ...item,
     key: item.id,
@@ -37,7 +37,7 @@ export const useOrganizationStore = create<{
   fetchOrganizationList: async () => {
     set({ loading: true })
     try {
-      const res = await request.post<OrganizationRes[]>(organizationListApi)
+      const res = await request.post<OrganizationResDto[]>(organizationListApi)
       const data = Array.isArray(res.data) ? res.data : []
       set({
         organizationList: transformToTreeNode(data),

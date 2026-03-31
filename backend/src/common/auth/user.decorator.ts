@@ -1,8 +1,8 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-interface RequestWithUser {
+type RequestWithUser = {
   user?: UserInfo;
-}
+};
 
 export type UserInfo = {
   userId: string;

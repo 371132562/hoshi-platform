@@ -1,12 +1,12 @@
 import React from 'react'
-import type { ArticleItemRes } from 'template-backend/src/types/dto'
+import type { ArticleItemResDto } from 'template-backend/src/types/dto'
 
 import { toFullPathContent } from '@/utils'
 
 import RichEditor from '../../RichEditor'
 
 interface ArticleDisplayProps {
-  articles: ArticleItemRes[]
+  articles: ArticleItemResDto[]
 }
 
 const ArticleDisplay: React.FC<ArticleDisplayProps> = ({ articles }) => {

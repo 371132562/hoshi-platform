@@ -1,8 +1,8 @@
 import { EyeOutlined, PlusOutlined, SearchOutlined, UndoOutlined } from '@ant-design/icons'
 import { Button, Form, Input, message, Popconfirm, Space, Table } from 'antd'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import type { ArticleMetaItemRes } from 'template-backend/src/types/dto'
+import type { ArticleMetaItemResDto } from 'template-backend/src/types/dto'
 
 import ArticlePreviewModal from '@/components/Article/ArticlePreviewModal'
 import useArticleStore from '@/stores/articleStore'
@@ -64,7 +64,7 @@ const ArticleManagement: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: unknown, record: ArticleMetaItemRes) => (
+      render: (_: unknown, record: ArticleMetaItemResDto) => (
         <Space>
           <Button
             color="primary"

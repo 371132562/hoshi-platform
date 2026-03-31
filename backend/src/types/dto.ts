@@ -9,8 +9,12 @@ export * from '../commonModules/role/role.dto';
 // 文章模块
 export * from '../businessModules/article/article.dto';
 
-// 认证模块
-export * from '../commonModules/auth/auth.dto';
+export type {
+  LoginReqDto,
+  LoginResDto,
+  UserProfileResDto,
+} from '../commonModules/auth/auth.dto';
+export { LoginWithHashReqDto } from '../commonModules/auth/auth.dto';
 
 // 系统日志模块
 export * from '../commonModules/systemLogs/systemLogs.dto';
@@ -28,7 +32,7 @@ export * from '../commonModules/organization/organization.dto';
 /**
  * 通用分页请求参数
  */
-export type CommonPageParams = {
+export type CommonPageReqDto = {
   page?: number;
   pageSize?: number;
 };
@@ -36,7 +40,7 @@ export type CommonPageParams = {
 /**
  * 分页响应类型
  */
-export type PaginatedResponse<T> = {
+export type PaginatedResDto<T> = {
   list: T[];
   total: number;
   page: number;

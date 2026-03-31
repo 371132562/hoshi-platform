@@ -7,7 +7,7 @@ import { IsArray, IsString } from 'class-validator';
 /**
  * 图片项类型
  */
-export type ImageItemRes = {
+export type ImageItemResDto = {
   id: string;
   filename: string;
   originalName: string;
@@ -28,7 +28,7 @@ export type UploadResDto = {
 /**
  * 孤儿图片项类型
  */
-export type OrphanImageItemRes = {
+export type OrphanImageItemResDto = {
   id: string;
   filename: string;
   originalName: string;
@@ -39,7 +39,7 @@ export type OrphanImageItemRes = {
  * 孤儿图片响应类型
  */
 export type OrphanImagesResDto = {
-  images: OrphanImageItemRes[];
+  images: OrphanImageItemResDto[];
   total: number;
 };
 

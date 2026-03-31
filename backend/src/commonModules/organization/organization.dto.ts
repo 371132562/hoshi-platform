@@ -32,7 +32,7 @@ export class UpdateOrganizationReqDto {
   description?: string;
 }
 
-export interface OrganizationRes {
+export type OrganizationResDto = {
   id: string;
   name: string;
   parentId?: string | null;
@@ -41,5 +41,5 @@ export interface OrganizationRes {
   createTime: string | Date;
   updateTime: string | Date;
   delete: number;
-  children?: OrganizationRes[];
-}
+  children?: OrganizationResDto[];
+};

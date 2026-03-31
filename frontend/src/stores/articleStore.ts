@@ -1,7 +1,7 @@
 import type {
-  ArticleItemRes,
+  ArticleItemResDto,
   ArticleListResDto,
-  ArticleMetaItemRes,
+  ArticleMetaItemResDto,
   CreateArticleReqDto,
   DeleteArticleReqDto,
   UpdateArticleReqDto
@@ -31,17 +31,17 @@ type ArticlePageParams = {
 
 type ArticleStore = {
   // 状态
-  articles: ArticleMetaItemRes[]
+  articles: ArticleMetaItemResDto[]
   total: number
   articlePageParams: ArticlePageParams
   loading: boolean
-  articleDetail: ArticleItemRes | null
+  articleDetail: ArticleItemResDto | null
   detailLoading: boolean
   submitLoading: boolean
-  allArticles: ArticleMetaItemRes[]
-  pageArticles: ArticleItemRes[]
+  allArticles: ArticleMetaItemResDto[]
+  pageArticles: ArticleItemResDto[]
   orderConfigLoading: boolean
-  previewArticles: ArticleItemRes[]
+  previewArticles: ArticleItemResDto[]
   previewLoading: boolean
 
   // 操作
@@ -168,7 +168,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ detailLoading: true, articleDetail: null })
     try {
       // 明确响应数据类型：文章详情
-      const response = await http.post<ArticleItemRes>(articleDetail, { id })
+      const response = await http.post<ArticleItemResDto>(articleDetail, { id })
       if (response && response.data) {
         set({ articleDetail: response.data })
       }
@@ -190,7 +190,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ orderConfigLoading: true })
     try {
       // 明确响应数据类型：文章元数据列表
-      const response = await http.post<ArticleMetaItemRes[]>(articleListAll)
+      const response = await http.post<ArticleMetaItemResDto[]>(articleListAll)
       if (response && response.data) {
         set({ allArticles: response.data })
       }
@@ -205,7 +205,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ orderConfigLoading: true })
     try {
       // 明确响应数据类型：页面文章列表
-      const response = await http.post<ArticleItemRes[]>(articlePublicGetByPage, { page })
+      const response = await http.post<ArticleItemResDto[]>(articlePublicGetByPage, { page })
       if (response && response.data) {
         set({ pageArticles: response.data })
       }
@@ -221,7 +221,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     set({ orderConfigLoading: true })
     try {
       // 明确响应数据类型：页面文章列表
-      const response = await http.post<ArticleItemRes[]>(articleGetByPage, { page })
+      const response = await http.post<ArticleItemResDto[]>(articleGetByPage, { page })
       if (response && response.data) {
         set({ pageArticles: response.data })
       }
@@ -251,7 +251,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   getArticleDetailsByIds: async (ids: string[]) => {
     set({ previewLoading: true, previewArticles: [] })
     try {
-      const response = await http.post<ArticleItemRes[]>(articleGetDetailsByIds, {
+      const response = await http.post<ArticleItemResDto[]>(articleGetDetailsByIds, {
         ids
       })
       if (response && response.data) {

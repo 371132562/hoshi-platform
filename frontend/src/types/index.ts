@@ -1,5 +1,5 @@
 import { LazyExoticComponent, ReactNode } from 'react'
-import type { OrganizationRes } from 'template-backend/src/types/dto'
+import type { OrganizationResDto } from 'template-backend/src/types/dto'
 
 // ==================== 前端专用类型 ====================
 // 后端共享类型请直接从 'template-backend/src/types/dto' 导入
@@ -22,7 +22,7 @@ export type RouteItem = {
 /**
  * 带有 key 属性的部门树节点类型（AntD Tree 组件专用）
  */
-export type OrganizationTreeNode = Omit<OrganizationRes, 'children'> & {
+export type OrganizationTreeNode = Omit<OrganizationResDto, 'children'> & {
   key: string
   children?: OrganizationTreeNode[]
 }

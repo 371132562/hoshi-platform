@@ -201,8 +201,8 @@ npx prisma studio
 ### 类型系统规范
 
 - **请求入参 DTO**：必须使用 class，配合 `class-validator` 和 `class-transformer` 进行运行时校验
-- **响应数据**：优先使用 class 定义，前端以 type 消费（避免引入装饰器）
-- **类型共享**：后端在 `backend/src/types/dto.ts` 统一导出，前端直接导入使用
+- **响应数据 DTO**：统一使用 `ResDto` 结尾，默认使用 `type` 定义稳定响应结构
+- **类型共享**：后端仅在 `backend/src/types/dto.ts` / `response.ts` 导出前端需要的稳定契约，前端从共享出口导入使用
 - **禁止 any**：所有类型必须有明确定义，禁止使用 `any`
 
 ### 前端开发规范

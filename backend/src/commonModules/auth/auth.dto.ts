@@ -4,7 +4,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
  * 认证相关 DTO 类定义
  */
 // 用户和角色类型从 user.dto 导入
-import type { UserItemRes } from '../user/user.dto';
+import type { UserItemResDto } from '../user/user.dto';
 
 /**
  * 登录 DTO
@@ -22,20 +22,20 @@ export class LoginReqDto {
 /**
  * 挑战响应类型 - 直接返回加密的随机盐字符串
  */
-export type ChallengeResponse = string;
+export type ChallengeResDto = string;
 
 /**
  * 登录响应类型
  */
 export type LoginResDto = {
   token: string;
-  user: UserItemRes;
+  user: UserItemResDto;
 };
 
 /**
  * 用户资料 DTO
  */
-export type UserProfileResDto = UserItemRes;
+export type UserProfileResDto = UserItemResDto;
 
 /**
  * 登录（哈希）DTO

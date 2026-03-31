@@ -3,10 +3,10 @@ import type { Article } from '@prisma/generated/client';
 
 import { Public } from '../../common/auth/public.decorator';
 import {
-  ArticleItemRes,
+  ArticleItemResDto,
   ArticleListReqDto,
   ArticleListResDto,
-  ArticleMetaItemRes,
+  ArticleMetaItemResDto,
   ArticleOrderResDto,
   CreateArticleReqDto,
   DeleteArticleReqDto,
@@ -60,7 +60,7 @@ export class ArticleController {
   }
 
   @Post('listAll')
-  async listAll(): Promise<ArticleMetaItemRes[]> {
+  async listAll(): Promise<ArticleMetaItemResDto[]> {
     return this.articleService.listAll();
   }
 
@@ -75,21 +75,21 @@ export class ArticleController {
   @Post('public/getByPage')
   async getPublicArticlesByPage(
     @Body() { page }: GetArticlesByPageReqDto,
-  ): Promise<ArticleItemRes[]> {
+  ): Promise<ArticleItemResDto[]> {
     return this.articleService.getArticlesByPage(page);
   }
 
   @Post('getByPage')
   async getAdminArticlesByPage(
     @Body() { page }: GetArticlesByPageReqDto,
-  ): Promise<ArticleItemRes[]> {
+  ): Promise<ArticleItemResDto[]> {
     return this.articleService.getArticlesByPage(page);
   }
 
   @Post('getDetailsByIds')
   async getDetailsByIds(
     @Body() { ids }: GetDetailsByIdsReqDto,
-  ): Promise<ArticleItemRes[]> {
+  ): Promise<ArticleItemResDto[]> {
     return this.articleService.getDetailsByIds(ids);
   }
 }

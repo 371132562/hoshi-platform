@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { Public } from '../../common/auth/public.decorator';
 import { CurrentUser, UserInfo } from '../../common/auth/user.decorator';
 import {
-  ChallengeResponse,
+  ChallengeResDto,
   LoginResDto,
   LoginWithHashReqDto,
   UserProfileResDto,
@@ -25,7 +25,7 @@ export class AuthController {
    */
   @Public()
   @Post('challenge')
-  challenge(): ChallengeResponse {
+  challenge(): ChallengeResDto {
     return this.authService.getChallenge();
   }
 

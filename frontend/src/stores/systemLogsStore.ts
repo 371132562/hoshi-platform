@@ -1,5 +1,5 @@
 import type {
-  LogLineItemRes,
+  LogLineItemResDto,
   LogUsersResDto,
   ReadLogReqDto,
   SystemLogFilesResDto,
@@ -44,7 +44,7 @@ type SystemLogsState = {
   /** 系统日志文件列表（原始数据） */
   files: SystemLogFilesResDto['files']
   /** 系统日志读取结果 */
-  readResult?: LogLineItemRes[]
+  readResult?: LogLineItemResDto[]
 
   // ==================== 用户日志相关状态 ====================
   /** 用户日志文件列表（原始数据） */
@@ -52,7 +52,7 @@ type SystemLogsState = {
   /** 用户选项列表（用于用户选择） */
   userOptions: UserOption[]
   /** 用户日志读取结果 */
-  readUserResult?: LogLineItemRes[]
+  readUserResult?: LogLineItemResDto[]
 
   // ==================== 防抖相关状态 ====================
   /** 上次刷新时间戳（用于防抖控制） */
@@ -123,7 +123,7 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
   async readLog(payload) {
     set({ contentLoading: true })
     try {
-      const res = await request.post<LogLineItemRes[]>(systemLogsRead, payload)
+      const res = await request.post<LogLineItemResDto[]>(systemLogsRead, payload)
       set({ readResult: res.data })
       return true
     } catch (error) {
@@ -178,7 +178,7 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
   async readUserLog(payload) {
     set({ contentLoading: true })
     try {
-      const res = await request.post<LogLineItemRes[]>(systemUserLogsRead, payload)
+      const res = await request.post<LogLineItemResDto[]>(systemUserLogsRead, payload)
       set({ readUserResult: res.data })
       return true
     } catch (error) {

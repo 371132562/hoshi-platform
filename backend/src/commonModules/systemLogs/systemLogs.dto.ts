@@ -8,7 +8,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 /**
  * 日志文件项类型
  */
-export type LogFileItemRes = {
+export type LogFileItemResDto = {
   filename: string;
 };
 
@@ -16,7 +16,7 @@ export type LogFileItemRes = {
  * 日志文件响应类型
  */
 export type LogFilesResDto = {
-  files: LogFileItemRes[];
+  files: LogFileItemResDto[];
 };
 
 /**
@@ -95,7 +95,7 @@ export type LogUsersResDto = {
 /**
  * 日志行项类型
  */
-export type LogLineItemRes = {
+export type LogLineItemResDto = {
   ts: string;
   message: string;
   level?: string;
@@ -109,12 +109,12 @@ export type LogFileLevel = 'info' | 'warn' | 'error' | 'debug';
 /**
  * 系统日志文件项类型
  */
-export type SystemLogFileItemRes = LogFileItemRes;
+export type SystemLogFileItemResDto = LogFileItemResDto;
 
 /**
  * 用户日志项类型
  */
-export type UserLogItemRes = {
+export type UserLogItemResDto = {
   id: string;
   username: string;
   name: string;
@@ -129,7 +129,7 @@ export type UserLogItemRes = {
  * 用户日志响应类型
  */
 export type UserLogsResDto = {
-  logs: UserLogItemRes[];
+  logs: UserLogItemResDto[];
   total: number;
   page: number;
   pageSize: number;

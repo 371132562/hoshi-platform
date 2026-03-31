@@ -23,7 +23,7 @@ export enum ArticleType {
 /**
  * 文章信息类型
  */
-export type ArticleItemRes = {
+export type ArticleItemResDto = {
   id: string;
   title: string;
   content: string;
@@ -34,7 +34,7 @@ export type ArticleItemRes = {
 /**
  * 文章元信息类型
  */
-export type ArticleMetaItemRes = {
+export type ArticleMetaItemResDto = {
   id: string;
   title: string;
   updateTime?: Date;
@@ -128,7 +128,7 @@ export class ArticleListReqDto {
  * 文章列表响应类型
  */
 export type ArticleListResDto = {
-  list: ArticleMetaItemRes[];
+  list: ArticleMetaItemResDto[];
   total: number;
   page: number;
   pageSize: number;

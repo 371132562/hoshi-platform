@@ -6,7 +6,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
 import {
   CreateOrganizationReqDto,
-  OrganizationRes,
+  OrganizationResDto,
   UpdateOrganizationReqDto,
 } from './organization.dto';
 
@@ -20,7 +20,7 @@ export class OrganizationService {
   /**
    * 获取部门树
    */
-  async getOrganizationTree(): Promise<OrganizationRes[]> {
+  async getOrganizationTree(): Promise<OrganizationResDto[]> {
     this.logger.log('[操作] 获取部门列表');
 
     try {
@@ -44,9 +44,9 @@ export class OrganizationService {
   /**
    * 构建树形结构辅助方法
    */
-  private buildTree(items: OrganizationRes[]): OrganizationRes[] {
-    const map = new Map<string, OrganizationRes>();
-    const roots: OrganizationRes[] = [];
+  private buildTree(items: OrganizationResDto[]): OrganizationResDto[] {
+    const map = new Map<string, OrganizationResDto>();
+    const roots: OrganizationResDto[] = [];
 
     // 初始化 Map，并添加 children 数组
     items.forEach((item) => {

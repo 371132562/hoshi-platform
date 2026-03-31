@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 
 import {
   CreateOrganizationReqDto,
-  OrganizationRes,
+  OrganizationResDto,
   UpdateOrganizationReqDto,
 } from './organization.dto';
 import { OrganizationService } from './organization.service';
@@ -15,7 +15,7 @@ export class OrganizationController {
    * 获取部门树列表
    */
   @Post('list')
-  async getOrganizationTree(): Promise<OrganizationRes[]> {
+  async getOrganizationTree(): Promise<OrganizationResDto[]> {
     return this.organizationService.getOrganizationTree();
   }
 

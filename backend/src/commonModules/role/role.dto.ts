@@ -6,7 +6,7 @@ import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
  */
 
 // 角色最小字段集（列表/业务使用）
-export type RoleItemRes = {
+export type RoleItemResDto = {
   id: string;
   code: string;
   displayName: string;
@@ -80,7 +80,7 @@ export class RoleListReqDto {
 /**
  * 角色列表项类型
  */
-export type RoleListItemResDto = RoleItemRes & { userCount: number };
+export type RoleListItemResDto = RoleItemResDto & { userCount: number };
 
 /**
  * 角色列表响应类型

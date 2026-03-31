@@ -8,7 +8,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 /**
  * 用户信息类型
  */
-export type UserItemRes = {
+export type UserItemResDto = {
   id: string;
   username: string;
   displayName: string;
@@ -78,7 +78,7 @@ export class UserListReqDto {
  * 用户列表响应类型（分页）
  */
 export type UserListResDto = {
-  list: UserItemRes[];
+  list: UserItemResDto[];
   total: number;
   page: number;
   pageSize: number;

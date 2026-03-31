@@ -3,7 +3,7 @@ import type {
   DeleteUserReqDto,
   ResetUserPasswordEncryptedReqDto,
   UpdateUserReqDto,
-  UserItemRes,
+  UserItemResDto,
   UserListResDto
 } from 'template-backend/src/types/dto'
 import { create } from 'zustand'
@@ -44,7 +44,7 @@ type UserPageParams = {
 
 // Store 状态类型
 type UserStoreState = {
-  userList: UserItemRes[]
+  userList: UserItemResDto[]
   userTotal: number
   userPageParams: UserPageParams
   loading: boolean

@@ -1,6 +1,6 @@
 import { Button, Modal, Spin } from 'antd'
 import React, { useEffect, useState } from 'react'
-import type { ArticleItemRes } from 'template-backend/src/types/dto'
+import type { ArticleItemResDto } from 'template-backend/src/types/dto'
 
 import RichEditor from '@/components/RichEditor'
 import useArticleStore from '@/stores/articleStore'
@@ -35,7 +35,7 @@ type ArticlePreviewModalProps = IdModeProps | ContentModeProps
 const ArticlePreviewModal: React.FC<ArticlePreviewModalProps> = props => {
   const { visible, onClose } = props
 
-  const [article, setArticle] = useState<ArticleItemRes | null>(null)
+  const [article, setArticle] = useState<ArticleItemResDto | null>(null)
   const [loading, setLoading] = useState(false)
 
   const getArticleDetail = useArticleStore(state => state.getArticleDetail)

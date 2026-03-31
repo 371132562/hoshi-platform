@@ -8,7 +8,7 @@ import { CryptoUtil } from '../../common/utils/crypto.util';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
 import {
-  ChallengeResponse,
+  ChallengeResDto,
   LoginResDto,
   LoginWithHashReqDto,
   TokenPayloadResDto,
@@ -31,7 +31,7 @@ export class AuthService {
   /**
    * 通用挑战接口 - 获取随机盐
    */
-  getChallenge(): ChallengeResponse {
+  getChallenge(): ChallengeResDto {
     this.logger.log(`[操作] 获取挑战 - 生成随机盐`);
     try {
       const salt = CryptoUtil.generateSalt();
