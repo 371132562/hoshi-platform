@@ -1,4 +1,4 @@
-import { PlusOutlined, SearchOutlined, UndoOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import {
   Button,
   Form,
@@ -253,12 +253,7 @@ const UserManagement: React.FC = () => {
               >
                 搜索
               </Button>
-              <Button
-                icon={<UndoOutlined />}
-                onClick={handleResetSearch}
-              >
-                重置
-              </Button>
+              <Button onClick={handleResetSearch}>重置</Button>
             </Space>
           </Form.Item>
         </Form>
@@ -286,6 +281,7 @@ const UserManagement: React.FC = () => {
           showTotal: total => `共 ${total} 条`
         }}
         loading={loading}
+        scroll={{ x: 'max-content', y: 'calc(100vh - 360px)' }}
       />
 
       {/* 新增/编辑用户弹窗 */}

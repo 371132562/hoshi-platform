@@ -183,6 +183,7 @@ const RoleManagement: React.FC = () => {
         dataSource={roleList}
         pagination={false}
         loading={loading}
+        scroll={{ x: 'max-content', y: 'calc(100vh - 360px)' }}
       />
       {/* 新增/编辑角色弹窗 */}
       <Modal

@@ -1,4 +1,4 @@
-import { EyeOutlined, PlusOutlined, SearchOutlined, UndoOutlined } from '@ant-design/icons'
+import { EyeOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Form, Input, message, Popconfirm, Space, Table } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -155,12 +155,7 @@ const ArticleManagement: React.FC = () => {
               >
                 搜索
               </Button>
-              <Button
-                icon={<UndoOutlined />}
-                onClick={handleResetSearch}
-              >
-                重置
-              </Button>
+              <Button onClick={handleResetSearch}>重置</Button>
             </Space>
           </Form.Item>
         </Form>
@@ -181,13 +176,12 @@ const ArticleManagement: React.FC = () => {
           total,
           current: articlePageParams.page,
           pageSize: articlePageParams.pageSize,
+          onChange: (page, pageSize) => updateArticlePageParams({ page, pageSize }),
           showSizeChanger: true,
           showTotal: total => `共 ${total} 条`
         }}
         loading={loading}
-        onChange={pagination =>
-          updateArticlePageParams({ page: pagination.current, pageSize: pagination.pageSize })
-        }
+        scroll={{ x: 'max-content', y: 'calc(100vh - 360px)' }}
       />
 
       {/* 文章预览 Modal */}

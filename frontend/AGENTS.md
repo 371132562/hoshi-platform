@@ -21,4 +21,5 @@
 - 请求统一走 `src/services/base.ts`，接口地址统一收敛到 `src/services/apis.ts`。
 - 共享类型契约细则转 `type-contract-guidelines`。
 - 路由、菜单、面包屑相关改动统一落在 `router/`。
+- 常规列表页（顶部工具栏含搜索、新建等操作）的 `Table` 默认参考 `UserManagement` / `ArticleManagement` / `RoleManagement`：使用 `scroll={{ x: 'max-content', y: 'calc(100vh - 360px)' }}`，纯分页场景优先用 `pagination.onChange`。
 - 页面与组件、Store、共享类型契约、Ant Design 文档消费方式，按需加载对应 skill，不在此重复展开。

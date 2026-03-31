@@ -1,4 +1,4 @@
-import { ReloadOutlined, SearchOutlined } from '@ant-design/icons'
+import { SearchOutlined } from '@ant-design/icons'
 import {
   Button,
   Card,
@@ -256,7 +256,6 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
         />
 
         <Button
-          icon={<ReloadOutlined />}
           onClick={() => {
             setSelectedUsername(undefined)
             setSelectedFilename(undefined)
@@ -286,9 +285,8 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
             rowKey="key"
             columns={columns}
             dataSource={processedData}
-            size="small"
             pagination={{ pageSize: 50, showSizeChanger: true }}
-            scroll={{ y: 'calc(100vh - 480px)' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 500px)' }}
             locale={{
               emptyText: <Empty description="暂无日志数据，请选择文件查看" />
             }}
