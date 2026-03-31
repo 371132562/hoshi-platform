@@ -3,6 +3,7 @@ import { Button, Form, Input, message } from 'antd'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 
+import { getDefaultAdminPath } from '@/router/routesConfig'
 import { useAuthStore } from '@/stores/authStore'
 
 // 登录页组件
@@ -29,7 +30,7 @@ const LoginPage: React.FC = () => {
     setSubmitting(false)
     if (success) {
       message.open({ type: 'success', content: '登录成功' })
-      navigate('/admin/article/list')
+      navigate(getDefaultAdminPath(useAuthStore.getState().user))
     }
   }
 

@@ -125,7 +125,7 @@ const RoleManagement: React.FC = () => {
               color="primary"
               variant="outlined"
               onClick={() => openModal(record)}
-              // 系统角色允许编辑名称和描述，但不允许修改code
+              disabled={record.isSystem}
             >
               编辑
             </Button>

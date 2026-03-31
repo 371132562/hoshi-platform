@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router'
 import { Link, useLocation, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
-import { getPublicLayoutData } from '@/router/routesConfig'
+import { getDefaultAdminPath, getPublicLayoutData } from '@/router/routesConfig'
+import { useAuthStore } from '@/stores/authStore'
 import { RouteItem } from '@/types'
 
 const { Header, Content } = Layout
@@ -21,6 +22,7 @@ export const PublicLayout: FC = () => {
   // Router hooks
   const outlet = useOutlet()
   const navigate = useNavigate()
+  const user = useAuthStore(state => state.user)
 
   const { pathname } = useLocation()
 
@@ -79,7 +81,7 @@ export const PublicLayout: FC = () => {
         >
           <div
             className="ml-4 flex cursor-pointer items-center justify-center rounded-lg px-3 py-2 transition-colors hover:bg-white/20"
-            onClick={() => navigate('/admin')}
+            onClick={() => navigate(getDefaultAdminPath(user))}
           >
             <SettingOutlined className="!text-gray-300 hover:text-white" />
           </div>

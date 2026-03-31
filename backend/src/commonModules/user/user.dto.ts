@@ -1,9 +1,28 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 /**
  * 用户相关 DTO 类定义
  */
+
+export type UserRoleResDto = {
+  id: string;
+  code?: string;
+  displayName?: string;
+  description?: string | null;
+  allowedRoutes?: string[];
+};
+
+export type PermissionSnapshotResDto = {
+  isAdmin: boolean;
+  allowedRoutes: string[];
+};
 
 /**
  * 用户信息类型
@@ -16,12 +35,8 @@ export type UserItemResDto = {
   organizationId: string | null;
   organization?: { id: string; name: string } | null;
   phone: string | null;
-  role: {
-    code?: string;
-    displayName?: string;
-    description?: string | null;
-    allowedRoutes?: string[];
-  };
+  roles: UserRoleResDto[];
+  permissionSnapshot: PermissionSnapshotResDto;
 };
 
 /**
@@ -49,8 +64,10 @@ export class UpdateUserReqDto {
   phone?: string;
 
   @IsOptional()
-  @IsString()
-  roleId?: string;
+  @IsArray()
+  @ArrayNotEmpty({ message: '至少选择一个角色' })
+  @IsString({ each: true })
+  roleIds?: string[];
 }
 
 /**
@@ -117,9 +134,10 @@ export class CreateUserEncryptedReqDto {
   @IsNotEmpty({ message: '加密密码不能为空' })
   encryptedPassword: string;
 
-  @IsString()
-  @IsNotEmpty({ message: '角色不能为空' })
-  roleId: string;
+  @IsArray()
+  @ArrayNotEmpty({ message: '至少选择一个角色' })
+  @IsString({ each: true })
+  roleIds: string[];
 }
 
 /**

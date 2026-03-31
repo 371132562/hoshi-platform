@@ -79,7 +79,10 @@ const UserManagement: React.FC = () => {
     setEditUser(user || null)
     setModalOpen(true)
     if (user) {
-      form.setFieldsValue({ ...user })
+      form.setFieldsValue({
+        ...user,
+        roleIds: user.roles.map(role => role.id)
+      })
     } else {
       form.resetFields()
     }
@@ -120,12 +123,30 @@ const UserManagement: React.FC = () => {
       { title: '姓名', dataIndex: 'displayName', key: 'displayName' },
       {
         title: '角色',
-        key: 'role',
+        key: 'roles',
         render: (_: unknown, record: UserItemResDto) => {
-          const roleDisplayName = record.role?.displayName || '未分配角色'
-          // 系统管理员角色特殊显示
-          const isSystemAdmin = record.role?.code === RoleCode.ADMIN
-          return isSystemAdmin ? <Tag color="red">系统管理员</Tag> : <Tag>{roleDisplayName}</Tag>
+          if (record.roles.length === 0) {
+            return <Tag>未分配角色</Tag>
+          }
+
+          return (
+            <Space
+              size={[4, 4]}
+              wrap
+            >
+              {record.roles.map(role => {
+                const isSystemAdmin = role.code === RoleCode.ADMIN
+                return (
+                  <Tag
+                    key={role.id}
+                    color={isSystemAdmin ? 'red' : undefined}
+                  >
+                    {isSystemAdmin ? '系统管理员' : role.displayName || role.code || role.id}
+                  </Tag>
+                )
+              })}
+            </Space>
+          )
         }
       },
       {
@@ -278,7 +299,7 @@ const UserManagement: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ displayName: '' }}
+          initialValues={{ displayName: '', roleIds: [] }}
         >
           <Form.Item
             name="username"
@@ -327,15 +348,18 @@ const UserManagement: React.FC = () => {
             </>
           )}
           <Form.Item
-            name="roleId"
+            name="roleIds"
             label="角色"
             rules={[{ required: true, message: '请选择角色' }]}
           >
             <Select
+              mode="multiple"
               allowClear
               placeholder="请选择角色"
+              maxTagCount={4}
+              showSearch
+              optionFilterProp="selectedLabel"
               optionLabelProp="selectedLabel"
-              showSearch={{ optionFilterProp: 'selectedLabel' }}
               options={roleList.map(r => {
                 const isSystem = r.isSystem
                 return {

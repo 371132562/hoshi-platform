@@ -11,6 +11,8 @@ import { RouteItem } from '@/types'
 import { adminRoutes } from './adminRoutes'
 import { publicRoutes } from './publicRoutes'
 
+const routeErrorElement = <ErrorPage />
+
 // 根据路由配置生成路由
 const generateRoutes = (routes: RouteItem[]): RouteObject[] => {
   const generateChildrenRoutes = (routes: RouteItem[]): RouteObject[] => {
@@ -63,24 +65,24 @@ const router = createBrowserRouter(
     {
       path: '/',
       element: <Navigate to="/home" />,
-      errorElement: <ErrorPage />
+      errorElement: routeErrorElement
     },
     {
       path: '/login',
       element: <LoginPage />,
-      errorElement: <ErrorPage />
+      errorElement: routeErrorElement
     },
     // 前台布局（公开页面，顶部导航）
     {
       element: <PublicLayout />,
-      errorElement: <ErrorPage />,
+      errorElement: routeErrorElement,
       children: generateRoutes(publicRoutes)
     },
     // 后台布局（管理页面，侧边导航，需登录）
     {
       path: '/admin',
       element: <AdminLayout />,
-      errorElement: <ErrorPage />,
+      errorElement: routeErrorElement,
       children: generateRoutes(adminRoutes)
     }
   ],

@@ -26,7 +26,7 @@ export const SYSTEM_INIT_USERS = [
     displayName: '系统管理员',
     phone: '',
     password: '88888888',
-    roleCode: RoleCode.ADMIN,
+    roleCodes: [RoleCode.ADMIN],
     isSystem: true, // 标识为系统内置，不可删除
   },
 ] as const;

@@ -29,7 +29,12 @@ export class RoleService {
     try {
       const roles = await this.prisma.role.findMany({
         where: { delete: 0 },
-        include: { users: { where: { delete: 0 } } },
+        include: {
+          userRoles: {
+            where: { user: { delete: 0 } },
+            select: { userId: true },
+          },
+        },
         orderBy: { createTime: 'asc' },
       });
 
@@ -46,7 +51,7 @@ export class RoleService {
               (r): r is string => typeof r === 'string',
             )
           : [], // 只保留字符串
-        userCount: role.users.length,
+        userCount: role.userRoles.length,
       }));
 
       return roleList;
@@ -177,8 +182,8 @@ export class RoleService {
       }
 
       // 检查是否有用户关联该角色
-      const userCount = await this.prisma.user.count({
-        where: { roleId: role.id, delete: 0 },
+      const userCount = await this.prisma.userRole.count({
+        where: { roleId: role.id, user: { delete: 0 } },
       });
       if (userCount > 0) {
         this.logger.warn(

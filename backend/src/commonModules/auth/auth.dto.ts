@@ -58,5 +58,4 @@ export class TokenPayloadResDto {
   userId: string;
   username: string; // account
   displayName: string; // localized name
-  roleId?: string;
 }

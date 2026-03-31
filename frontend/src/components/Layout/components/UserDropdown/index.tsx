@@ -39,13 +39,26 @@ const UserDropdown: FC = () => {
                   </div>
                   <div className="mb-2 flex items-center text-sm text-gray-600">
                     <span className="mr-2 text-gray-400">角色：</span>
-                    <span>
-                      {(user.role?.code === RoleCode.ADMIN ? (
-                        <Tag color="red">系统管理员</Tag>
-                      ) : (
-                        user.role?.displayName
-                      )) || '-'}
-                    </span>
+                    {user.roles.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {user.roles.slice(0, 3).map(role => {
+                          const isSystemAdmin = role.code === RoleCode.ADMIN
+                          return (
+                            <Tag
+                              key={role.id}
+                              color={isSystemAdmin ? 'red' : undefined}
+                            >
+                              {isSystemAdmin
+                                ? '系统管理员'
+                                : role.displayName || role.code || role.id}
+                            </Tag>
+                          )
+                        })}
+                        {user.roles.length > 3 ? <Tag>+{user.roles.length - 3}</Tag> : null}
+                      </div>
+                    ) : (
+                      <span>-</span>
+                    )}
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
                     <span className="mr-2 text-gray-400">部门：</span>

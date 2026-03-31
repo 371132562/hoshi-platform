@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
+import { buildUserItemResDto } from '../../common/auth/user-permission.util';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { CryptoUtil } from '../../common/utils/crypto.util';
@@ -57,21 +58,25 @@ export class AuthService {
       const user = await this.prisma.user.findFirst({
         where: { username, delete: 0 },
         include: {
-          role: {
-            select: {
-              id: true,
-              code: true, // code
-              displayName: true, // displayName
-              description: true,
-              allowedRoutes: true,
-              createTime: true,
-              updateTime: true,
-            },
-          },
           organization: {
             select: {
               id: true,
               name: true,
+            },
+          },
+          userRoles: {
+            orderBy: { createTime: 'asc' },
+            include: {
+              role: {
+                select: {
+                  id: true,
+                  code: true,
+                  displayName: true,
+                  description: true,
+                  allowedRoutes: true,
+                  delete: true,
+                },
+              },
             },
           },
         },
@@ -93,20 +98,8 @@ export class AuthService {
         throw new BusinessException(ErrorCode.PASSWORD_INCORRECT, '密码错误');
       }
 
-      const payload: TokenPayloadResDto = {
-        sub: user.id,
-        userId: user.id,
-        username: user.username,
-        displayName: user.displayName,
-        roleId: user.roleId || undefined,
-      };
-      const token = this.jwtService.sign(payload);
-      this.logger.log(
-        `[操作] 用户登录成功 - 用户名: ${username}, 姓名: ${user.displayName}`,
-      );
-      return {
-        token,
-        user: {
+      const userInfo = buildUserItemResDto(
+        {
           id: user.id,
           username: user.username,
           displayName: user.displayName,
@@ -115,13 +108,31 @@ export class AuthService {
           organization: user.organization
             ? { id: user.organization.id, name: user.organization.name }
             : null,
-          phone: user.phone || null,
-          role: {
-            code: user.role!.code,
-            displayName: user.role!.displayName,
-            allowedRoutes: (user.role!.allowedRoutes as string[]) || [],
-          },
+          phone: user.phone ?? null,
         },
+        user.userRoles.map((userRole) => userRole.role),
+      );
+
+      if (userInfo.roles.length === 0) {
+        this.logger.warn(
+          `[验证失败] 用户登录 - 用户名 ${username} 未分配任何角色`,
+        );
+        throw new BusinessException(ErrorCode.FORBIDDEN, '用户未分配角色');
+      }
+
+      const payload: TokenPayloadResDto = {
+        sub: user.id,
+        userId: user.id,
+        username: user.username,
+        displayName: user.displayName,
+      };
+      const token = this.jwtService.sign(payload);
+      this.logger.log(
+        `[操作] 用户登录成功 - 用户名: ${username}, 姓名: ${user.displayName}`,
+      );
+      return {
+        token,
+        user: userInfo,
       };
     } catch (error) {
       if (error instanceof BusinessException) throw error;
@@ -146,21 +157,25 @@ export class AuthService {
           delete: 0,
         },
         include: {
-          role: {
-            select: {
-              id: true,
-              code: true,
-              displayName: true,
-              description: true,
-              allowedRoutes: true,
-              createTime: true,
-              updateTime: true,
-            },
-          },
           organization: {
             select: {
               id: true,
               name: true,
+            },
+          },
+          userRoles: {
+            orderBy: { createTime: 'asc' },
+            include: {
+              role: {
+                select: {
+                  id: true,
+                  code: true,
+                  displayName: true,
+                  description: true,
+                  allowedRoutes: true,
+                  delete: true,
+                },
+              },
             },
           },
         },
@@ -180,22 +195,20 @@ export class AuthService {
         `[操作] 获取用户信息 - 用户ID: ${userId}, 用户名: ${user.username}, 姓名: ${user.displayName}`,
       );
 
-      return {
-        id: user.id,
-        username: user.username,
-        displayName: user.displayName,
-        isSystem: user.isSystem,
-        organizationId: user.organizationId ?? null,
-        organization: user.organization
-          ? { id: user.organization.id, name: user.organization.name }
-          : null,
-        phone: user.phone || null,
-        role: {
-          code: user.role!.code,
-          displayName: user.role!.displayName,
-          allowedRoutes: (user.role!.allowedRoutes as string[]) || [],
+      return buildUserItemResDto(
+        {
+          id: user.id,
+          username: user.username,
+          displayName: user.displayName,
+          isSystem: user.isSystem,
+          organizationId: user.organizationId ?? null,
+          organization: user.organization
+            ? { id: user.organization.id, name: user.organization.name }
+            : null,
+          phone: user.phone ?? null,
         },
-      };
+        user.userRoles.map((userRole) => userRole.role),
+      );
     } catch (error) {
       if (error instanceof BusinessException) {
         throw error;

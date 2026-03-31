@@ -1,5 +1,4 @@
 import React from 'react'
-import { RoleCode } from 'template-backend/src/common/config/constants'
 
 import { RouteItem } from '@/types'
 
@@ -53,6 +52,11 @@ export const getAllRoutes = (): RouteItem[] => {
  */
 export const getPublicMenuRoutes = (): RouteItem[] => publicRoutes
 
+type PermissionSnapshotLike = {
+  isAdmin?: boolean
+  allowedRoutes?: string[]
+}
+
 /**
  * 获取后台侧边菜单路由（根据用户角色过滤）
  *
@@ -61,21 +65,16 @@ export const getPublicMenuRoutes = (): RouteItem[] => publicRoutes
  * - 普通用户：根据 allowedRoutes 过滤，只返回有权限的菜单项
  * - 未登录/无角色：返回空数组
  *
- * @param userRole - 用户角色信息
- * @param userRole.code - 角色编码
- * @param userRole.allowedRoutes - 该角色允许访问的路由路径数组
+ * @param permissionSnapshot - 用户聚合权限快照
  * @returns 过滤后的后台菜单路由
  */
-export const getAdminMenuRoutes = (userRole?: {
-  code: string
-  allowedRoutes: string[]
-}): RouteItem[] => {
+export const getAdminMenuRoutes = (permissionSnapshot?: PermissionSnapshotLike): RouteItem[] => {
   // 超管：全部后台菜单
-  if (userRole?.code === RoleCode.ADMIN) {
+  if (permissionSnapshot?.isAdmin) {
     return adminRoutes
   }
 
-  const allowedRoutes = userRole?.allowedRoutes || []
+  const allowedRoutes = permissionSnapshot?.allowedRoutes || []
 
   // 递归过滤路由：保留用户有权限访问的路由及其父级
   const filterRoute = (route: RouteItem): RouteItem | null => {
@@ -97,6 +96,30 @@ export const getAdminMenuRoutes = (userRole?: {
     .filter(r => !r.adminOnly) // 非超管不显示 adminOnly 菜单（如系统管理）
     .map(route => filterRoute(route))
     .filter(Boolean) as RouteItem[]
+}
+
+const getFirstAccessiblePath = (routes: RouteItem[]): string | undefined => {
+  for (const route of routes) {
+    if (route.children && route.children.length > 0) {
+      const firstChildPath = getFirstAccessiblePath(route.children)
+      if (firstChildPath) {
+        return firstChildPath
+      }
+    }
+
+    if (!route.children || route.children.length === 0) {
+      return route.path
+    }
+  }
+
+  return undefined
+}
+
+export const getDefaultAdminPath = (
+  user?: { permissionSnapshot?: PermissionSnapshotLike } | null
+) => {
+  const sideMenuRoutes = getAdminMenuRoutes(user?.permissionSnapshot)
+  return getFirstAccessiblePath(sideMenuRoutes) || '/admin'
 }
 
 /**
@@ -285,17 +308,13 @@ export const getPublicLayoutData = (pathname: string) => {
  */
 export const getAdminLayoutData = (
   pathname: string,
-  user?: { role?: { code?: string; allowedRoutes?: string[] } } | null
+  user?: { permissionSnapshot?: PermissionSnapshotLike } | null
 ) => {
   const allRoutes = getAllRoutes()
   const pathSegments = pathname.split('/').filter(Boolean)
 
   // 1. 获取侧边菜单路由（已根据用户权限过滤）
-  const sideMenuRoutes = getAdminMenuRoutes(
-    user?.role?.code
-      ? { code: user.role.code, allowedRoutes: user.role.allowedRoutes || [] }
-      : undefined
-  )
+  const sideMenuRoutes = getAdminMenuRoutes(user?.permissionSnapshot)
 
   // 2. 计算当前路由信息
   const currentRoute = allRoutes.find(route => {
@@ -317,19 +336,19 @@ export const getAdminLayoutData = (
   // 5. 权限判断
   let hasPermission = false
   if (user) {
-    if (user.role?.code === RoleCode.ADMIN) {
+    if (user.permissionSnapshot?.isAdmin) {
       // 系统管理员有全部权限
       hasPermission = true
-    } else if (currentRoute?.menuParent) {
-      // 有 menuParent 的路由（如新增/编辑页）继承父路由权限
-      // 假设用户能访问列表页，就能访问对应的新增/编辑页
-      hasPermission = true
     } else {
-      // 普通用户：检查 allowedRoutes 是否包含当前路径
-      const allowed = user.role?.allowedRoutes || []
-      hasPermission = allowed.some(
-        (route: string) => pathname === route || pathname.startsWith(route + '/')
-      )
+      const allowedRoutes = user.permissionSnapshot?.allowedRoutes || []
+      const hasRoutePermission = (routePath: string) =>
+        allowedRoutes.some(route => routePath === route || routePath.startsWith(route + '/'))
+
+      if (currentRoute?.menuParent) {
+        hasPermission = hasRoutePermission(currentRoute.menuParent)
+      } else {
+        hasPermission = hasRoutePermission(pathname)
+      }
     }
   }
 

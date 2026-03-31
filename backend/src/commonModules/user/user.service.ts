@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import type { User } from '@prisma/generated/client';
+import { Prisma } from '@prisma/generated/client';
 import * as bcrypt from 'bcryptjs';
 
+import { buildUserItemResDto } from '../../common/auth/user-permission.util';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { CryptoUtil } from '../../common/utils/crypto.util';
@@ -22,6 +24,45 @@ export class UserService {
     private readonly logger: WinstonLoggerService,
   ) {}
 
+  private normalizeRoleIds(roleIds: string[]): string[] {
+    return Array.from(
+      new Set(roleIds.filter((roleId) => roleId.trim().length > 0)),
+    );
+  }
+
+  private async validateRoleIds(roleIds: string[]): Promise<string[]> {
+    const normalizedRoleIds = this.normalizeRoleIds(roleIds);
+
+    if (normalizedRoleIds.length === 0) {
+      throw new BusinessException(ErrorCode.INVALID_INPUT, '至少选择一个角色');
+    }
+
+    const roles = await this.prisma.role.findMany({
+      where: {
+        id: { in: normalizedRoleIds },
+        delete: 0,
+      },
+      select: { id: true },
+    });
+
+    if (roles.length !== normalizedRoleIds.length) {
+      throw new BusinessException(ErrorCode.ROLE_NOT_FOUND, '存在无效角色');
+    }
+
+    return normalizedRoleIds;
+  }
+
+  private async replaceUserRoles(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    roleIds: string[],
+  ) {
+    await tx.userRole.deleteMany({ where: { userId } });
+    await tx.userRole.createMany({
+      data: roleIds.map((roleId) => ({ userId, roleId })),
+    });
+  }
+
   /**
    * 获取用户列表，支持分页和筛选
    */
@@ -33,12 +74,12 @@ export class UserService {
 
     try {
       // 构建筛选条件
-      const where: Record<string, unknown> = { delete: 0 };
+      const where: Prisma.UserWhereInput = { delete: 0 };
       if (displayName) {
         where.displayName = { contains: displayName };
       }
       if (roleId) {
-        where.roleId = roleId;
+        where.userRoles = { some: { roleId } };
       }
 
       // 分页计算
@@ -49,7 +90,29 @@ export class UserService {
       const [users, total] = await Promise.all([
         this.prisma.user.findMany({
           where,
-          include: { role: true },
+          include: {
+            organization: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            userRoles: {
+              orderBy: { createTime: 'asc' },
+              include: {
+                role: {
+                  select: {
+                    id: true,
+                    code: true,
+                    displayName: true,
+                    description: true,
+                    allowedRoutes: true,
+                    delete: true,
+                  },
+                },
+              },
+            },
+          },
           orderBy: { createTime: 'asc' },
           skip,
           take,
@@ -61,18 +124,22 @@ export class UserService {
         `[操作] 获取用户列表成功 - 本页 ${users.length} 条，共 ${total} 条`,
       );
 
-      const list = users.map((user) => ({
-        id: user.id,
-        username: user.username,
-        displayName: user.displayName,
-        isSystem: user.isSystem,
-        organizationId: user.organizationId ?? null,
-        phone: user.phone ?? null,
-        role: {
-          code: user.role!.code,
-          displayName: user.role!.displayName,
-        },
-      }));
+      const list = users.map((user) =>
+        buildUserItemResDto(
+          {
+            id: user.id,
+            username: user.username,
+            displayName: user.displayName,
+            isSystem: user.isSystem,
+            organizationId: user.organizationId ?? null,
+            organization: user.organization
+              ? { id: user.organization.id, name: user.organization.name }
+              : null,
+            phone: user.phone ?? null,
+          },
+          user.userRoles.map((userRole) => userRole.role),
+        ),
+      );
 
       return { list, total, page, pageSize };
     } catch (error) {
@@ -93,6 +160,8 @@ export class UserService {
     );
 
     try {
+      const validatedRoleIds = await this.validateRoleIds(dto.roleIds);
+
       // 解密前端数据，提取密码部分
       const decryptedData = CryptoUtil.decryptData(dto.encryptedPassword);
       const password =
@@ -101,14 +170,18 @@ export class UserService {
       // 使用bcrypt对明文密码进行哈希
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await this.prisma.user.create({
-        data: {
-          username: dto.username,
-          displayName: dto.displayName,
-          phone: dto.phone,
-          password: hashedPassword,
-          roleId: dto.roleId,
-        },
+      await this.prisma.$transaction(async (tx) => {
+        const user = await tx.user.create({
+          data: {
+            username: dto.username,
+            displayName: dto.displayName,
+            phone: dto.phone,
+            password: hashedPassword,
+            organizationId: dto.organizationId,
+          },
+        });
+
+        await this.replaceUserRoles(tx, user.id, validatedRoleIds);
       });
 
       this.logger.log(
@@ -146,13 +219,26 @@ export class UserService {
         );
       }
 
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: {
-          displayName: dto.displayName ?? user.displayName,
-          phone: dto.phone ?? user.phone,
-          roleId: dto.roleId ?? user.roleId,
-        },
+      const validatedRoleIds = dto.roleIds
+        ? await this.validateRoleIds(dto.roleIds)
+        : null;
+
+      await this.prisma.$transaction(async (tx) => {
+        await tx.user.update({
+          where: { id: user.id },
+          data: {
+            displayName: dto.displayName ?? user.displayName,
+            phone: dto.phone ?? user.phone,
+            organizationId:
+              dto.organizationId !== undefined
+                ? dto.organizationId
+                : user.organizationId,
+          },
+        });
+
+        if (validatedRoleIds) {
+          await this.replaceUserRoles(tx, user.id, validatedRoleIds);
+        }
       });
 
       this.logger.log(

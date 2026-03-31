@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
+import { buildUserItemResDto } from '../../common/auth/user-permission.util';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
@@ -31,19 +32,25 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           delete: 0,
         },
         include: {
-          role: {
-            select: {
-              id: true,
-              code: true,
-              displayName: true,
-              description: true,
-              allowedRoutes: true,
-            },
-          },
           organization: {
             select: {
               id: true,
               name: true,
+            },
+          },
+          userRoles: {
+            orderBy: { createTime: 'asc' },
+            include: {
+              role: {
+                select: {
+                  id: true,
+                  code: true,
+                  displayName: true,
+                  description: true,
+                  allowedRoutes: true,
+                  delete: true,
+                },
+              },
             },
           },
         },
@@ -58,27 +65,34 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       // 返回用户信息，这些信息会被注入到请求对象中
       // 必须符合 UserInfo 类型定义
+      const userInfo = buildUserItemResDto(
+        {
+          id: user.id,
+          username: user.username,
+          displayName: user.displayName,
+          isSystem: user.isSystem,
+          organizationId: user.organizationId ?? null,
+          organization: user.organization
+            ? { id: user.organization.id, name: user.organization.name }
+            : null,
+          phone: user.phone ?? null,
+        },
+        user.userRoles.map((userRole) => userRole.role),
+      );
+
+      if (userInfo.roles.length === 0) {
+        throw new BusinessException(ErrorCode.FORBIDDEN, '用户未分配角色');
+      }
+
       return {
         userId: user.id,
         username: user.username,
         displayName: user.displayName,
-        phone: user.phone,
-        organizationId: user.organizationId,
-        organization: user.organization
-          ? { id: user.organization.id, name: user.organization.name }
-          : null,
-        roleId: user.roleId,
-        role: user.role
-          ? {
-              id: user.role.id,
-              code: user.role.code,
-              displayName: user.role.displayName,
-              description: user.role.description,
-              allowedRoutes: Array.isArray(user.role.allowedRoutes)
-                ? (user.role.allowedRoutes as string[])
-                : [],
-            }
-          : undefined,
+        phone: user.phone ?? null,
+        organizationId: userInfo.organizationId,
+        organization: userInfo.organization,
+        roles: userInfo.roles,
+        permissionSnapshot: userInfo.permissionSnapshot,
       };
     } catch (error) {
       // 如果是已知的BusinessException，直接抛出

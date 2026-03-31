@@ -26,7 +26,7 @@ type CreateUserFormData = {
   organizationId?: string
   phone?: string
   password: string
-  roleId: string
+  roleIds: string[]
 }
 
 type ResetPasswordFormData = {

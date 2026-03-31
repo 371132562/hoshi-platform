@@ -85,11 +85,13 @@ async function seedAuthData() {
 
   const encryptedUsers = await generateEncryptedUsers();
   for (const user of encryptedUsers) {
-    // 使用 roleCode 关联角色
-    const roleId = roleMap.get(user.roleCode);
-    if (!roleId) {
+    const roleIds = user.roleCodes
+      .map((roleCode) => roleMap.get(roleCode))
+      .filter((roleId): roleId is string => Boolean(roleId));
+
+    if (roleIds.length !== user.roleCodes.length) {
       console.warn(
-        `警告: 用户 "${user.username}" 引用的角色 "${user.roleCode}" 未找到，跳过创建`,
+        `警告: 用户 "${user.username}" 引用的角色集合存在未找到项，跳过创建`,
       );
       continue;
     }
@@ -106,21 +108,39 @@ async function seedAuthData() {
           phone: user.phone,
           password: user.password,
           isSystem: user.isSystem,
-          roleId: roleId,
         },
       });
+
+      await prisma.userRole.deleteMany({
+        where: { userId: existingUser.id },
+      });
+
+      await prisma.userRole.createMany({
+        data: roleIds.map((roleId) => ({
+          userId: existingUser.id,
+          roleId,
+        })),
+      });
+
       console.log(`系统用户 "${user.displayName}" (${user.username}) 已更新`);
     } else {
-      await prisma.user.create({
+      const createdUser = await prisma.user.create({
         data: {
           username: user.username,
           displayName: user.displayName,
           phone: user.phone,
           password: user.password,
           isSystem: user.isSystem,
-          roleId: roleId,
         },
       });
+
+      await prisma.userRole.createMany({
+        data: roleIds.map((roleId) => ({
+          userId: createdUser.id,
+          roleId,
+        })),
+      });
+
       console.log(`系统用户 "${user.displayName}" (${user.username}) 已创建`);
     }
   }

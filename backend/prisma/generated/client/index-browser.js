@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.3.0
- * Query Engine version: 9d6ad21cbbceab97458517b147a6a09ff43aa735
+ * Prisma Client JS version: 7.6.0
+ * Query Engine version: 75cbdc1eb7150937890ad5465d861175c6624711
  */
 Prisma.prismaVersion = {
-  client: "7.3.0",
-  engine: "9d6ad21cbbceab97458517b147a6a09ff43aa735"
+  client: "7.6.0",
+  engine: "75cbdc1eb7150937890ad5465d861175c6624711"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -146,11 +146,17 @@ exports.Prisma.UserScalarFieldEnum = {
   isSystem: 'isSystem',
   phone: 'phone',
   password: 'password',
-  roleId: 'roleId',
   organizationId: 'organizationId',
   createTime: 'createTime',
   updateTime: 'updateTime',
   delete: 'delete'
+};
+
+exports.Prisma.UserRoleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  roleId: 'roleId',
+  createTime: 'createTime'
 };
 
 exports.Prisma.ArticleScalarFieldEnum = {
@@ -215,6 +221,7 @@ exports.Prisma.ModelName = {
   Organization: 'Organization',
   Role: 'Role',
   User: 'User',
+  UserRole: 'UserRole',
   Article: 'Article',
   ArticleOrder: 'ArticleOrder',
   Image: 'Image'

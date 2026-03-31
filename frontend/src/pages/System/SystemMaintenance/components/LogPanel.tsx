@@ -287,7 +287,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
             columns={columns}
             dataSource={processedData}
             size="small"
-            pagination={{ pageSize: 50, showSizeChanger: true, size: 'default' }}
+            pagination={{ pageSize: 50, showSizeChanger: true }}
             scroll={{ y: 'calc(100vh - 480px)' }}
             locale={{
               emptyText: <Empty description="暂无日志数据，请选择文件查看" />

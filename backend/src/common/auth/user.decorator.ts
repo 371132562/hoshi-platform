@@ -1,5 +1,10 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
+import type {
+  PermissionSnapshotResDto,
+  UserRoleResDto,
+} from '../../commonModules/user/user.dto';
+
 type RequestWithUser = {
   user?: UserInfo;
 };
@@ -9,14 +14,10 @@ export type UserInfo = {
   username: string; // account name (login)
   displayName: string; // localized display name
   phone?: string;
-  roleId?: string;
-  role?: {
-    id: string;
-    code?: string;
-    displayName?: string;
-    description?: string;
-    allowedRoutes: string[];
-  };
+  organizationId?: string | null;
+  organization?: { id: string; name: string } | null;
+  roles: UserRoleResDto[];
+  permissionSnapshot: PermissionSnapshotResDto;
 };
 
 export const CurrentUser = createParamDecorator(

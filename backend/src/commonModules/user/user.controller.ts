@@ -30,7 +30,7 @@ export class UserController {
   @Post('create')
   async createUser(
     @Body() createUserEncryptedDto: CreateUserEncryptedReqDto,
-    @Body('code', UserCodeExistsValidationPipe) _code: string,
+    @Body('username', UserCodeExistsValidationPipe) _username: string,
   ) {
     return this.userService.createUserEncrypted(createUserEncryptedDto);
   }
