@@ -9965,16 +9965,15 @@ export namespace Prisma {
   export type ImageWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     filename?: string
-    hash_delete?: ImageHashDeleteCompoundUniqueInput
+    hash?: string
     AND?: ImageWhereInput | ImageWhereInput[]
     OR?: ImageWhereInput[]
     NOT?: ImageWhereInput | ImageWhereInput[]
     originalName?: StringFilter<"Image"> | string
-    hash?: StringFilter<"Image"> | string
     createdAt?: DateTimeFilter<"Image"> | Date | string
     updatedAt?: DateTimeFilter<"Image"> | Date | string
     delete?: IntFilter<"Image"> | number
-  }, "id" | "filename" | "hash_delete">
+  }, "id" | "filename" | "hash">
 
   export type ImageOrderByWithAggregationInput = {
     id?: SortOrder
@@ -10981,11 +10980,6 @@ export namespace Prisma {
 
   export type ArticleOrderSumOrderByAggregateInput = {
     delete?: SortOrder
-  }
-
-  export type ImageHashDeleteCompoundUniqueInput = {
-    hash: string
-    delete: number
   }
 
   export type ImageCountOrderByAggregateInput = {

@@ -54,10 +54,10 @@ export class UploadService {
       const hash = await this.getFileHash(file.path);
       const originalName = file.originalname;
 
-      const existingImage = await this.prisma.image.findFirst({
+      // hash 已声明为唯一键，按唯一约束定位去重目标，避免扫描多条记录。
+      const existingImage = await this.prisma.image.findUnique({
         where: {
           hash,
-          delete: 0,
         },
       });
 

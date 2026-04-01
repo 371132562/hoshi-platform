@@ -12,7 +12,6 @@ const SystemMaintenance: FC = () => {
       <Tabs
         defaultActiveKey="cleanup"
         type="card"
-        className="custom-tabs"
         items={[
           {
             key: 'cleanup',

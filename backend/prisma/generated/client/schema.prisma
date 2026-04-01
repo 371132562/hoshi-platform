@@ -121,11 +121,10 @@ model Image {
   id           String   @id @default(uuid()) // 图片主键ID
   filename     String   @unique // 生成的文件名
   originalName String // 原始文件名
-  hash         String // 文件哈希值
+  hash         String   @unique // 文件内容哈希值（全局唯一，用于内容去重）
   createdAt    DateTime @default(now()) // 创建时间
   updatedAt    DateTime @updatedAt // 最后更新时间
   delete       Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
 
-  @@unique([hash, delete])
   @@index([id, delete])
 }
