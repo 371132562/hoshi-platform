@@ -10,3 +10,6 @@ backend/.env -text
 # 明确指定某些二进制文件不进行转换
 *.png binary
 *.jpg binary
+
+# Docker 构建文件固定使用 LF，避免 Windows/WSL 之间触发换行冲突
+Dockerfile text eol=lf
