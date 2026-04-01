@@ -1,6 +1,16 @@
 import { RouteItem } from '@/types'
 
+import { adminRoutes } from './adminRoutes'
+import { publicRoutes } from './publicRoutes'
 import { resolvePermissionTargetMeta, resolveRoutePermissionMeta } from './routePermissions'
+
+// =========================
+// Runtime Core
+// =========================
+
+/** 将带参数的路由路径转换为可复用的正则匹配器。 */
+const createPathMatcher = (path: string): RegExp =>
+  new RegExp(`^${path.replace(/\/:[^/]+/g, '/[^/]+')}$`)
 
 type RouteEntryMeta = {
   route: RouteItem // 当前匹配到的路由声明
@@ -42,15 +52,17 @@ export type AccessResult = {
   hasPermission: boolean // 当前路径是否允许访问
 }
 
+export type ResolvedLayoutAccess = {
+  uiMeta?: RouteUiMeta // 当前路径对应的菜单/面包屑元信息
+  accessResult: AccessResult // 当前路径对应的菜单可见性与访问权限
+}
+
 export type RouteRuntime = {
   getRenderableRoutes: () => RouteItem[] // 返回可注册到 React Router 的平铺路由
   resolveRouteUiMeta: (pathname: string) => RouteUiMeta | undefined // 解析路径对应的 UI 元数据
   getAccessResult: (user?: AccessUserInfo | null, pathname?: string) => AccessResult // 解析菜单可见性与访问权限
+  resolveLayoutAccess: (pathname: string, user?: AccessUserInfo | null) => ResolvedLayoutAccess // 一次性解析布局需要的 UI 元数据与权限结果
 }
-
-/** 将带参数的路由路径转换为可复用的正则匹配器。 */
-const createDynamicMatcher = (path: string) =>
-  new RegExp(`^${path.replace(/\/:[^/]+/g, '/[^/]+')}$`)
 
 /**
  * 为路由声明建立运行时索引，统一派生菜单高亮、面包屑与权限结果。
@@ -72,7 +84,7 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
         route,
         menuOwner,
         breadcrumbTrail,
-        matcher: route.path.includes('/:') ? createDynamicMatcher(route.path) : undefined
+        matcher: route.path.includes('/:') ? createPathMatcher(route.path) : undefined
       }
 
       exactPathMap.set(route.path, entry)
@@ -162,86 +174,218 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
     return routes.map(route => filterRoute(route)).filter(Boolean) as RouteItem[]
   }
 
+  /**
+   * 基于上下文派生页面 UI 元数据；未命中路由时返回 undefined。
+   */
+  const resolveRouteUiMetaFromContext = (
+    routeContext: ResolvedRouteContext | undefined,
+    pathname: string
+  ): RouteUiMeta | undefined => {
+    if (!routeContext) {
+      return undefined
+    }
+
+    const { matchedEntry, selectedMenuPath, permissionKey, permissionTargetKey } = routeContext
+
+    // 4. 将当前页面需要的菜单高亮、面包屑与权限目标一次性派生出来。
+    return {
+      selectedMenuPath,
+      openMenuKeys: matchedEntry.breadcrumbTrail
+        .filter(route => Boolean(route.children?.length))
+        .map(route => route.path),
+      breadcrumbItems: matchedEntry.breadcrumbTrail.map((route, index) => ({
+        path: index === matchedEntry.breadcrumbTrail.length - 1 ? pathname : route.path,
+        title: route.title,
+        canLink: Boolean(route.component) && index < matchedEntry.breadcrumbTrail.length - 1
+      })),
+      currentRoute: matchedEntry.route,
+      menuOwner: matchedEntry.menuOwner,
+      permissionTargetKey,
+      permissionKey
+    }
+  }
+
+  /**
+   * 基于已解析的路径上下文计算菜单可见性与当前访问权限。
+   */
+  const resolveAccessResultFromContext = (
+    user?: AccessUserInfo | null,
+    routeContext?: ResolvedRouteContext
+  ): AccessResult => {
+    if (!user) {
+      return {
+        visibleMenuTree: [],
+        hasPermission: false
+      }
+    }
+
+    // 5. 先计算菜单可见树，再判断当前路径是否命中允许访问的目标权限 key。
+    const allowedPermissionKeySet = new Set((user.permissionKeys || []).filter(Boolean))
+    const isAdmin = Boolean(user.isAdmin)
+    const visibleMenuTree = filterVisibleMenuTree(routeList, allowedPermissionKeySet, isAdmin)
+
+    if (!routeContext) {
+      return {
+        visibleMenuTree,
+        hasPermission: false
+      }
+    }
+
+    if (isAdmin) {
+      return {
+        visibleMenuTree,
+        hasPermission: true
+      }
+    }
+
+    const { permissionTargetKey } = routeContext
+
+    if (!permissionTargetKey) {
+      return {
+        visibleMenuTree,
+        hasPermission: false
+      }
+    }
+
+    return {
+      visibleMenuTree,
+      hasPermission: allowedPermissionKeySet.has(permissionTargetKey)
+    }
+  }
+
   walkRoutes(routeList)
 
   return {
     getRenderableRoutes: () => Array.from(renderableRouteMap.values()),
-    resolveRouteUiMeta: pathname => {
-      const routeContext = resolveRouteContext(pathname)
-
-      if (!routeContext) {
-        return undefined
-      }
-
-      const { matchedEntry, selectedMenuPath, permissionKey, permissionTargetKey } = routeContext
-
-      // 4. 将当前页面需要的菜单高亮、面包屑与权限目标一次性派生出来。
-      return {
-        selectedMenuPath,
-        openMenuKeys: matchedEntry.breadcrumbTrail
-          .filter(route => Boolean(route.children?.length))
-          .map(route => route.path),
-        breadcrumbItems: matchedEntry.breadcrumbTrail.map((route, index) => ({
-          path: index === matchedEntry.breadcrumbTrail.length - 1 ? pathname : route.path,
-          title: route.title,
-          canLink: Boolean(route.component) && index < matchedEntry.breadcrumbTrail.length - 1
-        })),
-        currentRoute: matchedEntry.route,
-        menuOwner: matchedEntry.menuOwner,
-        permissionTargetKey,
-        permissionKey
-      }
-    },
+    resolveRouteUiMeta: pathname =>
+      resolveRouteUiMetaFromContext(resolveRouteContext(pathname), pathname),
     getAccessResult: (
       user,
       pathname = typeof window !== 'undefined' ? window.location.pathname : ''
-    ) => {
-      const routeContext = pathname ? resolveRouteContext(pathname) : undefined
-
-      if (!user) {
-        return {
-          visibleMenuTree: [],
-          hasPermission: false
-        }
-      }
-
-      // 5. 先计算菜单可见树，再判断当前路径是否命中允许访问的目标权限 key。
-      const allowedPermissionKeySet = new Set((user.permissionKeys || []).filter(Boolean))
-      const isAdmin = Boolean(user.isAdmin)
-      const visibleMenuTree = filterVisibleMenuTree(routeList, allowedPermissionKeySet, isAdmin)
-
-      if (!routeContext) {
-        return {
-          visibleMenuTree,
-          hasPermission: false
-        }
-      }
-
-      if (isAdmin) {
-        return {
-          visibleMenuTree,
-          hasPermission: true
-        }
-      }
-
-      const { permissionTargetKey } = routeContext
-
-      if (!permissionTargetKey) {
-        return {
-          visibleMenuTree,
-          hasPermission: false
-        }
-      }
-
+    ) => resolveAccessResultFromContext(user, pathname ? resolveRouteContext(pathname) : undefined),
+    resolveLayoutAccess: (pathname, user) => {
+      const routeContext = resolveRouteContext(pathname)
       return {
-        visibleMenuTree,
-        hasPermission: allowedPermissionKeySet.has(permissionTargetKey)
+        uiMeta: resolveRouteUiMetaFromContext(routeContext, pathname),
+        accessResult: resolveAccessResultFromContext(user, routeContext)
       }
     }
   }
 }
 
-export const getFirstVisibleRoutePath = (routeTree: RouteItem[]): string | undefined => {
-  const runtime = createRouteRuntime(routeTree)
-  return runtime.getRenderableRoutes().find(route => route.component)?.path
+// =========================
+// App Facade
+// =========================
+
+/**
+ * 路由运行时单例统一收敛在本文件，避免在多个入口重复创建索引。
+ * Router 注册与布局查询共用同一份 runtime，保证菜单、面包屑、判权口径一致。
+ */
+export const publicRouteRuntime = createRouteRuntime(publicRoutes)
+export const adminRouteRuntime = createRouteRuntime(adminRoutes)
+
+type UserPermissionLike = AccessUserInfo
+
+/** 根据当前用户权限返回后台可见菜单树。 */
+const getAdminMenuRoutes = (user?: UserPermissionLike | null): RouteItem[] =>
+  adminRouteRuntime.getAccessResult(user).visibleMenuTree
+
+/** 递归获取可见菜单树中的第一个可访问叶子路由。 */
+const getFirstAccessiblePath = (routes: RouteItem[]): string | undefined => {
+  for (const route of routes) {
+    if (route.children && route.children.length > 0) {
+      const firstChildPath = getFirstAccessiblePath(route.children)
+      if (firstChildPath) {
+        return firstChildPath
+      }
+    }
+
+    if (!route.children || route.children.length === 0) {
+      return route.path
+    }
+  }
+
+  return undefined
+}
+
+/** 为登录跳转和“进入后台”按钮计算默认后台落点。 */
+export const getDefaultAdminPath = (user?: UserPermissionLike | null) => {
+  const sideMenuRoutes = getAdminMenuRoutes(user)
+  return getFirstAccessiblePath(sideMenuRoutes) || '/admin'
+}
+
+type RolePermissionOption = {
+  label: string
+  value: string
+}
+
+type RolePermissionOptionGroup = {
+  label: string
+  options: RolePermissionOption[]
+}
+
+/** 将后台菜单叶子节点转换为角色权限分配弹窗可直接消费的选项结构。 */
+export const getMenuOptionsForRoleEdit = () => {
+  const options: RolePermissionOptionGroup[] = []
+
+  adminRoutes.forEach(route => {
+    if (route.adminOnly) return
+
+    const routeOptions: RolePermissionOption[] = []
+
+    if (route.children) {
+      route.children.forEach(child => {
+        const permissionMeta = resolveRoutePermissionMeta(child.path, child.path)
+
+        if (child.component && permissionMeta?.permissionKey) {
+          routeOptions.push({ label: child.title, value: permissionMeta.permissionKey })
+        }
+      })
+
+      if (routeOptions.length > 0) {
+        options.push({ label: route.title, options: routeOptions })
+      }
+      return
+    }
+
+    const permissionMeta = resolveRoutePermissionMeta(route.path, route.path)
+
+    if (route.component && permissionMeta?.permissionKey) {
+      routeOptions.push({ label: route.title, value: permissionMeta.permissionKey })
+    }
+
+    if (routeOptions.length > 0) {
+      options.push({ label: route.title, options: routeOptions })
+    }
+  })
+
+  return options
+}
+
+/** 为前台布局聚合菜单、面包屑与当前页面元数据。 */
+export const getPublicLayoutData = (pathname: string) => {
+  const uiMeta = publicRouteRuntime.resolveRouteUiMeta(pathname)
+
+  return {
+    topMenuRoutes: publicRoutes,
+    topNavSelectedKey: uiMeta ? [uiMeta.selectedMenuPath] : ['/home'],
+    breadcrumbItems: uiMeta?.breadcrumbItems || [],
+    currentRoute: uiMeta?.currentRoute
+  }
+}
+
+/** 为后台布局聚合菜单、面包屑、默认展开项与当前页面权限结果。 */
+export const getAdminLayoutData = (pathname: string, user?: UserPermissionLike | null) => {
+  const { uiMeta, accessResult } = adminRouteRuntime.resolveLayoutAccess(pathname, user)
+
+  return {
+    sideMenuRoutes: accessResult.visibleMenuTree,
+    sideMenuSelectedKey: uiMeta ? [uiMeta.selectedMenuPath] : [pathname],
+    defaultOpenKeys: uiMeta?.openMenuKeys || [],
+    breadcrumbItems: uiMeta?.breadcrumbItems || [],
+    currentRoute: uiMeta?.currentRoute,
+    permissionTargetKey: uiMeta?.permissionTargetKey,
+    permissionKey: uiMeta?.permissionKey,
+    hasPermission: accessResult.hasPermission
+  }
 }

@@ -1,14 +1,14 @@
 import { Breadcrumb, FloatButton, Layout, Menu, MenuProps } from 'antd'
 import { FC, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
-import { Link, useLocation, useNavigate, useOutlet } from 'react-router'
+import { Link, Navigate, useLocation, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
 import Forbidden from '@/components/Forbidden'
 import LoadingFallback from '@/components/LoadingFallback'
 import NetworkErrorFallback from '@/components/NetworkErrorFallback'
 import { UserInfoStatus, useUserInfo } from '@/hooks/useUserInfo'
-import { getAdminLayoutData } from '@/router/routesConfig'
+import { getAdminLayoutData } from '@/router/routeRuntime'
 import { useAuthStore } from '@/stores/authStore'
 import { RouteItem } from '@/types'
 
@@ -25,7 +25,6 @@ const { Header, Sider, Content } = Layout
 export const AdminLayout: FC = () => {
   // Router hooks
   const outlet = useOutlet()
-  const navigate = useNavigate()
   const { pathname } = useLocation()
 
   // Store 取值
@@ -144,11 +143,11 @@ export const AdminLayout: FC = () => {
                 // 网络错误，显示重试界面
                 <NetworkErrorFallback error={userInfoError || '网络连接异常'} />
               ) : userInfoStatus === UserInfoStatus.AUTH_FAILED ? (
-                // 认证失败，跳转到登录页
-                (() => {
-                  navigate('/login')
-                  return <LoadingFallback />
-                })()
+                // 认证失败时通过声明式路由跳转，避免在渲染阶段触发副作用。
+                <Navigate
+                  to="/login"
+                  replace
+                />
               ) : userInfoStatus === UserInfoStatus.SUCCESS && !hasPermission ? (
                 // 用户已登录但无权限访问当前页面
                 <Forbidden />

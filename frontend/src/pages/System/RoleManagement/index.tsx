@@ -16,7 +16,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { RoleCode } from 'template-backend/src/common/config/constants'
 import type { RoleListItemResDto } from 'template-backend/src/types/dto'
 
-import { getMenuOptionsForRoleEdit } from '../../../router/routesConfig'
+import { getMenuOptionsForRoleEdit } from '../../../router/routeRuntime'
 import { useRoleStore } from '../../../stores/roleStore'
 
 /**

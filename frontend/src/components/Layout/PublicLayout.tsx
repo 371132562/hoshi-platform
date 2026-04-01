@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router'
 import { Link, useLocation, useOutlet } from 'react-router'
 
 import ErrorPage from '@/components/Error'
-import { getDefaultAdminPath, getPublicLayoutData } from '@/router/routesConfig'
+import { getDefaultAdminPath, getPublicLayoutData } from '@/router/routeRuntime'
 import { useAuthStore } from '@/stores/authStore'
 import { RouteItem } from '@/types'
 

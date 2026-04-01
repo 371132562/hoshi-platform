@@ -21,29 +21,34 @@ export const routePermissionMap: Record<string, RoutePermissionMeta> = {
   '/admin/system/maintenance': { permissionKey: 'system:maintenance' }
 }
 
-const createRouteMatcher = (path: string) => new RegExp(`^${path.replace(/\/:[^/]+/g, '/[^/]+')}$`)
+/** 将带参数的路由路径转换为可复用的正则匹配器。 */
+const createPathMatcher = (path: string): RegExp =>
+  new RegExp(`^${path.replace(/\/:[^/]+/g, '/[^/]+')}$`)
 
-const permissionEntries = Object.entries(routePermissionMap).map(([path, meta]) => ({
-  path,
-  meta,
-  matcher: path.includes('/:') ? createRouteMatcher(path) : undefined
-}))
+const exactPermissionMap = new Map<string, RoutePermissionMeta>(Object.entries(routePermissionMap))
+const dynamicPermissionEntries = Object.entries(routePermissionMap)
+  .filter(([path]) => path.includes('/:'))
+  .map(([path, meta]) => ({
+    path,
+    meta,
+    matcher: createPathMatcher(path)
+  }))
 
 export const resolveRoutePermissionMeta = (
   pathname: string,
   fallbackPath?: string
 ): (RoutePermissionMeta & { path: string }) | undefined => {
-  // 1. 优先做精确匹配，再回退到动态路由匹配与 fallbackPath。
-  const exactMatch = permissionEntries.find(entry => entry.path === pathname)
-
-  if (exactMatch) {
+  // 1. 优先命中精确路径，减少遍历与动态正则匹配开销。
+  const exactMeta = exactPermissionMap.get(pathname)
+  if (exactMeta) {
     return {
-      path: exactMatch.path,
-      ...exactMatch.meta
+      path: pathname,
+      ...exactMeta
     }
   }
 
-  const dynamicMatch = permissionEntries.find(entry => entry.matcher?.test(pathname))
+  // 2. 精确路径未命中时，再回退到动态路由匹配。
+  const dynamicMatch = dynamicPermissionEntries.find(entry => entry.matcher.test(pathname))
 
   if (dynamicMatch) {
     return {
@@ -52,10 +57,12 @@ export const resolveRoutePermissionMeta = (
     }
   }
 
-  if (fallbackPath && routePermissionMap[fallbackPath]) {
+  // 3. 最后回退 fallbackPath，兼容详情页归属菜单判权场景。
+  const fallbackMeta = fallbackPath ? exactPermissionMap.get(fallbackPath) : undefined
+  if (fallbackMeta && fallbackPath) {
     return {
       path: fallbackPath,
-      ...routePermissionMap[fallbackPath]
+      ...fallbackMeta
     }
   }
 

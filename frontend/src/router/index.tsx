@@ -8,14 +8,9 @@ import LoadingFallback from '@/components/LoadingFallback'
 import LoginPage from '@/pages/Login'
 import { RouteItem } from '@/types'
 
-import { adminRoutes } from './adminRoutes'
-import { publicRoutes } from './publicRoutes'
-import { createRouteRuntime } from './routeRuntime'
+import { adminRouteRuntime, publicRouteRuntime } from './routeRuntime'
 
 const routeErrorElement = <ErrorPage />
-
-const publicRouteRuntime = createRouteRuntime(publicRoutes)
-const adminRouteRuntime = createRouteRuntime(adminRoutes)
 
 const generateRoutes = (routes: RouteItem[]): RouteObject[] =>
   routes.flatMap(route => {

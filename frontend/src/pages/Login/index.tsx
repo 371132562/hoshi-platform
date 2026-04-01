@@ -3,7 +3,7 @@ import { Button, Form, Input, message } from 'antd'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { getDefaultAdminPath } from '@/router/routesConfig'
+import { getDefaultAdminPath } from '@/router/routeRuntime'
 import { useAuthStore } from '@/stores/authStore'
 
 // 登录页组件
