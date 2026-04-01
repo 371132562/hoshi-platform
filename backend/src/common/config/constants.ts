@@ -13,7 +13,7 @@ export const SYSTEM_INIT_ROLES = [
     code: RoleCode.ADMIN,
     displayName: '系统管理员', // 本地化显示名称
     description: '拥有所有权限，可以访问所有功能模块',
-    isSystem: true, // 标识为系统内置，不可删除
+    isBuiltIn: true, // 标识为系统内置，不可删除
   },
 ] as const;
 
@@ -27,7 +27,7 @@ export const SYSTEM_INIT_USERS = [
     phone: '',
     password: '88888888',
     roleCodes: [RoleCode.ADMIN],
-    isSystem: true, // 标识为系统内置，不可删除
+    isBuiltIn: true, // 标识为系统内置，不可删除
   },
 ] as const;
 

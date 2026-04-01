@@ -45,7 +45,7 @@ export class RoleService {
         id: role.id,
         code: role.code,
         displayName: role.displayName,
-        isSystem: role.isSystem,
+        isBuiltIn: role.isBuiltIn,
         description: role.description ?? null,
         permissionKeys: Array.isArray(role.permissionKeys)
           ? (role.permissionKeys as unknown[]).filter(
@@ -107,7 +107,7 @@ export class RoleService {
         `[操作] 编辑角色 - ID: ${role.id}, 名称: ${role.displayName}`,
       );
 
-      if (role.isSystem) {
+      if (role.isBuiltIn) {
         this.logger.warn(
           `[验证失败] 编辑角色 - 系统角色 ${role.displayName} (${role.code}) 不可编辑`,
         );
@@ -171,7 +171,7 @@ export class RoleService {
         `[操作] 删除角色 - ID: ${role.id}, 名称: ${role.displayName}`,
       );
 
-      if (role.isSystem) {
+      if (role.isBuiltIn) {
         this.logger.warn(
           `[验证失败] 删除角色 - 系统角色 ${role.displayName} (${role.code}) 不可删除`,
         );
@@ -235,7 +235,7 @@ export class RoleService {
         throw new BusinessException(ErrorCode.ROLE_NOT_FOUND, '角色不存在');
       }
 
-      if (role.isSystem) {
+      if (role.isBuiltIn) {
         this.logger.warn(
           `[验证失败] 分配角色菜单权限 - 系统角色 ${role.displayName} 不可编辑`,
         );

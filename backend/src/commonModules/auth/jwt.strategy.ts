@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { buildUserItemResDto } from '../../common/auth/user-permission.util';
+import { buildUserItemResDto } from '../../common/auth/user-profile.builder';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
@@ -70,7 +70,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           id: user.id,
           username: user.username,
           displayName: user.displayName,
-          isSystem: user.isSystem,
+          isBuiltIn: user.isBuiltIn,
           organizationId: user.organizationId ?? null,
           organization: user.organization
             ? { id: user.organization.id, name: user.organization.name }
@@ -88,7 +88,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         userId: user.id,
         username: user.username,
         displayName: user.displayName,
-        isAdmin: userInfo.isAdmin,
+        hasAdminRole: userInfo.hasAdminRole,
         phone: user.phone ?? null,
         organizationId: userInfo.organizationId,
         organization: userInfo.organization,

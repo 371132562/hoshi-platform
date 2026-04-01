@@ -2752,7 +2752,7 @@ export namespace Prisma {
     code: string | null
     displayName: string | null
     description: string | null
-    isSystem: boolean | null
+    isBuiltIn: boolean | null
     createTime: Date | null
     updateTime: Date | null
     delete: number | null
@@ -2763,7 +2763,7 @@ export namespace Prisma {
     code: string | null
     displayName: string | null
     description: string | null
-    isSystem: boolean | null
+    isBuiltIn: boolean | null
     createTime: Date | null
     updateTime: Date | null
     delete: number | null
@@ -2774,7 +2774,7 @@ export namespace Prisma {
     code: number
     displayName: number
     description: number
-    isSystem: number
+    isBuiltIn: number
     permissionKeys: number
     createTime: number
     updateTime: number
@@ -2796,7 +2796,7 @@ export namespace Prisma {
     code?: true
     displayName?: true
     description?: true
-    isSystem?: true
+    isBuiltIn?: true
     createTime?: true
     updateTime?: true
     delete?: true
@@ -2807,7 +2807,7 @@ export namespace Prisma {
     code?: true
     displayName?: true
     description?: true
-    isSystem?: true
+    isBuiltIn?: true
     createTime?: true
     updateTime?: true
     delete?: true
@@ -2818,7 +2818,7 @@ export namespace Prisma {
     code?: true
     displayName?: true
     description?: true
-    isSystem?: true
+    isBuiltIn?: true
     permissionKeys?: true
     createTime?: true
     updateTime?: true
@@ -2917,7 +2917,7 @@ export namespace Prisma {
     code: string
     displayName: string
     description: string | null
-    isSystem: boolean
+    isBuiltIn: boolean
     permissionKeys: JsonValue
     createTime: Date
     updateTime: Date
@@ -2948,7 +2948,7 @@ export namespace Prisma {
     code?: boolean
     displayName?: boolean
     description?: boolean
-    isSystem?: boolean
+    isBuiltIn?: boolean
     permissionKeys?: boolean
     createTime?: boolean
     updateTime?: boolean
@@ -2962,7 +2962,7 @@ export namespace Prisma {
     code?: boolean
     displayName?: boolean
     description?: boolean
-    isSystem?: boolean
+    isBuiltIn?: boolean
     permissionKeys?: boolean
     createTime?: boolean
     updateTime?: boolean
@@ -2974,7 +2974,7 @@ export namespace Prisma {
     code?: boolean
     displayName?: boolean
     description?: boolean
-    isSystem?: boolean
+    isBuiltIn?: boolean
     permissionKeys?: boolean
     createTime?: boolean
     updateTime?: boolean
@@ -2986,14 +2986,14 @@ export namespace Prisma {
     code?: boolean
     displayName?: boolean
     description?: boolean
-    isSystem?: boolean
+    isBuiltIn?: boolean
     permissionKeys?: boolean
     createTime?: boolean
     updateTime?: boolean
     delete?: boolean
   }
 
-  export type RoleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "displayName" | "description" | "isSystem" | "permissionKeys" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["role"]>
+  export type RoleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "displayName" | "description" | "isBuiltIn" | "permissionKeys" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["role"]>
   export type RoleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userRoles?: boolean | Role$userRolesArgs<ExtArgs>
     _count?: boolean | RoleCountOutputTypeDefaultArgs<ExtArgs>
@@ -3011,7 +3011,7 @@ export namespace Prisma {
       code: string
       displayName: string
       description: string | null
-      isSystem: boolean
+      isBuiltIn: boolean
       permissionKeys: Prisma.JsonValue
       createTime: Date
       updateTime: Date
@@ -3444,7 +3444,7 @@ export namespace Prisma {
     readonly code: FieldRef<"Role", 'String'>
     readonly displayName: FieldRef<"Role", 'String'>
     readonly description: FieldRef<"Role", 'String'>
-    readonly isSystem: FieldRef<"Role", 'Boolean'>
+    readonly isBuiltIn: FieldRef<"Role", 'Boolean'>
     readonly permissionKeys: FieldRef<"Role", 'Json'>
     readonly createTime: FieldRef<"Role", 'DateTime'>
     readonly updateTime: FieldRef<"Role", 'DateTime'>
@@ -3906,7 +3906,7 @@ export namespace Prisma {
     id: string | null
     username: string | null
     displayName: string | null
-    isSystem: boolean | null
+    isBuiltIn: boolean | null
     phone: string | null
     password: string | null
     organizationId: string | null
@@ -3919,7 +3919,7 @@ export namespace Prisma {
     id: string | null
     username: string | null
     displayName: string | null
-    isSystem: boolean | null
+    isBuiltIn: boolean | null
     phone: string | null
     password: string | null
     organizationId: string | null
@@ -3932,7 +3932,7 @@ export namespace Prisma {
     id: number
     username: number
     displayName: number
-    isSystem: number
+    isBuiltIn: number
     phone: number
     password: number
     organizationId: number
@@ -3955,7 +3955,7 @@ export namespace Prisma {
     id?: true
     username?: true
     displayName?: true
-    isSystem?: true
+    isBuiltIn?: true
     phone?: true
     password?: true
     organizationId?: true
@@ -3968,7 +3968,7 @@ export namespace Prisma {
     id?: true
     username?: true
     displayName?: true
-    isSystem?: true
+    isBuiltIn?: true
     phone?: true
     password?: true
     organizationId?: true
@@ -3981,7 +3981,7 @@ export namespace Prisma {
     id?: true
     username?: true
     displayName?: true
-    isSystem?: true
+    isBuiltIn?: true
     phone?: true
     password?: true
     organizationId?: true
@@ -4081,7 +4081,7 @@ export namespace Prisma {
     id: string
     username: string
     displayName: string
-    isSystem: boolean
+    isBuiltIn: boolean
     phone: string | null
     password: string
     organizationId: string | null
@@ -4113,7 +4113,7 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     displayName?: boolean
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: boolean
     password?: boolean
     organizationId?: boolean
@@ -4129,7 +4129,7 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     displayName?: boolean
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: boolean
     password?: boolean
     organizationId?: boolean
@@ -4143,7 +4143,7 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     displayName?: boolean
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: boolean
     password?: boolean
     organizationId?: boolean
@@ -4157,7 +4157,7 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     displayName?: boolean
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: boolean
     password?: boolean
     organizationId?: boolean
@@ -4166,7 +4166,7 @@ export namespace Prisma {
     delete?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "displayName" | "isSystem" | "phone" | "password" | "organizationId" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "displayName" | "isBuiltIn" | "phone" | "password" | "organizationId" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | User$organizationArgs<ExtArgs>
     userRoles?: boolean | User$userRolesArgs<ExtArgs>
@@ -4189,7 +4189,7 @@ export namespace Prisma {
       id: string
       username: string
       displayName: string
-      isSystem: boolean
+      isBuiltIn: boolean
       phone: string | null
       password: string
       organizationId: string | null
@@ -4624,7 +4624,7 @@ export namespace Prisma {
     readonly id: FieldRef<"User", 'String'>
     readonly username: FieldRef<"User", 'String'>
     readonly displayName: FieldRef<"User", 'String'>
-    readonly isSystem: FieldRef<"User", 'Boolean'>
+    readonly isBuiltIn: FieldRef<"User", 'Boolean'>
     readonly phone: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
     readonly organizationId: FieldRef<"User", 'String'>
@@ -9342,7 +9342,7 @@ export namespace Prisma {
     code: 'code',
     displayName: 'displayName',
     description: 'description',
-    isSystem: 'isSystem',
+    isBuiltIn: 'isBuiltIn',
     permissionKeys: 'permissionKeys',
     createTime: 'createTime',
     updateTime: 'updateTime',
@@ -9356,7 +9356,7 @@ export namespace Prisma {
     id: 'id',
     username: 'username',
     displayName: 'displayName',
-    isSystem: 'isSystem',
+    isBuiltIn: 'isBuiltIn',
     phone: 'phone',
     password: 'password',
     organizationId: 'organizationId',
@@ -9602,7 +9602,7 @@ export namespace Prisma {
     code?: StringFilter<"Role"> | string
     displayName?: StringFilter<"Role"> | string
     description?: StringNullableFilter<"Role"> | string | null
-    isSystem?: BoolFilter<"Role"> | boolean
+    isBuiltIn?: BoolFilter<"Role"> | boolean
     permissionKeys?: JsonFilter<"Role">
     createTime?: DateTimeFilter<"Role"> | Date | string
     updateTime?: DateTimeFilter<"Role"> | Date | string
@@ -9615,7 +9615,7 @@ export namespace Prisma {
     code?: SortOrder
     displayName?: SortOrder
     description?: SortOrderInput | SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     permissionKeys?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -9631,7 +9631,7 @@ export namespace Prisma {
     NOT?: RoleWhereInput | RoleWhereInput[]
     displayName?: StringFilter<"Role"> | string
     description?: StringNullableFilter<"Role"> | string | null
-    isSystem?: BoolFilter<"Role"> | boolean
+    isBuiltIn?: BoolFilter<"Role"> | boolean
     permissionKeys?: JsonFilter<"Role">
     createTime?: DateTimeFilter<"Role"> | Date | string
     updateTime?: DateTimeFilter<"Role"> | Date | string
@@ -9644,7 +9644,7 @@ export namespace Prisma {
     code?: SortOrder
     displayName?: SortOrder
     description?: SortOrderInput | SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     permissionKeys?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -9664,7 +9664,7 @@ export namespace Prisma {
     code?: StringWithAggregatesFilter<"Role"> | string
     displayName?: StringWithAggregatesFilter<"Role"> | string
     description?: StringNullableWithAggregatesFilter<"Role"> | string | null
-    isSystem?: BoolWithAggregatesFilter<"Role"> | boolean
+    isBuiltIn?: BoolWithAggregatesFilter<"Role"> | boolean
     permissionKeys?: JsonWithAggregatesFilter<"Role">
     createTime?: DateTimeWithAggregatesFilter<"Role"> | Date | string
     updateTime?: DateTimeWithAggregatesFilter<"Role"> | Date | string
@@ -9678,7 +9678,7 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     username?: StringFilter<"User"> | string
     displayName?: StringFilter<"User"> | string
-    isSystem?: BoolFilter<"User"> | boolean
+    isBuiltIn?: BoolFilter<"User"> | boolean
     phone?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
     organizationId?: StringNullableFilter<"User"> | string | null
@@ -9693,7 +9693,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     displayName?: SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     phone?: SortOrderInput | SortOrder
     password?: SortOrder
     organizationId?: SortOrderInput | SortOrder
@@ -9712,7 +9712,7 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     username?: StringFilter<"User"> | string
     displayName?: StringFilter<"User"> | string
-    isSystem?: BoolFilter<"User"> | boolean
+    isBuiltIn?: BoolFilter<"User"> | boolean
     phone?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
     organizationId?: StringNullableFilter<"User"> | string | null
@@ -9727,7 +9727,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     displayName?: SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     phone?: SortOrderInput | SortOrder
     password?: SortOrder
     organizationId?: SortOrderInput | SortOrder
@@ -9748,7 +9748,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"User"> | string
     username?: StringWithAggregatesFilter<"User"> | string
     displayName?: StringWithAggregatesFilter<"User"> | string
-    isSystem?: BoolWithAggregatesFilter<"User"> | boolean
+    isBuiltIn?: BoolWithAggregatesFilter<"User"> | boolean
     phone?: StringNullableWithAggregatesFilter<"User"> | string | null
     password?: StringWithAggregatesFilter<"User"> | string
     organizationId?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -10086,7 +10086,7 @@ export namespace Prisma {
     code: string
     displayName: string
     description?: string | null
-    isSystem?: boolean
+    isBuiltIn?: boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -10099,7 +10099,7 @@ export namespace Prisma {
     code: string
     displayName: string
     description?: string | null
-    isSystem?: boolean
+    isBuiltIn?: boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -10112,7 +10112,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10125,7 +10125,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10138,7 +10138,7 @@ export namespace Prisma {
     code: string
     displayName: string
     description?: string | null
-    isSystem?: boolean
+    isBuiltIn?: boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -10150,7 +10150,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10162,7 +10162,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10173,7 +10173,7 @@ export namespace Prisma {
     id?: string
     username: string
     displayName: string
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: string | null
     password: string
     createTime?: Date | string
@@ -10187,7 +10187,7 @@ export namespace Prisma {
     id?: string
     username: string
     displayName: string
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: string | null
     password: string
     organizationId?: string | null
@@ -10201,7 +10201,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10215,7 +10215,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10229,7 +10229,7 @@ export namespace Prisma {
     id?: string
     username: string
     displayName: string
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: string | null
     password: string
     organizationId?: string | null
@@ -10242,7 +10242,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10254,7 +10254,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10740,7 +10740,7 @@ export namespace Prisma {
     code?: SortOrder
     displayName?: SortOrder
     description?: SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     permissionKeys?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
@@ -10756,7 +10756,7 @@ export namespace Prisma {
     code?: SortOrder
     displayName?: SortOrder
     description?: SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
     delete?: SortOrder
@@ -10767,7 +10767,7 @@ export namespace Prisma {
     code?: SortOrder
     displayName?: SortOrder
     description?: SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
     delete?: SortOrder
@@ -10815,7 +10815,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     displayName?: SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     phone?: SortOrder
     password?: SortOrder
     organizationId?: SortOrder
@@ -10832,7 +10832,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     displayName?: SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     phone?: SortOrder
     password?: SortOrder
     organizationId?: SortOrder
@@ -10845,7 +10845,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     displayName?: SortOrder
-    isSystem?: SortOrder
+    isBuiltIn?: SortOrder
     phone?: SortOrder
     password?: SortOrder
     organizationId?: SortOrder
@@ -11528,7 +11528,7 @@ export namespace Prisma {
     id?: string
     username: string
     displayName: string
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: string | null
     password: string
     createTime?: Date | string
@@ -11541,7 +11541,7 @@ export namespace Prisma {
     id?: string
     username: string
     displayName: string
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: string | null
     password: string
     createTime?: Date | string
@@ -11644,7 +11644,7 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     username?: StringFilter<"User"> | string
     displayName?: StringFilter<"User"> | string
-    isSystem?: BoolFilter<"User"> | boolean
+    isBuiltIn?: BoolFilter<"User"> | boolean
     phone?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
     organizationId?: StringNullableFilter<"User"> | string | null
@@ -11801,7 +11801,7 @@ export namespace Prisma {
     id?: string
     username: string
     displayName: string
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: string | null
     password: string
     createTime?: Date | string
@@ -11814,7 +11814,7 @@ export namespace Prisma {
     id?: string
     username: string
     displayName: string
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: string | null
     password: string
     organizationId?: string | null
@@ -11833,7 +11833,7 @@ export namespace Prisma {
     code: string
     displayName: string
     description?: string | null
-    isSystem?: boolean
+    isBuiltIn?: boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -11845,7 +11845,7 @@ export namespace Prisma {
     code: string
     displayName: string
     description?: string | null
-    isSystem?: boolean
+    isBuiltIn?: boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
@@ -11872,7 +11872,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11885,7 +11885,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11910,7 +11910,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11922,7 +11922,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11942,7 +11942,7 @@ export namespace Prisma {
     id?: string
     username: string
     displayName: string
-    isSystem?: boolean
+    isBuiltIn?: boolean
     phone?: string | null
     password: string
     createTime?: Date | string
@@ -11985,7 +11985,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11998,7 +11998,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12011,7 +12011,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
-    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    isBuiltIn?: BoolFieldUpdateOperationsInput | boolean
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string

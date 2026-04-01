@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
-import { buildUserItemResDto } from '../../common/auth/user-permission.util';
+import { buildUserItemResDto } from '../../common/auth/user-profile.builder';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { CryptoUtil } from '../../common/utils/crypto.util';
@@ -100,7 +100,7 @@ export class AuthService {
           id: user.id,
           username: user.username,
           displayName: user.displayName,
-          isSystem: user.isSystem,
+          isBuiltIn: user.isBuiltIn,
           organizationId: user.organizationId ?? null,
           organization: user.organization
             ? { id: user.organization.id, name: user.organization.name }
@@ -200,7 +200,7 @@ export class AuthService {
           id: user.id,
           username: user.username,
           displayName: user.displayName,
-          isSystem: user.isSystem,
+          isBuiltIn: user.isBuiltIn,
           organizationId: user.organizationId ?? null,
           organization: user.organization
             ? { id: user.organization.id, name: user.organization.name }

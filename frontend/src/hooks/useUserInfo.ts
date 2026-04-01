@@ -55,6 +55,7 @@ export const useUserInfo = (): UseUserInfoResult => {
       await Promise.race([fetchProfile(), timeoutPromise])
 
       // fetchProfile 内部已经处理了 token 失效与本地清理，这里只读取最终状态。
+      // 下游：AdminLayout 根据这里产出的 status 决定是渲染菜单+业务页，还是跳登录/无权限页。
       const currentToken = useAuthStore.getState().token
       const currentUser = useAuthStore.getState().user
 

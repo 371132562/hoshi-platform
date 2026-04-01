@@ -59,6 +59,8 @@ export const useAuthStore = create<AuthStore>()(
       },
       /**
        * 使用现有 token 刷新当前用户信息，并在认证失效时自动清理本地状态。
+       * 上游：后端 profile 接口返回当前用户及其权限信息（如 hasAdminRole、permissionKeys）。
+       * 下游：Layout 会把 user 交给 routeRuntime，统一计算左侧菜单可见性与当前页面访问权限。
        */
       async fetchProfile() {
         set({ loading: true })

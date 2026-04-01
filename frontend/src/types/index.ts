@@ -13,6 +13,7 @@ export type RouteItem = {
   title: string // 路由展示标题，用于菜单和面包屑
   icon?: ReactNode // 菜单图标，仅导航类路由需要提供
   component?: ComponentType | LazyExoticComponent<ComponentType> // 路由承载组件；纯分组节点可省略
+  permissionKey?: string // 菜单叶子路由对应的稳定权限 key；上游对齐后端 user.permissionKeys，下游供 routeRuntime 过滤菜单与判权
   children?: RouteItem[] // 菜单层级下的可见子路由
   detailRoutes?: RouteItem[] // 不进入菜单、但归属于当前路由的详情页家族
   adminOnly?: boolean // 仅admin可见

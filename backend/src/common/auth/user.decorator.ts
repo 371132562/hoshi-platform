@@ -10,7 +10,7 @@ export type UserInfo = {
   userId: string;
   username: string; // account name (login)
   displayName: string; // localized display name
-  isAdmin: boolean;
+  hasAdminRole: boolean; // 是否具备 admin 角色能力
   phone?: string;
   organizationId?: string | null;
   organization?: { id: string; name: string } | null;

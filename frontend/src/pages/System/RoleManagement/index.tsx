@@ -110,7 +110,7 @@ const RoleManagement: React.FC = () => {
         dataIndex: 'displayName',
         key: 'displayName',
         render: (v: string, record: RoleListItemResDto) => {
-          return record.isSystem ? <Tag color="red">{v}</Tag> : v
+          return record.isBuiltIn ? <Tag color="red">{v}</Tag> : v
         }
       },
       { title: '描述', dataIndex: 'description', key: 'description' },
@@ -132,7 +132,7 @@ const RoleManagement: React.FC = () => {
               color="primary"
               variant="outlined"
               onClick={() => openModal(record)}
-              disabled={record.isSystem}
+              disabled={record.isBuiltIn}
             >
               编辑
             </Button>
@@ -153,14 +153,14 @@ const RoleManagement: React.FC = () => {
                   message.success('角色删除成功')
                 }
               }}
-              disabled={record.isSystem}
+              disabled={record.isBuiltIn}
               okText="确定"
               cancelText="取消"
             >
               <Button
                 color="danger"
                 variant="outlined"
-                disabled={record.isSystem}
+                disabled={record.isBuiltIn}
               >
                 删除
               </Button>

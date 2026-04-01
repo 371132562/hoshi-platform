@@ -40,7 +40,9 @@ export const AdminLayout: FC = () => {
   // 使用增强的用户信息获取 Hook
   const { status: userInfoStatus, error: userInfoError } = useUserInfo()
 
-  // 获取布局数据
+  // 获取布局数据：
+  // 上游输入：pathname（路由当前地址）+ user（authStore 当前用户权限快照）
+  // 下游消费：Menu/Breadcrumb 直接渲染，以及 hasPermission 驱动页面级守卫分支
   const { menuItems, sideMenuSelectedKey, breadcrumbItems, defaultOpenKeys, hasPermission } =
     useMemo(() => {
       const data = getAdminLayoutData(pathname, user)

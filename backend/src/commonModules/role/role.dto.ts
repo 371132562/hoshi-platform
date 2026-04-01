@@ -10,7 +10,7 @@ export type RoleItemResDto = {
   id: string; // 角色主键ID
   code: string; // 角色编码，供系统逻辑判断使用
   displayName: string; // 角色显示名称
-  isSystem: boolean; // 是否为系统内置角色
+  isBuiltIn: boolean; // 是否为系统内置角色
   description?: string | null; // 角色补充说明
   permissionKeys?: string[]; // 角色拥有的稳定权限 key 列表
 };

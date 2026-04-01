@@ -2,7 +2,6 @@ import { RouteItem } from '@/types'
 
 import { adminRoutes } from './adminRoutes'
 import { publicRoutes } from './publicRoutes'
-import { resolvePermissionTargetMeta, resolveRoutePermissionMeta } from './routePermissions'
 
 // =========================
 // Runtime Core
@@ -43,7 +42,7 @@ export type RouteUiMeta = {
 }
 
 export type AccessUserInfo = {
-  isAdmin?: boolean // 是否超级管理员
+  hasAdminRole?: boolean // 是否具备 admin 角色能力
   permissionKeys?: string[] | null // 当前用户聚合后的权限 key 列表
 }
 
@@ -66,18 +65,24 @@ export type RouteRuntime = {
 
 /**
  * 为路由声明建立运行时索引，统一派生菜单高亮、面包屑与权限结果。
+ *
+ * 链路定位：
+ * 1. 上游输入：adminRoutes/publicRoutes 的静态路由声明 + authStore.user（hasAdminRole/permissionKeys）。
+ * 2. 中间处理：runtime 预索引路由并派生当前路径上下文，再以 Set/Map 做菜单过滤与权限判定。
+ * 3. 下游消费：getAdminLayoutData/getPublicLayoutData 与 Router 注册统一使用本模块结果。
  */
 export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
   const dynamicEntries: RouteEntryMeta[] = []
   const exactPathMap = new Map<string, RouteEntryMeta>()
   const renderableRouteMap = new Map<string, RouteItem>()
+  const permissionKeyByPathMap = new Map<string, string>()
 
   const walkRoutes = (
     currentRoutes: RouteItem[],
     menuOwner?: RouteItem,
     ancestorBreadcrumbTrail: RouteItem[] = []
   ) => {
-    // 1. 递归遍历路由树，同时记录详情页与父菜单的归属关系。
+    // 1. 递归遍历路由树，同时记录详情页与父菜单的归属关系，并构建后续查询所需的索引结构。
     currentRoutes.forEach(route => {
       const breadcrumbTrail = [...ancestorBreadcrumbTrail, route]
       const entry: RouteEntryMeta = {
@@ -97,6 +102,10 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
         renderableRouteMap.set(route.path, route)
       }
 
+      if (route.permissionKey) {
+        permissionKeyByPathMap.set(route.path, route.permissionKey)
+      }
+
       if (route.children?.length) {
         walkRoutes(route.children, undefined, breadcrumbTrail)
       }
@@ -113,6 +122,10 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
   /**
    * 基于路径统一解析“命中的路由 + 菜单归属 + 判权目标”。
    * 这样 UI 元数据与访问控制共用同一份上下文，避免后续改详情页归属规则时出现两套口径。
+   *
+   * 约定补充：
+   * - 权限 key 来源统一收敛到路由声明（RouteItem.permissionKey）。
+   * - detailRoutes 不要求声明 permissionKey，默认通过 selectedMenuPath（menuOwner.path）继承父级权限。
    */
   const resolveRouteContext = (pathname: string): ResolvedRouteContext | undefined => {
     const matchedEntry = findRouteEntryByPath(pathname)
@@ -122,24 +135,25 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
     }
 
     const selectedMenuPath = matchedEntry.menuOwner?.path || matchedEntry.route.path
-    const permissionMeta = resolveRoutePermissionMeta(pathname, selectedMenuPath)
-    const permissionTargetMeta = resolvePermissionTargetMeta(pathname, selectedMenuPath)
+    const permissionTargetKey = permissionKeyByPathMap.get(selectedMenuPath)
+    const currentPermissionKey =
+      permissionKeyByPathMap.get(matchedEntry.route.path) || permissionTargetKey
 
     return {
       matchedEntry,
       selectedMenuPath,
-      permissionKey: permissionMeta?.permissionKey,
-      permissionTargetKey: permissionTargetMeta?.permissionKey
+      permissionKey: currentPermissionKey,
+      permissionTargetKey
     }
   }
 
   const filterVisibleMenuTree = (
     routes: RouteItem[],
     allowedPermissionKeySet: Set<string>,
-    isAdmin: boolean
+    hasAdminRole: boolean
   ): RouteItem[] => {
     const filterRoute = (route: RouteItem): RouteItem | null => {
-      if (route.adminOnly && !isAdmin) {
+      if (route.adminOnly && !hasAdminRole) {
         return null
       }
 
@@ -155,13 +169,10 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
         }
       }
 
-      const permissionMeta = resolveRoutePermissionMeta(route.path, route.path)
+      const permissionKey = permissionKeyByPathMap.get(route.path)
 
       // 3. 叶子菜单使用稳定权限 key 做判权，不再依赖 path 本身。
-      if (
-        isAdmin ||
-        (permissionMeta?.permissionKey && allowedPermissionKeySet.has(permissionMeta.permissionKey))
-      ) {
+      if (hasAdminRole || (permissionKey && allowedPermissionKeySet.has(permissionKey))) {
         return {
           ...route,
           children: undefined
@@ -219,10 +230,11 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
       }
     }
 
-    // 5. 先计算菜单可见树，再判断当前路径是否命中允许访问的目标权限 key。
+    // 5. 上游 user.permissionKeys 写入 Set 后先计算菜单可见树，再判断当前路径是否命中允许访问的目标权限 key。
+    //    下游 AdminLayout 直接消费 visibleMenuTree + hasPermission 渲染菜单与守卫页面。
     const allowedPermissionKeySet = new Set((user.permissionKeys || []).filter(Boolean))
-    const isAdmin = Boolean(user.isAdmin)
-    const visibleMenuTree = filterVisibleMenuTree(routeList, allowedPermissionKeySet, isAdmin)
+    const hasAdminRole = Boolean(user.hasAdminRole)
+    const visibleMenuTree = filterVisibleMenuTree(routeList, allowedPermissionKeySet, hasAdminRole)
 
     if (!routeContext) {
       return {
@@ -231,7 +243,7 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
       }
     }
 
-    if (isAdmin) {
+    if (hasAdminRole) {
       return {
         visibleMenuTree,
         hasPermission: true
@@ -324,7 +336,11 @@ type RolePermissionOptionGroup = {
   options: RolePermissionOption[]
 }
 
-/** 将后台菜单叶子节点转换为角色权限分配弹窗可直接消费的选项结构。 */
+/**
+ * 将后台菜单叶子节点转换为角色权限分配弹窗可直接消费的选项结构。
+ * 上游：adminRoutes 中声明的 permissionKey。
+ * 下游：RoleManagement 的“分配权限”多选框 options。
+ */
 export const getMenuOptionsForRoleEdit = () => {
   const options: RolePermissionOptionGroup[] = []
 
@@ -335,10 +351,8 @@ export const getMenuOptionsForRoleEdit = () => {
 
     if (route.children) {
       route.children.forEach(child => {
-        const permissionMeta = resolveRoutePermissionMeta(child.path, child.path)
-
-        if (child.component && permissionMeta?.permissionKey) {
-          routeOptions.push({ label: child.title, value: permissionMeta.permissionKey })
+        if (child.component && child.permissionKey) {
+          routeOptions.push({ label: child.title, value: child.permissionKey })
         }
       })
 
@@ -348,10 +362,8 @@ export const getMenuOptionsForRoleEdit = () => {
       return
     }
 
-    const permissionMeta = resolveRoutePermissionMeta(route.path, route.path)
-
-    if (route.component && permissionMeta?.permissionKey) {
-      routeOptions.push({ label: route.title, value: permissionMeta.permissionKey })
+    if (route.component && route.permissionKey) {
+      routeOptions.push({ label: route.title, value: route.permissionKey })
     }
 
     if (routeOptions.length > 0) {
@@ -376,6 +388,8 @@ export const getPublicLayoutData = (pathname: string) => {
 
 /** 为后台布局聚合菜单、面包屑、默认展开项与当前页面权限结果。 */
 export const getAdminLayoutData = (pathname: string, user?: UserPermissionLike | null) => {
+  // 上游：pathname 来自 useLocation，user 来自 authStore（经 useUserInfo 拉取）。
+  // 下游：AdminLayout 直接消费 sideMenuRoutes/hasPermission/breadcrumbItems，不再关心判权细节。
   const { uiMeta, accessResult } = adminRouteRuntime.resolveLayoutAccess(pathname, user)
 
   return {

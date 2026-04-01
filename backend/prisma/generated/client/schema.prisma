@@ -39,7 +39,7 @@ model Role {
   code           String     @unique // 角色编码（唯一，如: admin），用于系统逻辑判断
   displayName    String // 角色显示名称（如: 系统管理员）
   description    String? // 角色描述
-  isSystem       Boolean    @default(false) // 是否为系统内置角色（不可删除）
+  isBuiltIn      Boolean    @default(false) // 是否为系统内置角色（不可删除）
   permissionKeys Json       @default("[]") // 允许访问的稳定权限 key（JSON数组）
   userRoles      UserRole[] // 关联到用户角色绑定表
   createTime     DateTime   @default(now()) // 创建时间
@@ -55,7 +55,7 @@ model User {
   id             String        @id @default(uuid()) // 主键ID（UUID）
   username       String // 用户名（唯一）
   displayName    String // 用户显示姓名
-  isSystem       Boolean       @default(false) // 是否为系统内置用户（不可删除）
+  isBuiltIn      Boolean       @default(false) // 是否为系统内置用户（不可删除）
   phone          String? // 电话号码（可选）
   password       String // 密码（加密存储）
   organizationId String? // 所属组织ID

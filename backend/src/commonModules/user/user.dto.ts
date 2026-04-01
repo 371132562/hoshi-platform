@@ -26,8 +26,8 @@ export type UserItemResDto = {
   id: string; // 用户主键ID
   username: string; // 登录账号
   displayName: string; // 后台展示姓名
-  isSystem: boolean; // 是否为系统内置用户，不允许删除
-  isAdmin: boolean; // 是否拥有超级管理员能力
+  isBuiltIn: boolean; // 是否为系统内置用户，不允许编辑或删除
+  hasAdminRole: boolean; // 角色聚合后是否包含 admin，用于路由权限兜底
   organizationId: string | null; // 所属部门ID
   organization?: { id: string; name: string } | null; // 所属部门简要信息
   phone: string | null; // 联系电话

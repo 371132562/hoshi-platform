@@ -3,7 +3,7 @@ import type { User } from '@prisma/generated/client';
 import { Prisma } from '@prisma/generated/client';
 import * as bcrypt from 'bcryptjs';
 
-import { buildUserItemResDto } from '../../common/auth/user-permission.util';
+import { buildUserItemResDto } from '../../common/auth/user-profile.builder';
 import { BusinessException } from '../../common/exceptions/allExceptionsFilter';
 import { WinstonLoggerService } from '../../common/services/winston-logger.service';
 import { CryptoUtil } from '../../common/utils/crypto.util';
@@ -133,7 +133,7 @@ export class UserService {
             id: user.id,
             username: user.username,
             displayName: user.displayName,
-            isSystem: user.isSystem,
+            isBuiltIn: user.isBuiltIn,
             organizationId: user.organizationId ?? null,
             organization: user.organization
               ? { id: user.organization.id, name: user.organization.name }
@@ -212,7 +212,7 @@ export class UserService {
         `[操作] 编辑用户 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.displayName}`,
       );
 
-      if (user.isSystem) {
+      if (user.isBuiltIn) {
         this.logger.warn(
           `[验证失败] 编辑用户 - 系统用户 ${user.username} 不可编辑`,
         );
@@ -269,7 +269,7 @@ export class UserService {
         `[操作] 删除用户 - ID: ${user.id}, 用户名: ${user.username}, 姓名: ${user.displayName}`,
       );
 
-      if (user.isSystem) {
+      if (user.isBuiltIn) {
         this.logger.warn(
           `[验证失败] 删除用户 - 系统用户 ${user.username} 不可删除`,
         );

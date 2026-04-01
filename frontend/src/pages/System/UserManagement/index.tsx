@@ -171,7 +171,7 @@ const UserManagement: React.FC = () => {
               color="primary"
               variant="outlined"
               onClick={() => openModal(record)}
-              disabled={record.isSystem}
+              disabled={record.isBuiltIn}
             >
               编辑
             </Button>
@@ -192,14 +192,14 @@ const UserManagement: React.FC = () => {
                   message.success('用户删除成功')
                 }
               }}
-              disabled={record.isSystem}
+              disabled={record.isBuiltIn}
               okText="确定"
               cancelText="取消"
             >
               <Button
                 color="danger"
                 variant="outlined"
-                disabled={record.isSystem}
+                disabled={record.isBuiltIn}
               >
                 删除
               </Button>
@@ -238,7 +238,7 @@ const UserManagement: React.FC = () => {
               onClear={() => setTimeout(handleSearchSubmit, 0)}
               options={roleList.map(r => {
                 return {
-                  label: r.isSystem ? '系统管理员' : r.displayName, // 简单处理，系统角色显示特定名称或原名
+                  label: r.isBuiltIn ? '系统管理员' : r.displayName, // 简单处理，系统角色显示特定名称或原名
                   value: r.id
                 }
               })}
@@ -357,12 +357,12 @@ const UserManagement: React.FC = () => {
               optionFilterProp="selectedLabel"
               optionLabelProp="selectedLabel"
               options={roleList.map(r => {
-                const isSystem = r.isSystem
+                const isBuiltIn = r.isBuiltIn
                 return {
                   value: r.id,
                   label: (
                     <div>
-                      <div>{isSystem ? <Tag color="red">系统管理员</Tag> : r.displayName}</div>
+                      <div>{isBuiltIn ? <Tag color="red">系统管理员</Tag> : r.displayName}</div>
                       {r.description && (
                         <div
                           style={{
@@ -380,7 +380,7 @@ const UserManagement: React.FC = () => {
                       )}
                     </div>
                   ),
-                  selectedLabel: isSystem ? '系统管理员' : r.displayName
+                  selectedLabel: isBuiltIn ? '系统管理员' : r.displayName
                 }
               })}
             />

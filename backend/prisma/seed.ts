@@ -59,7 +59,7 @@ async function seedAuthData() {
         data: {
           displayName: roleData.displayName,
           description: roleData.description,
-          isSystem: roleData.isSystem,
+          isBuiltIn: roleData.isBuiltIn,
           permissionKeys: [],
         },
       });
@@ -72,7 +72,7 @@ async function seedAuthData() {
           code: roleData.code,
           displayName: roleData.displayName,
           description: roleData.description,
-          isSystem: roleData.isSystem,
+          isBuiltIn: roleData.isBuiltIn,
           permissionKeys: [],
         },
       });
@@ -108,7 +108,7 @@ async function seedAuthData() {
           displayName: user.displayName,
           phone: user.phone,
           password: user.password,
-          isSystem: user.isSystem,
+          isBuiltIn: user.isBuiltIn,
         },
       });
 
@@ -131,7 +131,7 @@ async function seedAuthData() {
           displayName: user.displayName,
           phone: user.phone,
           password: user.password,
-          isSystem: user.isSystem,
+          isBuiltIn: user.isBuiltIn,
         },
       });
 

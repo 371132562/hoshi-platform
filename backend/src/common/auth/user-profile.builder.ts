@@ -17,14 +17,14 @@ type UserBaseSource = {
   id: string; // 用户ID
   username: string; // 登录账号
   displayName: string; // 展示姓名
-  isSystem: boolean; // 是否系统内置用户
+  isBuiltIn: boolean; // 是否系统内置用户
   organizationId: string | null; // 所属部门ID
   organization?: { id: string; name: string } | null; // 所属部门简要信息
   phone?: string | null; // 联系电话
 };
 
 /** 将 JSON 字段中的权限 key 归一化为字符串数组。 */
-export const normalizePermissionKeys = (value: unknown): string[] => {
+const normalizePermissionKeys = (value: unknown): string[] => {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -44,7 +44,7 @@ const isActiveRole = (
 };
 
 /** 将数据库角色集合去重后映射为响应 DTO。 */
-export const buildUserRoles = (
+const buildUserRoles = (
   roleSources: Array<RoleSource | null | undefined>,
 ): UserRoleResDto[] => {
   const uniqueRoles = new Map<string, UserRoleResDto>();
@@ -66,9 +66,9 @@ export const buildUserRoles = (
   return Array.from(uniqueRoles.values());
 };
 
-/** 从角色列表中聚合出用户的超级管理员标记与最终权限 key 列表。 */
-export const buildPermissionContext = (roles: UserRoleResDto[]) => {
-  const isAdmin = roles.some((role) => role.code === RoleCode.ADMIN);
+/** 从角色列表中聚合出用户的 admin 能力标记与最终权限 key 列表。 */
+const buildPermissionContext = (roles: UserRoleResDto[]) => {
+  const hasAdminRole = roles.some((role) => role.code === RoleCode.ADMIN);
   const permissionKeys = Array.from(
     new Set(
       roles.flatMap((role) => normalizePermissionKeys(role.permissionKeys)),
@@ -76,7 +76,7 @@ export const buildPermissionContext = (roles: UserRoleResDto[]) => {
   );
 
   return {
-    isAdmin,
+    hasAdminRole,
     permissionKeys,
   };
 };
@@ -93,8 +93,8 @@ export const buildUserItemResDto = (
     id: user.id,
     username: user.username,
     displayName: user.displayName,
-    isSystem: user.isSystem,
-    isAdmin: permissionContext.isAdmin,
+    isBuiltIn: user.isBuiltIn,
+    hasAdminRole: permissionContext.hasAdminRole,
     organizationId: user.organizationId,
     organization: user.organization ?? null,
     phone: user.phone ?? null,

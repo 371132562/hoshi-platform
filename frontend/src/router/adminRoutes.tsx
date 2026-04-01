@@ -17,6 +17,9 @@ const OrganizationManagement = lazy(() => import('@/pages/System/OrganizationMan
  * - 需要登录才能访问
  * - 使用侧边导航布局
  * - 路径统一带 /admin 前缀
+ * - permissionKey 仅声明在菜单叶子节点：
+ *   上游与后端返回的 user.permissionKeys 对齐；
+ *   下游由 routeRuntime 用于菜单可见性过滤、当前路径判权与角色权限选项生成。
  */
 export const adminRoutes: RouteItem[] = [
   {
@@ -27,6 +30,7 @@ export const adminRoutes: RouteItem[] = [
       {
         path: '/admin/article/list',
         title: '文章列表',
+        permissionKey: 'article:list',
         component: ArticleManagement,
         detailRoutes: [
           {
@@ -41,7 +45,12 @@ export const adminRoutes: RouteItem[] = [
           }
         ]
       },
-      { path: '/admin/article/order', title: '配置文章顺序', component: OrderConfig }
+      {
+        path: '/admin/article/order',
+        title: '配置文章顺序',
+        permissionKey: 'article:order',
+        component: OrderConfig
+      }
     ]
   },
   // 系统管理菜单（仅admin可见）
@@ -51,10 +60,30 @@ export const adminRoutes: RouteItem[] = [
     icon: <SettingOutlined />,
     adminOnly: true,
     children: [
-      { path: '/admin/system/organization', title: '部门管理', component: OrganizationManagement },
-      { path: '/admin/system/roleManagement', title: '角色管理', component: RoleManagement },
-      { path: '/admin/system/userManagement', title: '用户管理', component: UserManagement },
-      { path: '/admin/system/maintenance', title: '系统维护', component: SystemMaintenance }
+      {
+        path: '/admin/system/organization',
+        title: '部门管理',
+        permissionKey: 'system:organization',
+        component: OrganizationManagement
+      },
+      {
+        path: '/admin/system/roleManagement',
+        title: '角色管理',
+        permissionKey: 'system:role',
+        component: RoleManagement
+      },
+      {
+        path: '/admin/system/userManagement',
+        title: '用户管理',
+        permissionKey: 'system:user',
+        component: UserManagement
+      },
+      {
+        path: '/admin/system/maintenance',
+        title: '系统维护',
+        permissionKey: 'system:maintenance',
+        component: SystemMaintenance
+      }
     ]
   }
 ]
