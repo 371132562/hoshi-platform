@@ -9,6 +9,13 @@ type RouteEntryMeta = {
   breadcrumbTrail: RouteItem[] // 从根到当前路由的面包屑链路
 }
 
+type ResolvedRouteContext = {
+  matchedEntry: RouteEntryMeta // 当前路径命中的路由上下文
+  selectedMenuPath: string // 当前页面应高亮的菜单路径
+  permissionKey?: string // 当前路径自身映射出的权限 key
+  permissionTargetKey?: string // 当前页面真正用于访问控制的目标权限 key
+}
+
 export type RouteBreadcrumbItem = {
   path: string // 面包屑点击后应跳转的路径
   title: string // 面包屑标题
@@ -91,6 +98,29 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
   const findRouteEntryByPath = (pathname: string) =>
     exactPathMap.get(pathname) || dynamicEntries.find(entry => entry.matcher?.test(pathname))
 
+  /**
+   * 基于路径统一解析“命中的路由 + 菜单归属 + 判权目标”。
+   * 这样 UI 元数据与访问控制共用同一份上下文，避免后续改详情页归属规则时出现两套口径。
+   */
+  const resolveRouteContext = (pathname: string): ResolvedRouteContext | undefined => {
+    const matchedEntry = findRouteEntryByPath(pathname)
+
+    if (!matchedEntry) {
+      return undefined
+    }
+
+    const selectedMenuPath = matchedEntry.menuOwner?.path || matchedEntry.route.path
+    const permissionMeta = resolveRoutePermissionMeta(pathname, selectedMenuPath)
+    const permissionTargetMeta = resolvePermissionTargetMeta(pathname, selectedMenuPath)
+
+    return {
+      matchedEntry,
+      selectedMenuPath,
+      permissionKey: permissionMeta?.permissionKey,
+      permissionTargetKey: permissionTargetMeta?.permissionKey
+    }
+  }
+
   const filterVisibleMenuTree = (
     routes: RouteItem[],
     allowedPermissionKeySet: Set<string>,
@@ -137,15 +167,13 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
   return {
     getRenderableRoutes: () => Array.from(renderableRouteMap.values()),
     resolveRouteUiMeta: pathname => {
-      const matchedEntry = findRouteEntryByPath(pathname)
+      const routeContext = resolveRouteContext(pathname)
 
-      if (!matchedEntry) {
+      if (!routeContext) {
         return undefined
       }
 
-      const selectedMenuPath = matchedEntry.menuOwner?.path || matchedEntry.route.path
-      const permissionMeta = resolveRoutePermissionMeta(pathname, selectedMenuPath)
-      const permissionTargetMeta = resolvePermissionTargetMeta(pathname, selectedMenuPath)
+      const { matchedEntry, selectedMenuPath, permissionKey, permissionTargetKey } = routeContext
 
       // 4. 将当前页面需要的菜单高亮、面包屑与权限目标一次性派生出来。
       return {
@@ -160,15 +188,15 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
         })),
         currentRoute: matchedEntry.route,
         menuOwner: matchedEntry.menuOwner,
-        permissionTargetKey: permissionTargetMeta?.permissionKey,
-        permissionKey: permissionMeta?.permissionKey
+        permissionTargetKey,
+        permissionKey
       }
     },
     getAccessResult: (
       user,
       pathname = typeof window !== 'undefined' ? window.location.pathname : ''
     ) => {
-      const matchedEntry = pathname ? findRouteEntryByPath(pathname) : undefined
+      const routeContext = pathname ? resolveRouteContext(pathname) : undefined
 
       if (!user) {
         return {
@@ -182,7 +210,7 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
       const isAdmin = Boolean(user.isAdmin)
       const visibleMenuTree = filterVisibleMenuTree(routeList, allowedPermissionKeySet, isAdmin)
 
-      if (!matchedEntry) {
+      if (!routeContext) {
         return {
           visibleMenuTree,
           hasPermission: false
@@ -196,11 +224,7 @@ export const createRouteRuntime = (routeList: RouteItem[]): RouteRuntime => {
         }
       }
 
-      const permissionTargetMeta = resolvePermissionTargetMeta(
-        pathname,
-        matchedEntry.menuOwner?.path || matchedEntry.route.path
-      )
-      const permissionTargetKey = permissionTargetMeta?.permissionKey
+      const { permissionTargetKey } = routeContext
 
       if (!permissionTargetKey) {
         return {

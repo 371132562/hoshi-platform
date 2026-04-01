@@ -25,5 +25,5 @@
 - 后端常规开发默认走 `controller / service / dto / pipes` 分层；细则按需加载 `create-backend-module`。
 - 数据库访问统一通过 `PrismaService`；结构变更按需加载 `prisma-workflow`。
 - 共享契约细则转 `type-contract-guidelines`。
-- 只要本次开发会新增或修订注释，先参考根 `AGENTS.md` 中强制 skill `/comment-detail-preservation`；对高约束后端逻辑默认保留或写出与风险匹配的详细程度，不要事后再补。
+- 只要本次开发会新增或修改类型定义、函数、方法、DTO、Service/Controller 关键流程，或会新增/修订注释，先参考根 `AGENTS.md` 中强制 skill `/comment-detail-preservation`；对高约束后端逻辑默认保留或写出与风险匹配的详细程度，不要事后再补。
 - 日志链路、DTO/Pipe 细则、类型契约目录结构、Prisma 顺序等执行性规范，按需加载对应 skill，不在此重复展开。

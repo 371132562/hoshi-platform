@@ -28,7 +28,7 @@ Hoshi Platform 是一个 `pnpm` monorepo 管理平台模板，前端采用 React
 | 创建/修改 DTO、共享 type、`src/types` 导出与前后端契约                                                                               | `/type-contract-guidelines`    |
 | 修改 Prisma schema、seed、生成客户端、涉及数据库落库逻辑                                                                             | `/prisma-workflow`             |
 | 新增或调整系统日志、用户日志、操作日志链路                                                                                           | `/implement-system-log`        |
-| 任意开发任务中只要会新增/修订注释，尤其涉及已有详细注释文件或高约束逻辑时                                                            | `/comment-detail-preservation` |
+| 任意开发任务中只要会新增/修改类型定义、函数、方法、复杂 state/action，或会新增/修订注释，尤其涉及已有详细注释文件或高约束逻辑时      | `/comment-detail-preservation` |
 | 运行或修复 ESLint / TypeScript 检查                                                                                                  | `/eslint-fix`                  |
 | 当前环境是 WSL，项目位于 `/mnt/<盘符>/...`，且要执行 `pnpm` / `node` / `prisma` / `tsc` / `eslint` / `build` / `seed` 等依赖相关命令 | `/wsl-windows-command-bridge`  |
 
