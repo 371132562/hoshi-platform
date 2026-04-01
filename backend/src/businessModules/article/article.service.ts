@@ -28,6 +28,7 @@ export class ArticleService {
     private readonly logger: WinstonLoggerService,
   ) {}
 
+  /** 将 Prisma 文章实体映射为前端消费的完整文章 DTO。 */
   private mapToDto(article: Article): ArticleItemResDto {
     return {
       id: article.id,
@@ -38,6 +39,7 @@ export class ArticleService {
     };
   }
 
+  /** 将文章列表查询结果映射为轻量元信息 DTO。 */
   private mapToMetaDto(
     article: Pick<Article, 'id' | 'title' | 'createTime' | 'updateTime'>,
   ): ArticleMetaItemResDto {
@@ -48,6 +50,7 @@ export class ArticleService {
     };
   }
 
+  /** 将页面排序配置实体映射为响应 DTO。 */
   private mapToArticleOrderDto(articleOrder: ArticleOrder): ArticleOrderResDto {
     return {
       id: articleOrder.id,
@@ -58,6 +61,7 @@ export class ArticleService {
     };
   }
 
+  /** 返回单篇文章详情，并统一补齐日志与 DTO 映射。 */
   detail(article: Article): ArticleItemResDto {
     try {
       this.logger.log(

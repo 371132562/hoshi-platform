@@ -15,7 +15,7 @@ export const roleListApi = '/role/list' // 获取角色列表
 export const roleCreateApi = '/role/create' // 创建角色
 export const roleUpdateApi = '/role/update' // 更新角色
 export const roleDeleteApi = '/role/delete' // 删除角色
-export const roleAssignRoutesApi = '/role/assignRoutes' // 分配角色路由权限
+export const roleAssignPermissionKeysApi = '/role/assignPermissionKeys' // 分配角色路由权限
 
 // 认证相关API地址
 export const profileApiUrl = '/auth/profile' // 获取用户信息

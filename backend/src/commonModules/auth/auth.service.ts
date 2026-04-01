@@ -24,19 +24,14 @@ export class AuthService {
   ) {}
 
   /**
-   * 用户登录验证
-   * @param loginDto 登录信息
-   * @returns 登录响应，包含token和用户信息
-   */
-
-  /**
    * 通用挑战接口 - 获取随机盐
    */
   getChallenge(): ChallengeResDto {
     this.logger.log(`[操作] 获取挑战 - 生成随机盐`);
     try {
       const salt = CryptoUtil.generateSalt();
-      // 加密随机盐后返回，提高安全性
+
+      // 挑战值先加密再下发，避免前端直接拿到可复用明文盐值。
       const encryptedSalt = CryptoUtil.encryptSalt(salt);
       return encryptedSalt;
     } catch (error) {
@@ -55,6 +50,7 @@ export class AuthService {
     const { username } = dto;
     this.logger.log(`[操作] 用户登录 - 用户名: ${username}`);
     try {
+      // 1. 先按账号拉取用户、组织和角色，后续登录与权限聚合共用这份数据。
       const user = await this.prisma.user.findFirst({
         where: { username, delete: 0 },
         include: {
@@ -73,7 +69,7 @@ export class AuthService {
                   code: true,
                   displayName: true,
                   description: true,
-                  allowedRoutes: true,
+                  permissionKeys: true,
                   delete: true,
                 },
               },
@@ -86,18 +82,19 @@ export class AuthService {
         throw new BusinessException(ErrorCode.USER_NOT_FOUND, '用户不存在');
       }
 
-      // 解密前端数据，提取密码部分
+      // 2. 解密 challenge 登录载荷，还原用户本次提交的密码。
       const decryptedData = CryptoUtil.decryptData(dto.encryptedData);
       const password =
         CryptoUtil.extractPasswordFromDecryptedData(decryptedData);
 
-      // 使用bcrypt.compare验证密码
+      // 3. 使用 bcrypt 校验密码；失败时直接走统一业务异常。
       const isValid = await bcrypt.compare(password, user.password);
       if (!isValid) {
         this.logger.warn(`[验证失败] 用户登录 - 用户名 ${username} 密码错误`);
         throw new BusinessException(ErrorCode.PASSWORD_INCORRECT, '密码错误');
       }
 
+      // 4. 登录成功后聚合用户信息与权限上下文，供前端直接使用。
       const userInfo = buildUserItemResDto(
         {
           id: user.id,
@@ -120,6 +117,7 @@ export class AuthService {
         throw new BusinessException(ErrorCode.FORBIDDEN, '用户未分配角色');
       }
 
+      // 5. 仅在鉴权通过后签发 token，避免生成无效登录态。
       const payload: TokenPayloadResDto = {
         sub: user.id,
         userId: user.id,
@@ -151,6 +149,7 @@ export class AuthService {
    */
   async getUserProfile(userId: string) {
     try {
+      // 1. 拉取用户、组织和角色信息，保持与登录返回的结构一致。
       const user = await this.prisma.user.findFirst({
         where: {
           id: userId,
@@ -172,7 +171,7 @@ export class AuthService {
                   code: true,
                   displayName: true,
                   description: true,
-                  allowedRoutes: true,
+                  permissionKeys: true,
                   delete: true,
                 },
               },
@@ -191,6 +190,7 @@ export class AuthService {
         );
       }
 
+      // 2. 统一复用权限聚合逻辑，避免 profile 与 login 返回结构漂移。
       this.logger.log(
         `[操作] 获取用户信息 - 用户ID: ${userId}, 用户名: ${user.username}, 姓名: ${user.displayName}`,
       );

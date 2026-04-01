@@ -15,28 +15,21 @@ export class PrismaService
    * @returns 带 file: 前缀的绝对路径 URL
    */
   private static resolveDatabaseUrl(rawUrl: string): string {
-    // 剥离 file: 前缀以便进行路径处理
+    // 1. 先剥离 file: 前缀，统一按文件路径处理。
     const filePath = rawUrl.startsWith('file:') ? rawUrl.slice(5) : rawUrl;
 
-    // 绝对路径直接返回
+    // 2. 绝对路径直接补回 file: 前缀返回。
     if (path.isAbsolute(filePath)) {
       return `file:${filePath}`;
     }
 
-    // 相对路径需要基于 prisma 目录解析
-    // __dirname 在 CommonJS 模块下指向当前文件所在目录
-    // 编译后位于 dist/src/prisma/，源码位于 src/prisma/
-    // 目标是找到项目根目录 (backend/)，因为 prisma.config.ts 在那里
-
+    // 3. 相对路径统一基于 backend 根目录解析，避免源码与编译产物目录不一致。
     const startDir = __dirname;
-    // NestJS/SWC 编译后结构是 dist/prisma（不是 dist/src/prisma）
-    // 源码结构是 src/prisma
-    // 两者都只需向上回退两层到达 backend 根目录
     const projectRoot = path.resolve(startDir, '../..');
 
     const absolutePath = path.resolve(projectRoot, filePath);
 
-    // 确保数据库目录存在 (better-sqlite3 不会自动创建目录)
+    // 4. better-sqlite3 不会自动创建目录，因此这里主动补齐数据库目录。
     const dbDir = path.dirname(absolutePath);
     if (!fs.existsSync(dbDir)) {
       fs.mkdirSync(dbDir, { recursive: true });
@@ -49,8 +42,8 @@ export class PrismaService
     const url = PrismaService.resolveDatabaseUrl(
       process.env.DATABASE_URL ?? 'file:./local.db',
     );
-
     const adapter = new PrismaBetterSqlite3({ url });
+
     super({
       adapter,
       // 连接池配置
@@ -69,16 +62,9 @@ export class PrismaService
   async onModuleInit() {
     await this.$connect();
 
-    // 开启 SQLite WAL 模式与相关优化
-    // 说明：
-    // - WAL 写前日志能显著提升并发读写性能
-    // - synchronous=NORMAL 在 WAL 下足够安全且更快
-    // - busy_timeout 防止"database is locked"快速失败
-    // - foreign_keys=ON 确保外键约束生效（Prisma/SQLite 默认有时不启用）
-    // - cache_size 增加缓存大小提升性能
-    // - temp_store 使用内存存储临时数据
+    // 初始化 SQLite PRAGMA，统一收敛并发读写与外键约束等运行时配置。
     try {
-      // 注意：journal_mode 设置会返回结果，需使用 $queryRaw 而非 $executeRaw
+      // journal_mode 会返回结果，因此需使用 $queryRaw 而不是 $executeRaw。
       await this.$queryRaw`PRAGMA journal_mode = WAL;`;
       await this.$queryRaw`PRAGMA synchronous = NORMAL;`;
       await this.$queryRaw`PRAGMA busy_timeout = 10000;`; // 增加到10秒
@@ -88,8 +74,7 @@ export class PrismaService
       await this.$queryRaw`PRAGMA mmap_size = 268435456;`; // 256MB 内存映射
       await this.$queryRaw`PRAGMA optimize;`; // 优化查询计划
     } catch (error) {
-      // 保底日志，防止初始化失败影响服务启动
-      // 这里不抛出，让服务继续运行，但建议观察日志
+      // 这里不抛出，避免数据库优化项异常直接阻断整个服务启动。
       console.warn('[Prisma] 初始化 SQLite PRAGMA 失败：', error);
     }
   }

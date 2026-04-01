@@ -12,11 +12,11 @@ import type { UserItemResDto } from '../user/user.dto';
 export class LoginReqDto {
   @IsString()
   @IsNotEmpty({ message: '用户名不能为空' })
-  username: string;
+  username: string; // 登录账号
 
   @IsString()
   @IsNotEmpty({ message: '密码不能为空' })
-  password: string;
+  password: string; // 明文密码，仅在 challenge 之前暂存于前端输入态
 }
 
 /**
@@ -28,8 +28,8 @@ export type ChallengeResDto = string;
  * 登录响应类型
  */
 export type LoginResDto = {
-  token: string;
-  user: UserItemResDto;
+  token: string; // 登录成功后签发的 JWT
+  user: UserItemResDto; // 当前登录用户信息
 };
 
 /**
@@ -43,19 +43,19 @@ export type UserProfileResDto = UserItemResDto;
 export class LoginWithHashReqDto {
   @IsString()
   @IsNotEmpty({ message: '用户名不能为空' })
-  username: string;
+  username: string; // 登录账号
 
   @IsString()
   @IsNotEmpty({ message: '加密数据不能为空' })
-  encryptedData: string;
+  encryptedData: string; // challenge 流程生成的加密登录载荷
 }
 
 /**
  * Token 载荷 DTO
  */
 export class TokenPayloadResDto {
-  sub: string;
-  userId: string;
+  sub: string; // JWT 标准 subject，一般等同于 userId
+  userId: string; // 用户ID
   username: string; // account
   displayName: string; // localized name
 }

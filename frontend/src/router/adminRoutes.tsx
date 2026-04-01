@@ -24,21 +24,24 @@ export const adminRoutes: RouteItem[] = [
     title: '文章管理',
     icon: <FileTextOutlined />,
     children: [
-      { path: '/admin/article/list', title: '文章列表', component: ArticleManagement },
       {
-        path: '/admin/article/create',
-        title: '新增文章',
-        component: ModifyArticle,
-        menuParent: '/admin/article/list'
+        path: '/admin/article/list',
+        title: '文章列表',
+        component: ArticleManagement,
+        detailRoutes: [
+          {
+            path: '/admin/article/create',
+            title: '新增文章',
+            component: ModifyArticle
+          },
+          {
+            path: '/admin/article/modify/:id',
+            title: '编辑文章',
+            component: ModifyArticle
+          }
+        ]
       },
-      { path: '/admin/article/order', title: '配置文章顺序', component: OrderConfig },
-      {
-        path: '/admin/article/modify/:id',
-        title: '编辑文章',
-        component: ModifyArticle,
-        menuParent: '/admin/article/list',
-        hideInBreadcrumb: false
-      }
+      { path: '/admin/article/order', title: '配置文章顺序', component: OrderConfig }
     ]
   },
   // 系统管理菜单（仅admin可见）

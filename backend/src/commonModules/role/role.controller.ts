@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import type { Role } from '@prisma/generated/client';
 
 import {
-  AssignRoleRoutesReqDto,
+  AssignRolePermissionKeysReqDto,
   CreateRoleReqDto,
   DeleteRoleReqDto,
   RoleListResDto,
@@ -58,10 +58,10 @@ export class RoleController {
   }
 
   /**
-   * 分配角色菜单权限
+   * 分配角色权限 key
    */
-  @Post('assignRoutes')
-  async assignRoleRoutes(@Body() dto: AssignRoleRoutesReqDto) {
-    return this.roleService.assignRoleRoutes(dto);
+  @Post('assignPermissionKeys')
+  async assignRolePermissionKeys(@Body() dto: AssignRolePermissionKeysReqDto) {
+    return this.roleService.assignRolePermissionKeys(dto);
   }
 }

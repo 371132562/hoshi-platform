@@ -35,9 +35,9 @@ export const useUserInfo = (): UseUserInfoResult => {
   const fetchProfile = useAuthStore(s => s.fetchProfile)
   const storeError = useAuthStore(s => s.error)
 
-  // 获取用户信息的核心逻辑
+  /** 拉取并校验当前登录用户信息，统一管理加载状态与失败类型。 */
   const fetchUserInfo = async () => {
-    // 如果没有 token，直接判定为认证失败
+    // 没有 token 时无需请求后端，直接按认证失败处理。
     if (!token) {
       setStatus(UserInfoStatus.AUTH_FAILED)
       return
@@ -47,34 +47,30 @@ export const useUserInfo = (): UseUserInfoResult => {
     setError(null)
 
     try {
-      // 设置超时处理（10秒）
+      // 通过 race 加一个 10 秒超时，避免网络异常时页面长时间悬停在 loading。
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error('请求超时')), 10000)
       })
 
-      // 执行获取用户信息
       await Promise.race([fetchProfile(), timeoutPromise])
 
-      // 检查执行后的 store 状态
-      // fetchProfile 内部会处理 token 清除等逻辑
+      // fetchProfile 内部已经处理了 token 失效与本地清理，这里只读取最终状态。
       const currentToken = useAuthStore.getState().token
       const currentUser = useAuthStore.getState().user
 
       if (currentToken && currentUser) {
         setStatus(UserInfoStatus.SUCCESS)
       } else {
-        // 获取失败或被清除（可能是后端返回了 UNAUTHORIZED）
         setStatus(UserInfoStatus.AUTH_FAILED)
         setError(useAuthStore.getState().error || '登录状态已过期，请重新登录')
       }
     } catch (_err: unknown) {
-      // 网络错误或超时
       setStatus(UserInfoStatus.NETWORK_ERROR)
       setError('网络连接失败，请检查网络连接或稍后重试')
     }
   }
 
-  // 当 token 变化或组件挂载时获取用户信息
+  // token 变化或组件首次挂载时，都要尝试同步用户信息。
   useEffect(() => {
     const init = async () => {
       await fetchUserInfo()

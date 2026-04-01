@@ -2775,7 +2775,7 @@ export namespace Prisma {
     displayName: number
     description: number
     isSystem: number
-    allowedRoutes: number
+    permissionKeys: number
     createTime: number
     updateTime: number
     delete: number
@@ -2819,7 +2819,7 @@ export namespace Prisma {
     displayName?: true
     description?: true
     isSystem?: true
-    allowedRoutes?: true
+    permissionKeys?: true
     createTime?: true
     updateTime?: true
     delete?: true
@@ -2918,7 +2918,7 @@ export namespace Prisma {
     displayName: string
     description: string | null
     isSystem: boolean
-    allowedRoutes: JsonValue
+    permissionKeys: JsonValue
     createTime: Date
     updateTime: Date
     delete: number
@@ -2949,7 +2949,7 @@ export namespace Prisma {
     displayName?: boolean
     description?: boolean
     isSystem?: boolean
-    allowedRoutes?: boolean
+    permissionKeys?: boolean
     createTime?: boolean
     updateTime?: boolean
     delete?: boolean
@@ -2963,7 +2963,7 @@ export namespace Prisma {
     displayName?: boolean
     description?: boolean
     isSystem?: boolean
-    allowedRoutes?: boolean
+    permissionKeys?: boolean
     createTime?: boolean
     updateTime?: boolean
     delete?: boolean
@@ -2975,7 +2975,7 @@ export namespace Prisma {
     displayName?: boolean
     description?: boolean
     isSystem?: boolean
-    allowedRoutes?: boolean
+    permissionKeys?: boolean
     createTime?: boolean
     updateTime?: boolean
     delete?: boolean
@@ -2987,13 +2987,13 @@ export namespace Prisma {
     displayName?: boolean
     description?: boolean
     isSystem?: boolean
-    allowedRoutes?: boolean
+    permissionKeys?: boolean
     createTime?: boolean
     updateTime?: boolean
     delete?: boolean
   }
 
-  export type RoleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "displayName" | "description" | "isSystem" | "allowedRoutes" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["role"]>
+  export type RoleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "displayName" | "description" | "isSystem" | "permissionKeys" | "createTime" | "updateTime" | "delete", ExtArgs["result"]["role"]>
   export type RoleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userRoles?: boolean | Role$userRolesArgs<ExtArgs>
     _count?: boolean | RoleCountOutputTypeDefaultArgs<ExtArgs>
@@ -3012,7 +3012,7 @@ export namespace Prisma {
       displayName: string
       description: string | null
       isSystem: boolean
-      allowedRoutes: Prisma.JsonValue
+      permissionKeys: Prisma.JsonValue
       createTime: Date
       updateTime: Date
       delete: number
@@ -3445,7 +3445,7 @@ export namespace Prisma {
     readonly displayName: FieldRef<"Role", 'String'>
     readonly description: FieldRef<"Role", 'String'>
     readonly isSystem: FieldRef<"Role", 'Boolean'>
-    readonly allowedRoutes: FieldRef<"Role", 'Json'>
+    readonly permissionKeys: FieldRef<"Role", 'Json'>
     readonly createTime: FieldRef<"Role", 'DateTime'>
     readonly updateTime: FieldRef<"Role", 'DateTime'>
     readonly delete: FieldRef<"Role", 'Int'>
@@ -9343,7 +9343,7 @@ export namespace Prisma {
     displayName: 'displayName',
     description: 'description',
     isSystem: 'isSystem',
-    allowedRoutes: 'allowedRoutes',
+    permissionKeys: 'permissionKeys',
     createTime: 'createTime',
     updateTime: 'updateTime',
     delete: 'delete'
@@ -9603,7 +9603,7 @@ export namespace Prisma {
     displayName?: StringFilter<"Role"> | string
     description?: StringNullableFilter<"Role"> | string | null
     isSystem?: BoolFilter<"Role"> | boolean
-    allowedRoutes?: JsonFilter<"Role">
+    permissionKeys?: JsonFilter<"Role">
     createTime?: DateTimeFilter<"Role"> | Date | string
     updateTime?: DateTimeFilter<"Role"> | Date | string
     delete?: IntFilter<"Role"> | number
@@ -9616,7 +9616,7 @@ export namespace Prisma {
     displayName?: SortOrder
     description?: SortOrderInput | SortOrder
     isSystem?: SortOrder
-    allowedRoutes?: SortOrder
+    permissionKeys?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
     delete?: SortOrder
@@ -9632,7 +9632,7 @@ export namespace Prisma {
     displayName?: StringFilter<"Role"> | string
     description?: StringNullableFilter<"Role"> | string | null
     isSystem?: BoolFilter<"Role"> | boolean
-    allowedRoutes?: JsonFilter<"Role">
+    permissionKeys?: JsonFilter<"Role">
     createTime?: DateTimeFilter<"Role"> | Date | string
     updateTime?: DateTimeFilter<"Role"> | Date | string
     delete?: IntFilter<"Role"> | number
@@ -9645,7 +9645,7 @@ export namespace Prisma {
     displayName?: SortOrder
     description?: SortOrderInput | SortOrder
     isSystem?: SortOrder
-    allowedRoutes?: SortOrder
+    permissionKeys?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
     delete?: SortOrder
@@ -9665,7 +9665,7 @@ export namespace Prisma {
     displayName?: StringWithAggregatesFilter<"Role"> | string
     description?: StringNullableWithAggregatesFilter<"Role"> | string | null
     isSystem?: BoolWithAggregatesFilter<"Role"> | boolean
-    allowedRoutes?: JsonWithAggregatesFilter<"Role">
+    permissionKeys?: JsonWithAggregatesFilter<"Role">
     createTime?: DateTimeWithAggregatesFilter<"Role"> | Date | string
     updateTime?: DateTimeWithAggregatesFilter<"Role"> | Date | string
     delete?: IntWithAggregatesFilter<"Role"> | number
@@ -10087,7 +10087,7 @@ export namespace Prisma {
     displayName: string
     description?: string | null
     isSystem?: boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
     delete?: number
@@ -10100,7 +10100,7 @@ export namespace Prisma {
     displayName: string
     description?: string | null
     isSystem?: boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
     delete?: number
@@ -10113,7 +10113,7 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
     delete?: IntFieldUpdateOperationsInput | number
@@ -10126,7 +10126,7 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
     delete?: IntFieldUpdateOperationsInput | number
@@ -10139,7 +10139,7 @@ export namespace Prisma {
     displayName: string
     description?: string | null
     isSystem?: boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
     delete?: number
@@ -10151,7 +10151,7 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
     delete?: IntFieldUpdateOperationsInput | number
@@ -10163,7 +10163,7 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
     delete?: IntFieldUpdateOperationsInput | number
@@ -10741,7 +10741,7 @@ export namespace Prisma {
     displayName?: SortOrder
     description?: SortOrder
     isSystem?: SortOrder
-    allowedRoutes?: SortOrder
+    permissionKeys?: SortOrder
     createTime?: SortOrder
     updateTime?: SortOrder
     delete?: SortOrder
@@ -11834,7 +11834,7 @@ export namespace Prisma {
     displayName: string
     description?: string | null
     isSystem?: boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
     delete?: number
@@ -11846,7 +11846,7 @@ export namespace Prisma {
     displayName: string
     description?: string | null
     isSystem?: boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: Date | string
     updateTime?: Date | string
     delete?: number
@@ -11911,7 +11911,7 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
     delete?: IntFieldUpdateOperationsInput | number
@@ -11923,7 +11923,7 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
-    allowedRoutes?: JsonNullValueInput | InputJsonValue
+    permissionKeys?: JsonNullValueInput | InputJsonValue
     createTime?: DateTimeFieldUpdateOperationsInput | Date | string
     updateTime?: DateTimeFieldUpdateOperationsInput | Date | string
     delete?: IntFieldUpdateOperationsInput | number

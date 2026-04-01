@@ -14,6 +14,7 @@ import {
 import request from '../services/base'
 import type { OrganizationTreeNode } from '../types'
 
+/** 将后端返回的部门树节点转换为 AntD Tree 可直接消费的结构。 */
 const transformToTreeNode = (data: OrganizationResDto[]): OrganizationTreeNode[] => {
   return data.map(item => ({
     ...item,
@@ -33,7 +34,7 @@ export const useOrganizationStore = create<{
   organizationList: [],
   loading: false,
 
-  // 获取部门树
+  /** 获取部门树，并在本地转换成 Tree 组件结构。 */
   fetchOrganizationList: async () => {
     set({ loading: true })
     try {
@@ -48,7 +49,7 @@ export const useOrganizationStore = create<{
     }
   },
 
-  // 创建部门
+  /** 创建部门，成功后刷新整棵部门树。 */
   createOrganization: async (data: CreateOrganizationReqDto) => {
     set({ loading: true })
     try {
@@ -63,7 +64,7 @@ export const useOrganizationStore = create<{
     }
   },
 
-  // 更新部门
+  /** 更新部门信息，成功后刷新整棵部门树。 */
   updateOrganization: async (data: UpdateOrganizationReqDto) => {
     set({ loading: true })
     try {
@@ -78,7 +79,7 @@ export const useOrganizationStore = create<{
     }
   },
 
-  // 删除部门
+  /** 删除部门，成功后刷新整棵部门树。 */
   deleteOrganization: async (id: string) => {
     set({ loading: true })
     try {

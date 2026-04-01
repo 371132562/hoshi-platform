@@ -41,7 +41,7 @@ export enum ErrorCode {
 }
 
 export type ResponseBody<T = any> = {
-  code: ErrorCode;
-  msg: string;
-  data: T;
+  code: ErrorCode; // 业务状态码
+  msg: string; // 面向前端展示的结果文案
+  data: T; // 实际业务数据载荷
 };

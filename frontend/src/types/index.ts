@@ -1,4 +1,4 @@
-import { LazyExoticComponent, ReactNode } from 'react'
+import type { ComponentType, LazyExoticComponent, ReactNode } from 'react'
 import type { OrganizationResDto } from 'template-backend/src/types/dto'
 
 // ==================== 前端专用类型 ====================
@@ -9,13 +9,12 @@ import type { OrganizationResDto } from 'template-backend/src/types/dto'
  * 路由项类型定义
  */
 export type RouteItem = {
-  path: string
-  title: string
-  icon?: ReactNode
-  component?: React.ComponentType | LazyExoticComponent<React.ComponentType>
-  menuParent?: string // 指定父级菜单路径，设置后自动隐藏在菜单中
-  hideInBreadcrumb?: boolean
-  children?: RouteItem[]
+  path: string // 路由路径，既用于注册也用于菜单选中
+  title: string // 路由展示标题，用于菜单和面包屑
+  icon?: ReactNode // 菜单图标，仅导航类路由需要提供
+  component?: ComponentType | LazyExoticComponent<ComponentType> // 路由承载组件；纯分组节点可省略
+  children?: RouteItem[] // 菜单层级下的可见子路由
+  detailRoutes?: RouteItem[] // 不进入菜单、但归属于当前路由的详情页家族
   adminOnly?: boolean // 仅admin可见
 }
 
@@ -23,6 +22,6 @@ export type RouteItem = {
  * 带有 key 属性的部门树节点类型（AntD Tree 组件专用）
  */
 export type OrganizationTreeNode = Omit<OrganizationResDto, 'children'> & {
-  key: string
-  children?: OrganizationTreeNode[]
+  key: string // AntD Tree 组件要求的节点唯一 key
+  children?: OrganizationTreeNode[] // 子部门节点列表
 }

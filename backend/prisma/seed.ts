@@ -11,11 +11,11 @@ import * as path from 'path';
 import { SYSTEM_INIT_DATA } from '../src/common/config/constants';
 import { PrismaClient } from './generated/client';
 
-// 解析数据库 URL
+// 解析数据库 URL，保持与 PrismaService 的文件定位逻辑一致。
 const rawUrl = process.env.DATABASE_URL ?? 'file:./db/local.db';
 let url = rawUrl.startsWith('file:') ? rawUrl.slice(5) : rawUrl;
 
-// 解析绝对路径：假设脚本在 backend 根目录下运行（pnpm prisma db seed）
+// seed 命令默认在 backend 根目录执行，因此相对路径直接基于 process.cwd() 解析。
 if (!path.isAbsolute(url)) {
   url = path.resolve(process.cwd(), url);
 }
@@ -23,13 +23,13 @@ if (!path.isAbsolute(url)) {
 const adapter = new PrismaBetterSqlite3({ url });
 const prisma = new PrismaClient({ adapter });
 
-// 生成加密密码
+/** 生成系统初始化用户要落库的 bcrypt 密码哈希。 */
 const generatePassword = async (password: string) => {
   const saltRounds = 10;
   return await bcrypt.hash(password, saltRounds);
 };
 
-// 生成加密后的用户数据
+/** 为系统初始用户批量生成加密后的密码字段。 */
 const generateEncryptedUsers = async () => {
   return Promise.all(
     SYSTEM_INIT_DATA.users.map(async (user) => ({
@@ -48,7 +48,7 @@ async function seedAuthData() {
   const roleMap = new Map<string, string>();
 
   for (const roleData of SYSTEM_INIT_DATA.roles) {
-    // 使用 code 查找角色
+    // 1. 先按角色编码 upsert 系统角色，避免重复创建初始化角色。
     let role = await prisma.role.findFirst({
       where: { code: roleData.code, delete: 0 },
     });
@@ -60,7 +60,7 @@ async function seedAuthData() {
           displayName: roleData.displayName,
           description: roleData.description,
           isSystem: roleData.isSystem,
-          allowedRoutes: [],
+          permissionKeys: [],
         },
       });
       console.log(
@@ -73,7 +73,7 @@ async function seedAuthData() {
           displayName: roleData.displayName,
           description: roleData.description,
           isSystem: roleData.isSystem,
-          allowedRoutes: [],
+          permissionKeys: [],
         },
       });
       console.log(
@@ -83,6 +83,7 @@ async function seedAuthData() {
     roleMap.set(roleData.code, role.id);
   }
 
+  // 2. 再创建/更新系统用户，并按 roleCodes 重建用户-角色绑定关系。
   const encryptedUsers = await generateEncryptedUsers();
   for (const user of encryptedUsers) {
     const roleIds = user.roleCodes
@@ -157,9 +158,10 @@ async function seedAuthData() {
  * 它负责初始化所有需要的缓存，并按正确的依赖顺序调用各个填充函数。
  */
 async function main() {
-  // 认证相关数据初始化
+  // 先初始化认证数据，确保后续默认用户和角色可用。
   await seedAuthData();
-  // 部门相关数据初始化
+
+  // 再初始化根部门等基础组织数据。
   await seedOrganizationData();
 }
 
@@ -180,7 +182,7 @@ async function seedOrganizationData() {
   console.log('部门数据初始化完成！根部门ID:', rootOrg.id);
 }
 
-// 脚本的执行入口点。
+// 脚本执行入口：统一处理失败退出码与数据库连接释放。
 main()
   .catch((e) => {
     // 捕获并打印任何在异步执行过程中发生的错误。

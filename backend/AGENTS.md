@@ -4,7 +4,9 @@
 
 ## 进入后端任务前先选 Skill
 
-完整路由见根 `AGENTS.md`；后端常用 skill：`create-backend-module`、`type-contract-guidelines`、`prisma-workflow`、`implement-system-log`。
+完整路由见根 `AGENTS.md`；后端常用 skill：`create-backend-module`、`type-contract-guidelines`、`prisma-workflow`、`implement-system-log`、`comment-detail-preservation`。
+
+如果当前环境是 WSL、项目位于 `/mnt/<盘符>/...`，且要执行 `pnpm` / `node` / `prisma` / `nest` / `eslint` / `build` / `seed` / `generate` 等依赖相关命令，先参考根 `AGENTS.md` 中强制 skill `/wsl-windows-command-bridge`。
 
 ## 先看哪里
 
@@ -23,4 +25,5 @@
 - 后端常规开发默认走 `controller / service / dto / pipes` 分层；细则按需加载 `create-backend-module`。
 - 数据库访问统一通过 `PrismaService`；结构变更按需加载 `prisma-workflow`。
 - 共享契约细则转 `type-contract-guidelines`。
+- 只要本次开发会新增或修订注释，先参考根 `AGENTS.md` 中强制 skill `/comment-detail-preservation`；对高约束后端逻辑默认保留或写出与风险匹配的详细程度，不要事后再补。
 - 日志链路、DTO/Pipe 细则、类型契约目录结构、Prisma 顺序等执行性规范，按需加载对应 skill，不在此重复展开。

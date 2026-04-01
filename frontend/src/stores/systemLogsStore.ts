@@ -143,7 +143,7 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
     const now = Date.now()
     const { lastRefreshTime } = get()
 
-    // 如果不是强制刷新，且距离上次刷新时间小于5秒，则跳过
+    // 5 秒内的重复刷新直接复用已有结果，避免用户频繁点击时连续打后端。
     if (!force && now - lastRefreshTime < 5000) {
       return true
     }
@@ -196,6 +196,8 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
     set({ usersLoading: true })
     try {
       const res = await request.post<LogUsersResDto>(systemUserLogsList)
+
+      // 后端可能返回兼容形态的 list 字段，这里统一转换为 Select 选项。
       const list = res.data?.list || []
       const userOptions = list.map((i: { name: string; username: string }) => ({
         label: i.name ? `${i.name}/${i.username}` : i.username,
@@ -221,7 +223,7 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
     const now = Date.now()
     const { lastRefreshTime } = get()
 
-    // 如果不是强制刷新，且距离上次刷新时间小于5秒，则跳过
+    // 用户日志文件列表与系统日志共用同一套防抖窗口，避免短时间内重复刷新。
     if (!force && now - lastRefreshTime < 5000) {
       return true
     }
@@ -237,6 +239,8 @@ export const useSystemLogsStore = create<SystemLogsState>((set, get) => ({
   async loadInitialUsers() {
     try {
       const res = await get().listUsers()
+
+      // 首次加载时预先生成下拉选项，避免每次打开面板重新计算。
       if (res.list && res.list.length > 0) {
         const userOptions = res.list.map((i: { name: string; username: string }) => ({
           label: i.name ? `${i.name}/${i.username}` : i.username,

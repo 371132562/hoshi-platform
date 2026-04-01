@@ -24,27 +24,25 @@ import http from '@/services/base'
 
 // 文章列表查询参数类型（分页 + 搜索统一对象）
 type ArticlePageParams = {
-  page?: number
-  pageSize?: number
-  title?: string
+  page?: number // 页码，从 1 开始
+  pageSize?: number // 每页数量
+  title?: string // 按标题模糊搜索
 }
 
 type ArticleStore = {
-  // 状态
-  articles: ArticleMetaItemResDto[]
-  total: number
-  articlePageParams: ArticlePageParams
-  loading: boolean
-  articleDetail: ArticleItemResDto | null
-  detailLoading: boolean
-  submitLoading: boolean
-  allArticles: ArticleMetaItemResDto[]
-  pageArticles: ArticleItemResDto[]
-  orderConfigLoading: boolean
-  previewArticles: ArticleItemResDto[]
-  previewLoading: boolean
+  articles: ArticleMetaItemResDto[] // 当前页文章元信息列表
+  total: number // 文章总数
+  articlePageParams: ArticlePageParams // 当前分页与搜索条件
+  loading: boolean // 列表加载状态
+  articleDetail: ArticleItemResDto | null // 当前查看/编辑的文章详情
+  detailLoading: boolean // 详情加载状态
+  submitLoading: boolean // 创建、更新、排序等提交态
+  allArticles: ArticleMetaItemResDto[] // 排序配置页使用的全量文章列表
+  pageArticles: ArticleItemResDto[] // 某个页面当前配置的文章列表
+  orderConfigLoading: boolean // 排序配置相关请求加载态
+  previewArticles: ArticleItemResDto[] // 排序预览弹窗使用的文章详情列表
+  previewLoading: boolean // 预览详情加载态
 
-  // 操作
   fetchArticleList: (params?: Partial<ArticlePageParams>) => Promise<void>
   updateArticlePageParams: (params: Partial<ArticlePageParams>) => void
   resetArticleSearch: () => void
@@ -61,7 +59,6 @@ type ArticleStore = {
 }
 
 const useArticleStore = create<ArticleStore>((set, get) => ({
-  // 初始状态
   articles: [],
   total: 0,
   articlePageParams: { page: 1, pageSize: 10 },
@@ -75,7 +72,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
   previewArticles: [],
   previewLoading: false,
 
-  // 获取文章列表（支持分页和筛选）
+  /** 获取文章列表，并统一维护分页与搜索状态。 */
   fetchArticleList: async (params?: Partial<ArticlePageParams>) => {
     const merged = { ...get().articlePageParams, ...params }
     set({ loading: true, articlePageParams: merged })
@@ -100,23 +97,22 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
-  // 更新分页/筛选参数并刷新列表（统一入口）
+  /** 更新分页/筛选参数，并复用统一列表拉取逻辑。 */
   updateArticlePageParams: (params: Partial<ArticlePageParams>) => {
     const merged = { ...get().articlePageParams, ...params }
     get().fetchArticleList(merged)
   },
 
-  // 重置搜索条件
+  /** 重置文章搜索条件并回到第一页。 */
   resetArticleSearch: () => {
     get().updateArticlePageParams({ page: 1, title: undefined })
   },
 
-  // 创建文章
+  /** 创建文章，成功后回到第一页并刷新列表。 */
   createArticle: async (data: CreateArticleReqDto) => {
     set({ submitLoading: true })
     try {
       await http.post(articleCreate, data)
-      // 创建成功后回到第一页并清空搜索条件
       await get().fetchArticleList({ page: 1, title: undefined })
       return true
     } catch (error) {
@@ -127,12 +123,11 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
-  // 更新文章
+  /** 更新文章，成功后刷新当前列表页。 */
   updateArticle: async (data: UpdateArticleReqDto) => {
     set({ submitLoading: true })
     try {
       await http.post(articleUpdate, data)
-      // 更新成功后刷新当前页
       await get().fetchArticleList()
       return true
     } catch (error) {
@@ -143,14 +138,13 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
-  // 删除文章
+  /** 删除文章，并在删空当前页时自动回退到上一页。 */
   deleteArticle: async (data: DeleteArticleReqDto) => {
     try {
       await http.post(articleDelete, data)
       const { articles, articlePageParams } = get()
       const currentPage = articlePageParams.page || 1
-      // 删除成功后，处理分页逻辑
-      // 当删除的是当前页的最后一条数据时，需要返回上一页
+      // 删除成功后若当前页被删空，则自动回退一页，避免出现空白页。
       if (articles.length === 1 && currentPage > 1) {
         await get().fetchArticleList({ page: currentPage - 1 })
       } else {
@@ -163,11 +157,10 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
-  // 获取文章详情
+  /** 获取单篇文章详情，供编辑页与详情弹窗使用。 */
   getArticleDetail: async (id: string) => {
     set({ detailLoading: true, articleDetail: null })
     try {
-      // 明确响应数据类型：文章详情
       const response = await http.post<ArticleItemResDto>(articleDetail, { id })
       if (response && response.data) {
         set({ articleDetail: response.data })
@@ -180,16 +173,15 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
-  // 清除文章详情
+  /** 清空当前文章详情缓存。 */
   clearArticleDetail: () => {
     set({ articleDetail: null })
   },
 
-  // 获取所有文章
+  /** 获取所有文章元信息，供排序配置页使用。 */
   getAllArticles: async () => {
     set({ orderConfigLoading: true })
     try {
-      // 明确响应数据类型：文章元数据列表
       const response = await http.post<ArticleMetaItemResDto[]>(articleListAll)
       if (response && response.data) {
         set({ allArticles: response.data })
@@ -201,10 +193,10 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
+  /** 获取前台指定页面展示的文章列表。 */
   getPublicArticlesByPage: async (page: string) => {
     set({ orderConfigLoading: true })
     try {
-      // 明确响应数据类型：页面文章列表
       const response = await http.post<ArticleItemResDto[]>(articlePublicGetByPage, { page })
       if (response && response.data) {
         set({ pageArticles: response.data })
@@ -217,10 +209,10 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
+  /** 获取后台指定页面配置的文章列表。 */
   getArticlesByPage: async (page: string) => {
     set({ orderConfigLoading: true })
     try {
-      // 明确响应数据类型：页面文章列表
       const response = await http.post<ArticleItemResDto[]>(articleGetByPage, { page })
       if (response && response.data) {
         set({ pageArticles: response.data })
@@ -233,7 +225,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
-  // 创建或更新文章顺序
+  /** 提交页面文章顺序配置。 */
   upsertArticleOrder: async (page: string, articles: string[]) => {
     set({ submitLoading: true })
     try {
@@ -247,7 +239,7 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
     }
   },
 
-  // 获取预览文章
+  /** 根据文章ID列表拉取预览所需的完整详情。 */
   getArticleDetailsByIds: async (ids: string[]) => {
     set({ previewLoading: true, previewArticles: [] })
     try {

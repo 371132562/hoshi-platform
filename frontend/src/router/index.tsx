@@ -10,49 +10,32 @@ import { RouteItem } from '@/types'
 
 import { adminRoutes } from './adminRoutes'
 import { publicRoutes } from './publicRoutes'
+import { createRouteRuntime } from './routeRuntime'
 
 const routeErrorElement = <ErrorPage />
 
-// 根据路由配置生成路由
-const generateRoutes = (routes: RouteItem[]): RouteObject[] => {
-  const generateChildrenRoutes = (routes: RouteItem[]): RouteObject[] => {
-    return routes.flatMap(route => {
-      const result: RouteObject[] = []
+const publicRouteRuntime = createRouteRuntime(publicRoutes)
+const adminRouteRuntime = createRouteRuntime(adminRoutes)
 
-      // 添加主路由
-      if (route.component) {
-        result.push({
-          path: route.path,
-          element: (
-            <Suspense fallback={<LoadingFallback />}>
-              <route.component />
-            </Suspense>
-          )
-        })
-      }
-
-      // 添加子路由
-      if (route.children) {
-        result.push(...generateChildrenRoutes(route.children))
-      }
-
-      return result
-    })
-  }
-
-  // 基于路由数组生成所有可渲染路由
-  const allRoutes = generateChildrenRoutes(routes)
-
-  // 去重
-  const pathMap = new Map<string, RouteObject>()
-  allRoutes.forEach(route => {
-    if (route.path && !pathMap.has(route.path)) {
-      pathMap.set(route.path, route)
+const generateRoutes = (routes: RouteItem[]): RouteObject[] =>
+  routes.flatMap(route => {
+    if (!route.component) {
+      return []
     }
-  })
 
-  return Array.from(pathMap.values())
-}
+    const RouteComponent = route.component
+
+    return [
+      {
+        path: route.path,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <RouteComponent />
+          </Suspense>
+        )
+      }
+    ]
+  })
 
 // 获取部署路径，处理斜杠问题
 const getBasename = () => {
@@ -76,14 +59,14 @@ const router = createBrowserRouter(
     {
       element: <PublicLayout />,
       errorElement: routeErrorElement,
-      children: generateRoutes(publicRoutes)
+      children: generateRoutes(publicRouteRuntime.getRenderableRoutes())
     },
     // 后台布局（管理页面，侧边导航，需登录）
     {
       path: '/admin',
       element: <AdminLayout />,
       errorElement: routeErrorElement,
-      children: generateRoutes(adminRoutes)
+      children: generateRoutes(adminRouteRuntime.getRenderableRoutes())
     }
   ],
   {

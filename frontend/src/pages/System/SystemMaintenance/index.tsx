@@ -5,6 +5,7 @@ import { FC } from 'react'
 import CleanupPanel from './components/CleanupPanel'
 import LogPanel from './components/LogPanel'
 
+/** 系统维护页，集中承载资源清理、系统日志与用户日志三个运维面板。 */
 const SystemMaintenance: FC = () => {
   return (
     <div className="w-full">

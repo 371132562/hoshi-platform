@@ -21,33 +21,33 @@ import { decryptSalt, encryptData } from '../utils/crypto'
 
 // 临时类型定义，用于前端表单
 type CreateUserFormData = {
-  username: string
-  displayName: string
-  organizationId?: string
-  phone?: string
-  password: string
-  roleIds: string[]
+  username: string // 新建用户的登录账号
+  displayName: string // 新建用户的展示姓名
+  organizationId?: string // 所属部门ID
+  phone?: string // 联系电话
+  password: string // 表单中输入的明文密码
+  roleIds: string[] // 初始绑定的角色ID列表
 }
 
 type ResetPasswordFormData = {
-  id: string
-  newPassword: string
+  id: string // 待重置密码的用户ID
+  newPassword: string // 表单中输入的新密码明文
 }
 
 // 用户列表查询参数类型（分页 + 搜索统一对象）
 type UserPageParams = {
-  page?: number
-  pageSize?: number
-  displayName?: string
-  roleId?: string
+  page?: number // 页码，从 1 开始
+  pageSize?: number // 每页数量
+  displayName?: string // 按姓名模糊搜索
+  roleId?: string // 按角色筛选
 }
 
 // Store 状态类型
 type UserStoreState = {
-  userList: UserItemResDto[]
-  userTotal: number
-  userPageParams: UserPageParams
-  loading: boolean
+  userList: UserItemResDto[] // 当前页用户列表
+  userTotal: number // 用户总数
+  userPageParams: UserPageParams // 当前分页与筛选条件
+  loading: boolean // 用户管理相关请求是否进行中
   fetchUserList: (params?: Partial<UserPageParams>) => Promise<void>
   updateUserPageParams: (params: Partial<UserPageParams>) => void
   resetUserSearch: () => void
@@ -63,7 +63,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
   userPageParams: { page: 1, pageSize: 10 },
   loading: false,
 
-  // 获取用户列表（支持分页和筛选）
+  /** 获取用户列表，并统一维护分页与筛选状态。 */
   fetchUserList: async (params?: Partial<UserPageParams>) => {
     const merged = { ...get().userPageParams, ...params }
     set({ loading: true, userPageParams: merged })
@@ -80,18 +80,18 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
     }
   },
 
-  // 更新分页/筛选参数并刷新列表（统一入口，涵盖分页变化、搜索等场景）
+  /** 更新分页/筛选参数，并复用统一列表拉取逻辑。 */
   updateUserPageParams: (params: Partial<UserPageParams>) => {
     const merged = { ...get().userPageParams, ...params }
     get().fetchUserList(merged)
   },
 
-  // 重置搜索条件
+  /** 重置用户搜索条件并回到第一页。 */
   resetUserSearch: () => {
     get().updateUserPageParams({ page: 1, displayName: undefined, roleId: undefined })
   },
 
-  // 创建用户
+  /** 创建用户，并通过 challenge 流程加密密码后提交。 */
   createUser: async data => {
     set({ loading: true })
     try {
@@ -116,7 +116,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
     }
   },
 
-  // 编辑用户
+  /** 更新用户基础信息与角色绑定。 */
   updateUser: async data => {
     set({ loading: true })
     try {
@@ -131,12 +131,12 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
     }
   },
 
-  // 删除用户
+  /** 删除用户，并在必要时自动回退到上一页。 */
   deleteUser: async data => {
     set({ loading: true })
     try {
       await request.post(userDeleteApi, data)
-      // 智能处理分页：删除后检查当前页是否为空
+      // 删除成功后检查当前页是否还有数据；若删空则自动回退一页。
       const { userTotal, userPageParams } = get()
       const newTotal = userTotal - 1
       const totalPages = Math.ceil(newTotal / (userPageParams.pageSize || 10))
@@ -154,7 +154,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
     }
   },
 
-  // 重置用户密码
+  /** 重置用户密码，并沿用登录相同的 challenge 加密链路。 */
   resetUserPassword: async data => {
     set({ loading: true })
     try {

@@ -133,7 +133,7 @@ exports.Prisma.RoleScalarFieldEnum = {
   displayName: 'displayName',
   description: 'description',
   isSystem: 'isSystem',
-  allowedRoutes: 'allowedRoutes',
+  permissionKeys: 'permissionKeys',
   createTime: 'createTime',
   updateTime: 'updateTime',
   delete: 'delete'

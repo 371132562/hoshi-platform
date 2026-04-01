@@ -1,4 +1,4 @@
-// 从前端导入后端的 dayjs 工具
+// 直接复用后端导出的 dayjs 工具，确保前后端日期处理口径一致。
 export {
   dateToYear,
   default as dayjs,

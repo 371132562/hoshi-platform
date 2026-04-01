@@ -7,18 +7,16 @@ import { challengeApiUrl, loginApiUrl, profileApiUrl } from '../services/apis'
 import http from '../services/base'
 import { decryptSalt, encryptData } from '../utils/crypto'
 
-// 认证store的类型定义
 export type AuthStore = {
-  token: string | null // JWT token
-  user: UserProfileResDto | null // 当前用户信息
-  loading: boolean // 加载状态
-  error: string | null // 错误信息
+  token: string | null // 当前登录态对应的 JWT token
+  user: UserProfileResDto | null // 当前登录用户信息
+  loading: boolean // 认证相关请求是否进行中
+  error: string | null // 最近一次认证失败的错误文案
   login: (data: LoginReqDto) => Promise<boolean>
   logout: () => boolean
   fetchProfile: () => Promise<void>
 }
 
-// 认证store实现
 export const useAuthStore = create<AuthStore>()(
   persist(
     set => ({
@@ -26,17 +24,21 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       loading: false,
       error: null,
-      // 登录方法
+      /**
+       * 完成挑战码登录流程，并在成功后同步 token 与用户信息。
+       */
       async login(data) {
         set({ loading: true, error: null })
         try {
-          // 两步登录：先获取加密的随机盐，解密后使用crypto-js加密(盐+密码)，然后提交加密数据
+          // 1. 先向后端请求一次性 challenge，用于生成本次登录加密参数。
           const challenge = await http.post<string>(challengeApiUrl)
           const encryptedSalt = challenge.data
-          // 解密后端返回的加密盐值
+
+          // 2. 解密 challenge 后再对用户输入的密码进行加密，避免明文直传。
           const salt = decryptSalt(encryptedSalt)
           const encryptedData = encryptData(salt, data.password)
-          // 注意：后端返回结构 { token, user: { ... } }
+
+          // 3. 登录成功后一次性写入 token 与用户上下文，供持久化中间件接管。
           const res = await http.post<LoginResDto>(loginApiUrl, {
             username: data.username,
             encryptedData
@@ -49,20 +51,22 @@ export const useAuthStore = create<AuthStore>()(
           return false
         }
       },
-      // 登出方法
+      /** 清空认证状态，并删除本地持久化的登录信息。 */
       logout() {
         set({ token: null, user: null, error: null })
         localStorage.removeItem('auth-storage')
         return true
       },
-      // 获取用户信息
+      /**
+       * 使用现有 token 刷新当前用户信息，并在认证失效时自动清理本地状态。
+       */
       async fetchProfile() {
         set({ loading: true })
         try {
           const res = await http.post<UserProfileResDto>(profileApiUrl)
           set({ user: res.data, loading: false, error: null })
         } catch (err: unknown) {
-          // 根据后端错误码处理
+          // 1. 统一从后端响应中提取错误码与错误文案。
           const errorCode = (err as { response?: { data?: { code?: string } } })?.response?.data
             ?.code
           const errorMsg =
@@ -70,7 +74,7 @@ export const useAuthStore = create<AuthStore>()(
             (err as { msg?: string })?.msg ||
             '获取用户信息失败'
 
-          // 用户不存在、token过期或认证失败，清除本地存储
+          // 2. 认证已失效时，直接清空内存与本地持久化，避免 UI 继续显示过期身份。
           if (
             Number(errorCode) === ErrorCode.USER_NOT_FOUND ||
             Number(errorCode) === ErrorCode.TOKEN_EXPIRED ||
@@ -86,7 +90,7 @@ export const useAuthStore = create<AuthStore>()(
             return
           }
 
-          // 其他错误
+          // 3. 非认证类错误仅回写错误文案，不主动登出当前用户。
           set({
             loading: false,
             error: errorMsg
@@ -112,7 +116,7 @@ export const useAuthStore = create<AuthStore>()(
 // 3) 当本地无 token 且内存仍有 token 时，重置为未登录；当本地 token 与内存不一致时，以本地为准并触发后续逻辑
 // =========================
 
-// 安全解析本地持久化的 auth-storage
+/** 安全解析本地持久化的 auth-storage，避免 JSON 异常影响页面启动。 */
 const readPersistedAuth = (): { token: string | null; user: UserProfileResDto | null } => {
   try {
     const raw = localStorage.getItem('auth-storage') || '{}'
@@ -125,24 +129,23 @@ const readPersistedAuth = (): { token: string | null; user: UserProfileResDto | 
   }
 }
 
-// 将内存状态与本地持久化状态进行对齐
+/**
+ * 将内存中的认证状态与 localStorage 持久化状态对齐。
+ */
 const syncAuthFromLocalStorage = (): void => {
   const { token: lsToken, user: lsUser } = readPersistedAuth()
   const mem = useAuthStore.getState()
 
-  // 本地无 token，但内存仍有，说明用户清除了存储；需清空内存以刷新 UI
+  // 1. 本地无 token，但内存仍有，说明用户手动清空了存储；此时应立即清空内存。
   if (!lsToken && mem.token) {
     useAuthStore.setState({ token: null, user: null })
     return
   }
 
-  // 本地存在 token 且与内存不一致时，以本地为准进行对齐
+  // 2. 本地 token 与内存不一致时，以本地为准，并补一次 profile 校验。
   if (lsToken && lsToken !== mem.token) {
-    // 先对齐 token，随后主动刷新用户信息，确保权限与菜单准确
     useAuthStore.setState({ token: lsToken, user: lsUser })
-    // 立即触发一次用户信息拉取进行校验
     setTimeout(() => {
-      // 使用当前 store 中的 fetchProfile，避免闭包过期
       const currentFetch = useAuthStore.getState().fetchProfile
       currentFetch().catch(() => {})
     }, 0)

@@ -7,7 +7,7 @@ import { WinstonLoggerService } from '../../common/services/winston-logger.servi
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErrorCode } from '../../types/response';
 import {
-  AssignRoleRoutesReqDto,
+  AssignRolePermissionKeysReqDto,
   CreateRoleReqDto,
   RoleListResDto,
   UpdateRoleReqDto,
@@ -40,14 +40,15 @@ export class RoleService {
 
       this.logger.log(`[操作] 获取角色列表 - 共 ${roles.length} 个角色`);
 
+      // 1. 将 JSON 权限字段规范化为字符串数组，并补齐用户数等派生信息。
       const roleList = roles.map((role) => ({
         id: role.id,
         code: role.code,
         displayName: role.displayName,
         isSystem: role.isSystem,
         description: role.description ?? null,
-        allowedRoutes: Array.isArray(role.allowedRoutes)
-          ? (role.allowedRoutes as unknown[]).filter(
+        permissionKeys: Array.isArray(role.permissionKeys)
+          ? (role.permissionKeys as unknown[]).filter(
               (r): r is string => typeof r === 'string',
             )
           : [], // 只保留字符串
@@ -71,12 +72,13 @@ export class RoleService {
     this.logger.log(`[操作] 创建角色 - 名称: ${dto.displayName} (${dto.code})`);
 
     try {
+      // 角色创建直接落稳定权限 key，避免再做 path 级兼容转换。
       await this.prisma.role.create({
         data: {
           code: dto.code,
           displayName: dto.displayName,
           description: dto.description,
-          allowedRoutes: dto.allowedRoutes,
+          permissionKeys: dto.permissionKeys,
         },
       });
 
@@ -115,10 +117,7 @@ export class RoleService {
         );
       }
 
-      // 角色名(displayName)是否重复？
-      // 业务上可能允许重复，或者在此处增加唯一性校验。
-      // 这里暂时只校验code的唯一性（但在updateRoleDto中通常不传code，code一般不可改）
-      // 如果 dto 中包含 displayName，检查是否与其他角色的 displayName 重复（可选，视业务需求而定）
+      // 1. displayName 变化时单独做重名校验，避免和其他角色混淆。
       if (dto.displayName && dto.displayName !== role.displayName) {
         const exist = await this.prisma.role.findFirst({
           where: { displayName: dto.displayName, delete: 0 },
@@ -134,15 +133,16 @@ export class RoleService {
         }
       }
 
+      // 2. 统一更新展示信息与权限 key；未传的字段保持原值。
       await this.prisma.role.update({
         where: { id: role.id },
         data: {
           displayName: dto.displayName ?? role.displayName,
           description: dto.description ?? role.description,
-          allowedRoutes:
-            dto.allowedRoutes !== undefined
-              ? (dto.allowedRoutes as unknown as Prisma.InputJsonValue)
-              : (role.allowedRoutes as unknown as Prisma.InputJsonValue),
+          permissionKeys:
+            dto.permissionKeys !== undefined
+              ? (dto.permissionKeys as unknown as Prisma.InputJsonValue)
+              : (role.permissionKeys as unknown as Prisma.InputJsonValue),
         },
       });
 
@@ -181,7 +181,7 @@ export class RoleService {
         );
       }
 
-      // 检查是否有用户关联该角色
+      // 1. 仍被用户使用的角色不允许删除，避免产生悬空授权关系。
       const userCount = await this.prisma.userRole.count({
         where: { roleId: role.id, user: { delete: 0 } },
       });
@@ -219,8 +219,9 @@ export class RoleService {
   /**
    * 分配角色菜单权限
    */
-  async assignRoleRoutes(dto: AssignRoleRoutesReqDto) {
+  async assignRolePermissionKeys(dto: AssignRolePermissionKeysReqDto) {
     try {
+      // 1. 先校验角色是否存在且仍可编辑。
       const role = await this.prisma.role.findUnique({ where: { id: dto.id } });
       this.logger.log(
         role
@@ -244,19 +245,22 @@ export class RoleService {
         );
       }
 
-      const filteredRoutes = (dto.allowedRoutes as unknown[]).filter(
-        (r): r is string => typeof r === 'string',
+      // 2. 仅保留字符串形式的权限 key，避免无效 JSON 值写回数据库。
+      const filteredPermissionKeys = (dto.permissionKeys as unknown[]).filter(
+        (permissionKey): permissionKey is string =>
+          typeof permissionKey === 'string',
       );
 
+      // 3. 一次性覆盖角色权限集合，保持权限真值只有一份。
       await this.prisma.role.update({
         where: { id: dto.id },
         data: {
-          allowedRoutes: filteredRoutes,
+          permissionKeys: filteredPermissionKeys,
         },
       });
 
       this.logger.log(
-        `[操作] 分配角色菜单权限成功 - 角色ID: ${dto.id}, 名称: ${role.displayName}, 权限数量: ${filteredRoutes.length}`,
+        `[操作] 分配角色菜单权限成功 - 角色ID: ${dto.id}, 名称: ${role.displayName}, 权限数量: ${filteredPermissionKeys.length}`,
       );
       return true;
     } catch (error) {

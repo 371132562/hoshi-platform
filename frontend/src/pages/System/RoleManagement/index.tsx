@@ -19,7 +19,9 @@ import type { RoleListItemResDto } from 'template-backend/src/types/dto'
 import { getMenuOptionsForRoleEdit } from '../../../router/routesConfig'
 import { useRoleStore } from '../../../stores/roleStore'
 
-// 角色管理页面
+/**
+ * 角色管理页面，负责角色 CRUD 与权限 key 分配。
+ */
 const RoleManagement: React.FC = () => {
   const roleList = useRoleStore(s => s.roleList)
   const loading = useRoleStore(s => s.loading)
@@ -27,7 +29,7 @@ const RoleManagement: React.FC = () => {
   const createRole = useRoleStore(s => s.createRole)
   const updateRole = useRoleStore(s => s.updateRole)
   const deleteRole = useRoleStore(s => s.deleteRole)
-  const assignRoleRoutes = useRoleStore(s => s.assignRoleRoutes)
+  const assignRolePermissionKeys = useRoleStore(s => s.assignRolePermissionKeys)
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editRole, setEditRole] = useState<RoleListItemResDto | null>(null)
@@ -40,6 +42,7 @@ const RoleManagement: React.FC = () => {
     fetchRoleList()
   }, [])
 
+  /** 打开角色新建/编辑弹窗，并同步表单初始值。 */
   const openModal = (role?: RoleListItemResDto) => {
     setEditRole(role || null)
     setModalOpen(true)
@@ -50,6 +53,7 @@ const RoleManagement: React.FC = () => {
     }
   }
 
+  /** 提交角色基础信息表单，根据当前上下文决定是创建还是更新。 */
   const handleOk = async () => {
     const values = await form.validateFields()
     let success = false
@@ -69,18 +73,20 @@ const RoleManagement: React.FC = () => {
     }
   }
 
+  /** 打开权限分配弹窗，并回填当前角色已有权限。 */
   const openAssignModal = (role: RoleListItemResDto) => {
     setAssignRole(role)
     setAssignModalOpen(true)
-    assignForm.setFieldsValue({ allowedRoutes: role.allowedRoutes })
+    assignForm.setFieldsValue({ permissionKeys: role.permissionKeys })
   }
 
+  /** 提交角色权限 key 覆盖更新。 */
   const handleAssignOk = async () => {
     const values = await assignForm.validateFields()
     if (assignRole) {
-      const success = await assignRoleRoutes({
+      const success = await assignRolePermissionKeys({
         id: assignRole.id,
-        allowedRoutes: values.allowedRoutes
+        permissionKeys: values.permissionKeys
       })
       if (success) {
         message.success('权限分配成功')
@@ -91,6 +97,7 @@ const RoleManagement: React.FC = () => {
 
   const menuOptions = getMenuOptionsForRoleEdit()
 
+  /** 表格列定义集中放在 useMemo 中，避免每次渲染重复创建 render 闭包。 */
   const columns = useMemo(
     () => [
       {
@@ -254,7 +261,7 @@ const RoleManagement: React.FC = () => {
           layout="vertical"
         >
           <Form.Item
-            name="allowedRoutes"
+            name="permissionKeys"
             label="可访问菜单"
             rules={[{ required: true, message: '请选择菜单权限' }]}
           >

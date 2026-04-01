@@ -19,16 +19,18 @@ Hoshi Platform 是一个 `pnpm` monorepo 管理平台模板，前端采用 React
 
 以下场景**必须**先调用对应 Skill，再进入实现：
 
-| 场景                                                        | 必须调用的 Skill             |
-| ----------------------------------------------------------- | ---------------------------- |
-| 新功能开发、跨模块改动、需要先做验收契约与 TODO 拆解        | `/project-workflow`          |
-| 创建/修改 React 页面、布局、组件、样式、路由承载页面        | `/create-frontend-component` |
-| 创建/修改 Zustand Store、列表查询状态、异步 Action          | `/create-zustand-store`      |
-| 创建/修改 NestJS controller / service / dto / pipe / module | `/create-backend-module`     |
-| 创建/修改 DTO、共享 type、`src/types` 导出与前后端契约      | `/type-contract-guidelines`  |
-| 修改 Prisma schema、seed、生成客户端、涉及数据库落库逻辑    | `/prisma-workflow`           |
-| 新增或调整系统日志、用户日志、操作日志链路                  | `/implement-system-log`      |
-| 运行或修复 ESLint / TypeScript 检查                         | `/eslint-fix`                |
+| 场景                                                                                                                                 | 必须调用的 Skill               |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
+| 新功能开发、跨模块改动、需要先做验收契约与 TODO 拆解                                                                                 | `/project-workflow`            |
+| 创建/修改 React 页面、布局、组件、样式、路由承载页面                                                                                 | `/create-frontend-component`   |
+| 创建/修改 Zustand Store、列表查询状态、异步 Action                                                                                   | `/create-zustand-store`        |
+| 创建/修改 NestJS controller / service / dto / pipe / module                                                                          | `/create-backend-module`       |
+| 创建/修改 DTO、共享 type、`src/types` 导出与前后端契约                                                                               | `/type-contract-guidelines`    |
+| 修改 Prisma schema、seed、生成客户端、涉及数据库落库逻辑                                                                             | `/prisma-workflow`             |
+| 新增或调整系统日志、用户日志、操作日志链路                                                                                           | `/implement-system-log`        |
+| 任意开发任务中只要会新增/修订注释，尤其涉及已有详细注释文件或高约束逻辑时                                                            | `/comment-detail-preservation` |
+| 运行或修复 ESLint / TypeScript 检查                                                                                                  | `/eslint-fix`                  |
+| 当前环境是 WSL，项目位于 `/mnt/<盘符>/...`，且要执行 `pnpm` / `node` / `prisma` / `tsc` / `eslint` / `build` / `seed` 等依赖相关命令 | `/wsl-windows-command-bridge`  |
 
 ## 可选但推荐的 Skills
 
@@ -60,8 +62,15 @@ hoshi-platform/
 
 - 开发前至少查找 **3 个项目内相似实现**，优先沿用现有命名、分层、错误处理与注释风格。
 - 注释必须帮助后续维护者理解“为什么这样做”，不要只翻译代码表面行为。
+- 修订已有注释时，优先保留原注释中的有效细节，只做术语、结构与风格统一；不要把较详细的注释机械缩写成更短版本。
 - 非用户明确要求时，不自动提交代码，不新增无必要文档。
 - 破坏性变更必须先确认：删除核心配置、修改数据库结构、大范围重构、不可逆 git 操作。
+
+### 跨环境命令执行
+
+- 如果当前运行环境是 WSL，且项目位于 Windows 文件系统（如 `/mnt/c/*`、`/mnt/d/*`），执行 `pnpm` / `node` / `prisma` / `nest` / `vite` / `tsc` / `eslint` / `build` / `seed` / `generate` 等依赖相关命令前，**必须先参考 `/wsl-windows-command-bridge`**。
+- 这类场景默认优先通过 `powershell.exe -NoProfile -Command` 在 Windows 侧执行命令，避免依赖安装宿主与脚本执行宿主不一致。
+- 如果当前本身就是原生 Linux 宿主机，则按正常方式执行，无需走 PowerShell。
 
 ### 文档与目录边界
 

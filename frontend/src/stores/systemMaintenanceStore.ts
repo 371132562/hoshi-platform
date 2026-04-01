@@ -5,22 +5,22 @@ import http from '@/services/base'
 
 // 孤立图片删除结果类型
 export type DeleteOrphanImagesResult = {
-  deleted: string[]
-  failed: { filename: string; error: string }[]
+  deleted: string[] // 删除成功的文件名列表
+  failed: { filename: string; error: string }[] // 删除失败的文件及错误原因
 }
 
 // 孤立图片扫描结果类型
 export type ScanOrphanImagesResult = {
-  success: boolean
-  count: number
-  message: string
+  success: boolean // 扫描是否成功
+  count: number // 本次扫描发现的孤儿图片数量
+  message: string // 面向 UI 展示的结果文案
 }
 
 // 系统维护相关的状态与动作
 export type SystemMaintenanceStore = {
-  orphanImages: string[]
-  scanning: boolean
-  deleting: boolean
+  orphanImages: string[] // 当前扫描出的孤儿图片文件名列表
+  scanning: boolean // 扫描任务是否进行中
+  deleting: boolean // 删除任务是否进行中
 
   scanOrphanImages: () => Promise<ScanOrphanImagesResult>
   deleteOrphanImages: (filenames: string[]) => Promise<DeleteOrphanImagesResult | null>
@@ -32,7 +32,7 @@ const useSystemMaintenanceStore = create<SystemMaintenanceStore>(set => ({
   scanning: false,
   deleting: false,
 
-  // 扫描孤立图片
+  /** 扫描孤儿图片，并返回可直接展示给用户的结果摘要。 */
   scanOrphanImages: async (): Promise<ScanOrphanImagesResult> => {
     set({ scanning: true })
     try {
@@ -66,7 +66,7 @@ const useSystemMaintenanceStore = create<SystemMaintenanceStore>(set => ({
     }
   },
 
-  // 删除选中的孤立图片
+  /** 删除选中的孤儿图片，并同步更新本地列表。 */
   deleteOrphanImages: async (filenames: string[]) => {
     if (!Array.isArray(filenames) || filenames.length === 0) return null
     set({ deleting: true })
@@ -74,7 +74,7 @@ const useSystemMaintenanceStore = create<SystemMaintenanceStore>(set => ({
       const res = await http.post<DeleteOrphanImagesResult>(deleteOrphanImagesApi, {
         filenames
       })
-      // 删除成功后，从列表中剔除已删除项
+      // 删除成功后直接从本地列表剔除，避免额外再扫一遍系统。
       const deleted = res?.data?.deleted || []
       set(state => ({ orphanImages: state.orphanImages.filter(f => !deleted.includes(f)) }))
       return res?.data || { deleted: [], failed: [] }

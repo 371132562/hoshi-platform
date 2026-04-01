@@ -8,7 +8,6 @@ export * from '../commonModules/role/role.dto';
 
 // 文章模块
 export * from '../businessModules/article/article.dto';
-
 export type {
   LoginReqDto,
   LoginResDto,

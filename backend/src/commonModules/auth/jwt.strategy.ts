@@ -47,7 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                   code: true,
                   displayName: true,
                   description: true,
-                  allowedRoutes: true,
+                  permissionKeys: true,
                   delete: true,
                 },
               },
@@ -88,11 +88,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         userId: user.id,
         username: user.username,
         displayName: user.displayName,
+        isAdmin: userInfo.isAdmin,
         phone: user.phone ?? null,
         organizationId: userInfo.organizationId,
         organization: userInfo.organization,
         roles: userInfo.roles,
-        permissionSnapshot: userInfo.permissionSnapshot,
+        permissionKeys: userInfo.permissionKeys,
       };
     } catch (error) {
       // 如果是已知的BusinessException，直接抛出

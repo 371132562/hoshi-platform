@@ -26,8 +26,8 @@ model Organization {
   // 与用户表的关联
   users       User[]
 
-  createTime  DateTime @default(now())
-  updateTime  DateTime @updatedAt
+  createTime  DateTime @default(now()) // 创建时间
+  updateTime  DateTime @updatedAt // 最后更新时间
   delete      Int      @default(0) // 软删除，0表示未删除，1表示已删除
 
   @@index([parentId, delete])
@@ -40,10 +40,10 @@ model Role {
   displayName   String   // 角色显示名称（如: 系统管理员）
   description   String?  // 角色描述
   isSystem      Boolean  @default(false) // 是否为系统内置角色（不可删除）
-  allowedRoutes Json     @default("[]") // 允许访问的前端路由地址（JSON数组）
+  permissionKeys Json     @default("[]") // 允许访问的稳定权限 key（JSON数组）
   userRoles     UserRole[] // 关联到用户角色绑定表
-  createTime    DateTime @default(now())
-  updateTime    DateTime @updatedAt
+  createTime    DateTime @default(now()) // 创建时间
+  updateTime    DateTime @updatedAt // 最后更新时间
   delete        Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@index([id])
@@ -61,8 +61,8 @@ model User {
   organizationId String?       // 所属组织ID
   organization   Organization? @relation(fields: [organizationId], references: [id]) // 关联到组织表
   userRoles      UserRole[]    // 用户角色绑定关系
-  createTime     DateTime      @default(now())
-  updateTime     DateTime      @updatedAt
+  createTime     DateTime      @default(now()) // 创建时间
+  updateTime     DateTime      @updatedAt // 最后更新时间
   delete         Int           @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@unique([username, delete]) // 用户名在未删除状态下唯一
@@ -72,13 +72,13 @@ model User {
 
 // 用户-角色绑定表
 model UserRole {
-  id         String   @id @default(uuid())
-  userId     String
-  roleId     String
-  createTime DateTime @default(now())
+  id         String   @id @default(uuid()) // 绑定记录主键ID
+  userId     String   // 用户ID
+  roleId     String   // 角色ID
+  createTime DateTime @default(now()) // 绑定创建时间
 
-  user       User     @relation(fields: [userId], references: [id])
-  role       Role     @relation(fields: [roleId], references: [id])
+  user       User     @relation(fields: [userId], references: [id]) // 所属用户
+  role       Role     @relation(fields: [roleId], references: [id]) // 所属角色
 
   @@unique([userId, roleId])
   @@index([userId])
@@ -91,8 +91,8 @@ model Article {
   title      String // 文章标题
   content    String // 文章内容
   images     Json     @default("[]") // 文章内包含的图片 为图片id组成的数组
-  createTime DateTime @default(now())
-  updateTime DateTime @updatedAt
+  createTime DateTime @default(now()) // 创建时间
+  updateTime DateTime @updatedAt // 最后更新时间
   type       ArticleType @default(NORMAL) // 文章类型
   delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
 
@@ -109,8 +109,8 @@ model ArticleOrder {
   id         String   @id @default(uuid()) // 主键ID
   page       String // 对应页面key
   articles   Json     @default("[]") //包含的所有文章 为文章id组成的数组
-  createTime DateTime @default(now())
-  updateTime DateTime @updatedAt
+  createTime DateTime @default(now()) // 创建时间
+  updateTime DateTime @updatedAt // 最后更新时间
   delete     Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@index([page, delete])
@@ -118,12 +118,12 @@ model ArticleOrder {
 
 // 上传的图片
 model Image {
-  id           String   @id @default(uuid())
+  id           String   @id @default(uuid()) // 图片主键ID
   filename     String   @unique // 生成的文件名
   originalName String // 原始文件名
   hash         String // 文件哈希值
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now()) // 创建时间
+  updatedAt    DateTime @updatedAt // 最后更新时间
   delete       Int      @default(0) // 软删除标记，0表示未删除，1表示已删除
 
   @@unique([hash, delete])

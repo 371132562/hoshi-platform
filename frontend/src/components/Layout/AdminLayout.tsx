@@ -47,9 +47,7 @@ export const AdminLayout: FC = () => {
       const data = getAdminLayoutData(pathname, user)
 
       const menuItems: MenuProps['items'] = data.sideMenuRoutes.map((route: RouteItem) => {
-        const hasChildren =
-          route.children &&
-          route.children.filter((child: RouteItem) => !child.menuParent).length > 0
+        const hasChildren = Boolean(route.children?.length)
 
         const item: {
           key: string
@@ -63,24 +61,17 @@ export const AdminLayout: FC = () => {
         }
 
         if (hasChildren) {
-          item.children = route
-            .children!.filter((child: RouteItem) => !child.menuParent)
-            .map((child: RouteItem) => ({
-              key: child.path,
-              label: <Link to={child.path}>{child.title}</Link>
-            }))
+          item.children = route.children!.map((child: RouteItem) => ({
+            key: child.path,
+            label: <Link to={child.path}>{child.title}</Link>
+          }))
         }
 
         return item
       })
 
       const breadcrumbItems = data.breadcrumbItems.map(item => ({
-        title:
-          item.component && item.path !== pathname ? (
-            <Link to={item.path}>{item.title}</Link>
-          ) : (
-            item.title
-          )
+        title: item.canLink ? <Link to={item.path}>{item.title}</Link> : item.title
       }))
 
       return {

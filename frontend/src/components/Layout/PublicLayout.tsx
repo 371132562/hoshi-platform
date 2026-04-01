@@ -41,12 +41,7 @@ export const PublicLayout: FC = () => {
     }))
 
     const breadcrumbItems = data.breadcrumbItems.map(item => ({
-      title:
-        item.component && item.path !== pathname ? (
-          <Link to={item.path}>{item.title}</Link>
-        ) : (
-          item.title
-        )
+      title: item.canLink ? <Link to={item.path}>{item.title}</Link> : item.title
     }))
 
     return {

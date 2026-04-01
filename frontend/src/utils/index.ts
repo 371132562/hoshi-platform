@@ -1,11 +1,10 @@
-// 自定义手机号校验规则
+/** 手机号校验规则：允许为空，非空时仅接受中国大陆手机号格式。 */
 export const validatePhoneNumber = (_: unknown, value: string) => {
-  // 如果没有输入，则不进行校验，这里你可以根据需求调整是否允许为空
   if (!value) {
-    return Promise.resolve() // 允许为空
+    return Promise.resolve() // 当前表单策略允许手机号为空
   }
 
-  // 中国大陆手机号的正则表达式：以1开头，第二位是3-9，后面是9位数字
+  // 中国大陆手机号：1 开头，第二位 3-9，后面 9 位数字。
   const reg = /^1[3-9]\d{9}$/
   if (reg.test(value)) {
     return Promise.resolve()
@@ -13,16 +12,15 @@ export const validatePhoneNumber = (_: unknown, value: string) => {
   return Promise.reject(new Error('请输入有效的手机号！'))
 }
 
-// ---------------- 富文本图片地址转换通用方法 ----------------
-// 说明：以下方法用于在富文本保存与展示时，在“文件名”与“完整URL”之间进行互转。
+// 富文本图片地址转换工具：在“文件名”与“完整 URL”之间做双向转换。
 
-// 从 URL 中提取文件名
+/** 从图片 URL 中提取文件名。 */
 export const extractFilename = (url: string): string => {
   const lastSlashIndex = url.lastIndexOf('/')
   return lastSlashIndex !== -1 ? url.substring(lastSlashIndex + 1) : url
 }
 
-// 根据文件名构造完整图片地址（需与富文本编辑器内的 parseImageSrc 逻辑保持一致）
+/** 根据文件名构造完整图片地址，需与富文本编辑器的解析逻辑保持一致。 */
 export const buildFullImageUrl = (filename: string): string => {
   return (
     '//' +
@@ -34,8 +32,7 @@ export const buildFullImageUrl = (filename: string): string => {
   )
 }
 
-// 将 HTML 内容中的 <img src> 统一为文件名
-// 用于提交给后端存储，富文本编辑器内完整路径时才能正常显示，但入库时只需要文件名，所以删除路径后保存
+/** 将 HTML 内容中的 <img src> 统一转成文件名，供后端存储。 */
 export const toFilenameContent = (html: string): string => {
   if (!html) return ''
   const parser = new DOMParser()
@@ -48,7 +45,7 @@ export const toFilenameContent = (html: string): string => {
   return doc.body.innerHTML
 }
 
-// 将 HTML 内容中的 <img src> 从文件名扩展为完整路径（用于从库中读取时将文件名根据当前环境转换为完整路径）
+/** 将 HTML 内容中的文件名图片地址扩展为当前环境可访问的完整路径。 */
 export const toFullPathContent = (html: string): string => {
   if (!html) return ''
   const parser = new DOMParser()
@@ -56,7 +53,7 @@ export const toFullPathContent = (html: string): string => {
   doc.querySelectorAll('img').forEach(img => {
     const src = img.getAttribute('src') || ''
     if (!src) return
-    // 已是完整地址则跳过（http/https/双斜杠）或包含路径分隔符（相对路径）
+    // 已是完整地址或已包含路径信息时，直接保持原值。
     if (/^(https?:)?\/\//.test(src) || src.includes('/')) return
     img.setAttribute('src', buildFullImageUrl(src))
   })
@@ -75,16 +72,14 @@ export const downloadFile = (
   defaultFileName: string = '下载文件.xlsx'
 ): boolean => {
   try {
-    // 解析文件名
+    // 1. 优先从响应头解析文件名，兼容 RFC 5987 与传统 filename 两种格式。
     const contentDisposition = response.headers['content-disposition'] as string | undefined
     let fileName = defaultFileName
     if (contentDisposition) {
-      // 优先匹配 filename* (RFC 5987), 处理UTF-8编码的文件名
       const fileNameStarMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)
       if (fileNameStarMatch && fileNameStarMatch[1]) {
         fileName = decodeURIComponent(fileNameStarMatch[1])
       } else {
-        // 其次匹配 filename (传统方式)
         const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/)
         if (fileNameMatch && fileNameMatch[1]) {
           fileName = decodeURIComponent(fileNameMatch[1])
@@ -92,7 +87,7 @@ export const downloadFile = (
       }
     }
 
-    // 创建blob URL并触发下载
+    // 2. 构造 blob URL 并触发浏览器下载。
     const url = window.URL.createObjectURL(response.data)
     const link = document.createElement('a')
     link.href = url
@@ -100,7 +95,7 @@ export const downloadFile = (
     document.body.appendChild(link)
     link.click()
 
-    // 清理资源
+    // 3. 下载完成后立即释放 DOM 与 blob 资源。
     link.parentNode?.removeChild(link)
     window.URL.revokeObjectURL(url)
 

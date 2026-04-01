@@ -26,6 +26,7 @@ import { buildFullImageUrl } from '@/utils'
 
 const { Text } = Typography
 
+/** 资源清理面板，负责扫描并删除数据库中无引用的孤儿图片。 */
 const CleanupPanel: FC = () => {
   const orphanImages = useSystemMaintenanceStore(s => s.orphanImages)
   const scanning = useSystemMaintenanceStore(s => s.scanning)
@@ -40,14 +41,17 @@ const CleanupPanel: FC = () => {
     return orphanImages.length > 0 && selected.length === orphanImages.length
   }, [orphanImages, selected])
 
+  /** 切换全选状态。 */
   const onToggleAll = (checked: boolean) => {
     setSelected(checked ? orphanImages.slice() : [])
   }
 
+  /** 切换单张图片的选中状态。 */
   const onToggleOne = (filename: string, checked: boolean) => {
     setSelected(prev => (checked ? [...prev, filename] : prev.filter(f => f !== filename)))
   }
 
+  /** 触发孤儿图片扫描，并根据结果给出反馈提示。 */
   const handleScan = async () => {
     setSelected([])
     const result = await scanOrphanImages()
@@ -62,6 +66,7 @@ const CleanupPanel: FC = () => {
     }
   }
 
+  /** 弹出确认框并执行批量删除。 */
   const handleDelete = () => {
     if (selected.length === 0) return
 
@@ -85,7 +90,6 @@ const CleanupPanel: FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* 顶部统计与操作区 */}
       {/* 顶部统计与操作区 */}
       <div className="mb-4 flex flex-col items-center justify-between gap-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm md:flex-row">
         <div className="flex items-center gap-6">
@@ -132,7 +136,6 @@ const CleanupPanel: FC = () => {
         </Space>
       </div>
 
-      {/* 图片列表区 */}
       <Card
         variant="borderless"
         className="shadow-sm"
@@ -161,7 +164,7 @@ const CleanupPanel: FC = () => {
       >
         {scanning ? (
           <div className="flex h-64 items-center justify-center">
-            <Spin tip="正在扫描中..." />
+            <Spin description="正在扫描中..." />
           </div>
         ) : orphanImages.length === 0 ? (
           <Empty
@@ -181,7 +184,6 @@ const CleanupPanel: FC = () => {
                 onClick={() => onToggleOne(filename, !selected.includes(filename))}
               >
                 <div className="relative flex aspect-square items-center justify-center bg-gray-100">
-                  {/* 图片 */}
                   <Image
                     src={buildFullImageUrl(filename)}
                     alt={filename}
@@ -192,14 +194,13 @@ const CleanupPanel: FC = () => {
                     height="100%"
                     width="100%"
                     className="object-cover"
-                    onClick={e => e.stopPropagation()} // 阻止冒泡，避免触发选择
+                    onClick={e => e.stopPropagation()} // 预览图片时不触发外层的选中逻辑
                   />
-                  {/* 选择框 */}
                   <div className="absolute top-2 right-2 z-10">
                     <Checkbox
                       checked={selected.includes(filename)}
                       className="scale-110"
-                      onClick={e => e.stopPropagation()} // 阻止 checkbox 点击触发外层 div click
+                      onClick={e => e.stopPropagation()} // 勾选框点击不应触发卡片的整块点击逻辑
                       onChange={e => onToggleOne(filename, e.target.checked)}
                     />
                   </div>
@@ -219,7 +220,6 @@ const CleanupPanel: FC = () => {
         )}
       </Card>
 
-      {/* 提示 Alert */}
       {orphanImages.length > 0 && (
         <Alert
           title="安全提示"

@@ -23,7 +23,7 @@ const { Text } = Typography
 type LogType = 'system' | 'user'
 
 type LogPanelProps = {
-  type: LogType
+  type: LogType // 日志面板模式：系统日志或用户日志
 }
 
 /** 日志等级选项配置 */
@@ -42,14 +42,14 @@ const LOG_LEVEL_COLOR: Record<string, string> = {
 }
 
 const LogPanel: FC<LogPanelProps> = ({ type }) => {
-  // State for filtering
+  // 筛选条件：文件、用户、关键字、时间范围与日志等级。
   const [selectedFilename, setSelectedFilename] = useState<string>()
   const [selectedUsername, setSelectedUsername] = useState<string>()
   const [keyword, setKeyword] = useState<string>()
   const [timeRange, setTimeRange] = useState<[Dayjs | null, Dayjs | null] | null>()
   const [selectedLevel, setSelectedLevel] = useState<LogFileLevel>()
 
-  // Store actions and state
+  // Store 中统一维护文件列表、读取结果与拉取动作。
   const {
     files,
     filesLoading,
@@ -69,7 +69,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
     refreshUserFilesWithDebounce
   } = useSystemLogsStore()
 
-  // Initialize data
+  // 初始化阶段：系统日志直接拉文件列表，用户日志先拉用户选项。
   useEffect(() => {
     if (type === 'system') {
       refreshFilesWithDebounce(true)
@@ -78,13 +78,13 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
     }
   }, [type, refreshFilesWithDebounce, listUsers])
 
-  // Computed options
+  // 根据当前模式把文件列表转换成 Select 可直接消费的选项结构。
   const fileOptions = useMemo(() => {
     const targetFiles = type === 'system' ? files : userFiles
     return targetFiles.map((f: { filename: string }) => ({ label: f.filename, value: f.filename }))
   }, [type, files, userFiles])
 
-  // Handle User Change
+  /** 切换用户后刷新该用户对应的日志文件列表。 */
   const handleUserChange = async (username: string | undefined) => {
     setSelectedUsername(username)
     setSelectedFilename(undefined)
@@ -93,7 +93,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
     }
   }
 
-  // Auto fetch logs when filename matches requirements
+  // 当文件名满足条件时自动读取日志内容，避免额外的“查询”按钮。
   useEffect(() => {
     const fetch = async () => {
       if (!selectedFilename) return
@@ -105,13 +105,13 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
           await readUserLog({ username: selectedUsername, filename: selectedFilename })
         }
       } catch (_) {
-        // Error handling is usually done in store/service
+        // 错误提示统一交给 store / request 层，这里不重复处理。
       }
     }
     fetch()
   }, [type, selectedFilename, selectedUsername, readLog, readUserLog])
 
-  // Data processing
+  // 读取结果统一在这里做二次过滤，避免把 UI 条件直接下沉到后端接口。
   const rawData = type === 'system' ? readResult : readUserResult
 
   const processedData = useMemo(() => {
@@ -124,18 +124,18 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
       message: l.message
     }))
 
-    // Filter by log level
+    // 1. 先按日志等级过滤。
     if (selectedLevel) {
       data = data.filter(item => item.level === selectedLevel)
     }
 
-    // Filter by keyword
+    // 2. 再按关键词做大小写不敏感匹配。
     if (keyword?.trim()) {
       const lower = keyword.trim().toLowerCase()
       data = data.filter(item => item.message.toLowerCase().includes(lower))
     }
 
-    // Filter by time range
+    // 3. 最后按时间范围收敛结果，保证各筛选条件是叠加关系。
     if (timeRange && timeRange.length === 2) {
       const [start, end] = timeRange
       const startTime = dayjs(start).startOf('second')
@@ -150,7 +150,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
     return data
   }, [rawData, keyword, timeRange, selectedFilename, selectedLevel])
 
-  // Columns
+  // 表格列定义集中放在 useMemo 中，避免高频重建 render 函数。
   const columns = useMemo(
     () => [
       {
@@ -177,7 +177,7 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
           const k = keyword?.trim()
           if (!k) return <Text className="font-mono text-xs whitespace-pre-wrap">{text}</Text>
 
-          // Highlight logic
+          // 关键词高亮仅在存在搜索词时启用，减少无意义的字符串拆分。
           const parts = text.split(new RegExp(`(${k})`, 'gi'))
           return (
             <Text className="font-mono text-xs whitespace-pre-wrap">
@@ -270,7 +270,6 @@ const LogPanel: FC<LogPanelProps> = ({ type }) => {
         </Button>
       </div>
 
-      {/* Content Area */}
       <Card
         variant="borderless"
         className="min-h-[500px] shadow-sm"

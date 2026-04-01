@@ -24,12 +24,14 @@ export class UserService {
     private readonly logger: WinstonLoggerService,
   ) {}
 
+  /** 去重并清理角色ID列表中的空白值。 */
   private normalizeRoleIds(roleIds: string[]): string[] {
     return Array.from(
       new Set(roleIds.filter((roleId) => roleId.trim().length > 0)),
     );
   }
 
+  /** 校验角色ID是否有效，并返回去重后的角色ID列表。 */
   private async validateRoleIds(roleIds: string[]): Promise<string[]> {
     const normalizedRoleIds = this.normalizeRoleIds(roleIds);
 
@@ -52,6 +54,7 @@ export class UserService {
     return normalizedRoleIds;
   }
 
+  /** 在事务内重建用户与角色的绑定关系。 */
   private async replaceUserRoles(
     tx: Prisma.TransactionClient,
     userId: string,
@@ -106,7 +109,7 @@ export class UserService {
                     code: true,
                     displayName: true,
                     description: true,
-                    allowedRoutes: true,
+                    permissionKeys: true,
                     delete: true,
                   },
                 },

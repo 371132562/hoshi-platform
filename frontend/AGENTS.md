@@ -4,7 +4,9 @@
 
 ## 进入前端任务前先选 Skill
 
-完整路由见根 `AGENTS.md`；前端常用 skill：`create-frontend-component`、`create-zustand-store`、`ant-design-docs`、`type-contract-guidelines`。
+完整路由见根 `AGENTS.md`；前端常用 skill：`create-frontend-component`、`create-zustand-store`、`ant-design-docs`、`type-contract-guidelines`、`comment-detail-preservation`。
+
+如果当前环境是 WSL、项目位于 `/mnt/<盘符>/...`，且要执行 `pnpm` / `vite` / `eslint` / `tsc` / `build` 等依赖相关命令，先参考根 `AGENTS.md` 中强制 skill `/wsl-windows-command-bridge`。
 
 ## 先看哪里
 
@@ -22,4 +24,5 @@
 - 共享类型契约细则转 `type-contract-guidelines`。
 - 路由、菜单、面包屑相关改动统一落在 `router/`。
 - 常规列表页（顶部工具栏含搜索、新建等操作）的 `Table` 默认参考 `UserManagement` / `ArticleManagement` / `RoleManagement`：使用 `scroll={{ x: 'max-content', y: 'calc(100vh - 360px)' }}`，纯分页场景优先用 `pagination.onChange`。
+- 只要本次开发会新增或修订注释，先参考根 `AGENTS.md` 中强制 skill `/comment-detail-preservation`；对高约束前端逻辑默认保留或写出与风险匹配的详细程度，不要事后再补。
 - 页面与组件、Store、共享类型契约、Ant Design 文档消费方式，按需加载对应 skill，不在此重复展开。
