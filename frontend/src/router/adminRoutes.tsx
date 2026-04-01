@@ -6,7 +6,6 @@ import { RouteItem } from '@/types'
 // 后台页面懒加载
 const ArticleManagement = lazy(() => import('@/pages/ArticleManagement'))
 const ModifyArticle = lazy(() => import('@/pages/ArticleManagement/Modify'))
-const OrderConfig = lazy(() => import('@/pages/ArticleManagement/OrderConfig'))
 const RoleManagement = lazy(() => import('@/pages/System/RoleManagement'))
 const SystemMaintenance = lazy(() => import('@/pages/System/SystemMaintenance'))
 const UserManagement = lazy(() => import('@/pages/System/UserManagement'))
@@ -44,12 +43,6 @@ export const adminRoutes: RouteItem[] = [
             component: ModifyArticle
           }
         ]
-      },
-      {
-        path: '/admin/article/order',
-        title: '配置文章顺序',
-        permissionKey: 'article:order',
-        component: OrderConfig
       }
     ]
   },

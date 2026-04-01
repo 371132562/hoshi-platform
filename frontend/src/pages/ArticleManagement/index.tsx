@@ -1,10 +1,11 @@
-import { EyeOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, message, Popconfirm, Space, Table } from 'antd'
+import { EyeOutlined, OrderedListOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Form, Input, message, Modal, Popconfirm, Space, Table } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import type { ArticleMetaItemResDto } from 'template-backend/src/types/dto'
 
 import ArticlePreviewModal from '@/components/Article/ArticlePreviewModal'
+import ArticleOrderConfigPanel from '@/pages/ArticleManagement/components/ArticleOrderConfigPanel'
 import useArticleStore from '@/stores/articleStore'
 import { dayjs } from '@/utils/dayjs'
 
@@ -28,6 +29,8 @@ const ArticleManagement: React.FC = () => {
   // 预览 Modal 状态
   const [previewVisible, setPreviewVisible] = useState(false)
   const [previewArticleId, setPreviewArticleId] = useState<string | null>(null)
+  // 排序配置 Modal 状态
+  const [orderConfigVisible, setOrderConfigVisible] = useState(false)
 
   // React Hooks: useEffect
   useEffect(() => {
@@ -160,13 +163,21 @@ const ArticleManagement: React.FC = () => {
           </Form.Item>
         </Form>
         <div className="flex-1" />
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => navigate('/admin/article/create')}
-        >
-          新增文章
-        </Button>
+        <Space size={8}>
+          <Button
+            icon={<OrderedListOutlined />}
+            onClick={() => setOrderConfigVisible(true)}
+          >
+            配置文章顺序
+          </Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/admin/article/create')}
+          >
+            新增文章
+          </Button>
+        </Space>
       </div>
       <Table
         columns={columns}
@@ -191,6 +202,18 @@ const ArticleManagement: React.FC = () => {
         articleId={previewArticleId}
         onClose={handlePreviewClose}
       />
+
+      {/* 文章顺序配置 Modal */}
+      <Modal
+        title="配置文章顺序"
+        open={orderConfigVisible}
+        onCancel={() => setOrderConfigVisible(false)}
+        footer={null}
+        width={960}
+        destroyOnHidden
+      >
+        <ArticleOrderConfigPanel />
+      </Modal>
     </div>
   )
 }

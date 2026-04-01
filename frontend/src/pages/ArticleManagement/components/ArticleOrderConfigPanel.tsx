@@ -124,7 +124,10 @@ const OrderConfigSkeleton: React.FC = () => (
 
 const PAGES = [{ key: 'home', label: '首页' }]
 
-const OrderConfig = () => {
+/**
+ * 文章顺序配置面板（仅作为文章列表页内的嵌入式能力，不再作为独立菜单页）。
+ */
+const ArticleOrderConfigPanel: React.FC = () => {
   const allArticles = useArticleStore(state => state.allArticles)
   const pageArticles = useArticleStore(state => state.pageArticles)
   const orderConfigLoading = useArticleStore(state => state.orderConfigLoading)
@@ -229,8 +232,6 @@ const OrderConfig = () => {
   const hasUnselectedArticles = selectedArticles.some(item => !item.id)
   const selectedArticleIds = new Set(selectedArticles.map(item => item.id).filter(Boolean))
 
-  // 文章排序骨架屏组件
-
   return (
     <div className="w-full">
       <div className="mb-4 flex items-center justify-between">
@@ -267,41 +268,39 @@ const OrderConfig = () => {
       {orderConfigLoading ? (
         <OrderConfigSkeleton />
       ) : (
-        <>
-          <div className="min-h-[300px] rounded-md border border-gray-300 p-4">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+        <div className="min-h-[300px] rounded-md border border-gray-300 p-4">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={selectedArticles.map(item => item.uniqueId)}
+              strategy={verticalListSortingStrategy}
             >
-              <SortableContext
-                items={selectedArticles.map(item => item.uniqueId)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="mb-4 space-y-4">
-                  {selectedArticles.map(article => (
-                    <SortableItem
-                      key={article.uniqueId}
-                      id={article.uniqueId}
-                      article={article}
-                      allArticles={allArticles}
-                      selectedArticleIds={selectedArticleIds}
-                      onSelect={handleSelectArticle}
-                      onRemove={handleRemoveArticle}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-            <Button
-              type="dashed"
-              onClick={handleAddArticle}
-              className="w-full"
-            >
-              + 添加文章
-            </Button>
-          </div>
-        </>
+              <div className="mb-4 space-y-4">
+                {selectedArticles.map(article => (
+                  <SortableItem
+                    key={article.uniqueId}
+                    id={article.uniqueId}
+                    article={article}
+                    allArticles={allArticles}
+                    selectedArticleIds={selectedArticleIds}
+                    onSelect={handleSelectArticle}
+                    onRemove={handleRemoveArticle}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+          <Button
+            type="dashed"
+            onClick={handleAddArticle}
+            className="w-full"
+          >
+            + 添加文章
+          </Button>
+        </div>
       )}
 
       <Modal
@@ -318,4 +317,4 @@ const OrderConfig = () => {
   )
 }
 
-export default OrderConfig
+export default ArticleOrderConfigPanel
