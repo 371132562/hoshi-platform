@@ -1,6 +1,6 @@
 ---
 name: eslint-fix
-description: 在本项目运行或修复 ESLint、TypeScript 相关问题时使用，按 monorepo 子项目粒度执行检查，避免无关全量开销。
+description: 当用户要求运行 lint、修复 ESLint 报错、处理 TypeScript 问题，或需要按改动范围决定检查命令时使用；按 monorepo 子项目粒度执行，避免无关全量开销。
 ---
 
 # ESLint / TypeScript 检查规范

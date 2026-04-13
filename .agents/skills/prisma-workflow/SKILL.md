@@ -1,6 +1,6 @@
 ---
 name: prisma-workflow
-description: 修改 Prisma schema、seed、生成客户端或处理数据库结构相关任务时使用，负责变更顺序、验证与风险控制。
+description: 当用户要修改 Prisma schema、seed、生成客户端，或处理数据库结构与落库逻辑相关任务时使用；重点控制变更顺序、同步项、验证方式与风险边界。
 ---
 
 # Prisma 工作流规范

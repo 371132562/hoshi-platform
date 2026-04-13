@@ -1,6 +1,6 @@
 ---
 name: create-zustand-store
-description: 创建或修改 Zustand Store 时使用，约束状态命名、异步 action、请求封装和组件订阅方式。
+description: 当用户要创建、拆分或修改 Zustand Store、页面级状态、列表查询状态或异步 Action 时使用；重点约束状态命名、请求封装、刷新闭环与组件订阅方式。
 ---
 
 # Zustand Store 规范

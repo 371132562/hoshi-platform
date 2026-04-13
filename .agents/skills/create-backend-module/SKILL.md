@@ -1,6 +1,6 @@
 ---
 name: create-backend-module
-description: 创建或修改 NestJS 模块、controller、service、dto、pipe 时使用，确保符合当前后端分层、响应、校验与日志规则。
+description: 当用户要创建或修改 NestJS 模块、controller、service、dto、pipe 或后端业务链路时使用；重点约束当前后端分层、统一响应、校验方式、错误处理与日志规则。
 ---
 
 # 后端模块开发规范

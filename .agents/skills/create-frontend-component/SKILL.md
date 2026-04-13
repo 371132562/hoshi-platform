@@ -1,6 +1,6 @@
 ---
 name: create-frontend-component
-description: 创建或修改 React 页面、组件、布局、样式、路由承载页面时使用，保证遵循当前前端分层与 UI 风格。
+description: 当用户要创建或修改 React 页面、组件、布局、样式、路由承载页面或其他前端 UI 元素时使用；重点约束前端分层、页面结构、列表交互、样式优先级与现有 UI 风格延续。
 ---
 
 # 前端组件与页面开发规范

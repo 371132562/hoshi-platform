@@ -1,6 +1,6 @@
 ---
 name: implement-system-log
-description: 实现或修改系统日志、用户日志、关键操作日志时使用，遵循当前 Winston + RequestContext 的日志链路。
+description: 当用户要新增或修改系统日志、用户日志、关键操作日志、认证日志、导出上传日志或日志查询链路时使用；重点遵循当前 Winston 与 RequestContext 的统一日志链路。
 ---
 
 # 系统日志规范

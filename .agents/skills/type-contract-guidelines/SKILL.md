@@ -1,6 +1,6 @@
 ---
 name: type-contract-guidelines
-description: 创建或修改 DTO、共享 type、backend/src/types 导出与前后端类型契约时使用，统一目录结构、命名和共享边界。
+description: 当用户要创建或修改 DTO、共享 type、backend/src/types 导出或前后端类型契约时使用；重点约束目录结构、命名规则、共享出口与前后端边界。
 ---
 
 # 类型契约规范
